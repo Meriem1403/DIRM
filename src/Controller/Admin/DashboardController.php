@@ -7,44 +7,86 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
+use App\Entity\User;
+use App\Entity\Role;
+use App\Entity\Service;
+use App\Entity\DomaineService;
+use App\Entity\Lieu;
+use App\Entity\ApplicationCerbere;
+use App\Entity\ProfilCerbere;
+use App\Entity\DemandeHabilitationCerbere;
+use App\Entity\DemandeMobilite;
+use App\Entity\DeclarationChantier;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
     public function index(): Response
     {
-        return parent::index();
-
-        // Option 1. You can make your dashboard redirect to some common page of your backend
-        //
-        // 1.1) If you have enabled the "pretty URLs" feature:
-        // return $this->redirectToRoute('admin_user_index');
-        //
-        // 1.2) Same example but using the "ugly URLs" that were used in previous EasyAdmin versions:
-        // $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-        // return $this->redirect($adminUrlGenerator->setController(OneOfYourCrudController::class)->generateUrl());
-
-        // Option 2. You can make your dashboard redirect to different pages depending on the user
-        //
-        // if ('jane' === $this->getUser()->getUsername()) {
-        //     return $this->redirectToRoute('...');
-        // }
-
-        // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-        // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-        //
-        // return $this->render('some/path/my-dashboard.html.twig');
+        return $this->render('admin/index.html.twig');
     }
 
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Dirm');
+            ->setTitle('DIRM Méditerranée')
+            ->renderContentMaximized();
     }
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
+        yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
+
+        yield MenuItem::section('Utilisateurs & Structure');
+        yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-users', User::class);
+        yield MenuItem::linkToCrud('Rôles', 'fas fa-user-tag', Role::class);
+        yield MenuItem::linkToCrud('Services', 'fas fa-building', Service::class);
+        yield MenuItem::linkToCrud('Domaines', 'fas fa-tags', DomaineService::class);
+        yield MenuItem::linkToCrud('Lieux', 'fas fa-map-marker-alt', Lieu::class);
+
+        yield MenuItem::section('Applications & Habilitations');
+        yield MenuItem::linkToCrud('Applications Cerbère', 'fas fa-cogs', ApplicationCerbere::class);
+        yield MenuItem::linkToCrud('Profils Cerbère', 'fas fa-id-badge', ProfilCerbere::class);
+        yield MenuItem::linkToCrud('Demandes d\'habilitation', 'fas fa-shield-alt', DemandeHabilitationCerbere::class);
+
+        yield MenuItem::section('Mobilité & Chantier');
+        yield MenuItem::linkToCrud('Demandes de mobilité', 'fas fa-exchange-alt', DemandeMobilite::class);
+        yield MenuItem::linkToCrud('Déclarations chantier', 'fas fa-anchor', DeclarationChantier::class);
+
+        yield MenuItem::section('Accès rapide');
+        yield MenuItem::linkToUrl('Retour au site', 'fas fa-home', '/')->setLinkTarget('_blank');
+    }
+
+    public function configureUserMenu(UserInterface $user): UserMenu
+    {
+        return parent::configureUserMenu($user)
+            ->addMenuItems([
+                MenuItem::linkToLogout('Se déconnecter', 'fas fa-sign-out-alt'),
+            ]);
+    }
+
+    public function configureActions(): Actions
+    {
+        return parent::configureActions()
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_DETAIL, Action::INDEX, fn(Action $action) => $action);
+    }
+
+    public function configureAssets(): Assets
+    {
+        return parent::configureAssets()
+            ->addWebpackEncoreEntry('admin'); // si tu as un fichier admin.js/css
+    }
+
+    public function configureCrud(): Crud
+    {
+        return parent::configureCrud()
+            ->setDefaultSort(['id' => 'DESC']);
     }
 }

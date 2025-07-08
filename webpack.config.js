@@ -21,6 +21,11 @@ Encore
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     .addEntry('app', './assets/app.js')
+    .addEntry('admin', './assets/admin.js')
+
+    // PostCSS + Tailwind
+    .enablePostCssLoader()
+
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -39,7 +44,8 @@ Encore
     .cleanupOutputBeforeBuild()
 
     // Displays build status system notifications to the user
-    // .enableBuildNotifications()
+    .enableBuildNotifications()
+
 
     .enableSourceMaps(!Encore.isProduction())
     // enables hashed filenames (e.g. app.abc123.css)
@@ -59,7 +65,10 @@ Encore
     // enables Sass/SCSS support
     //.enableSassLoader()
 
-    // uncomment if you use TypeScript
+    .enableStimulusBridge('./assets/controllers.json')
+
+
+// uncomment if you use TypeScript
     //.enableTypeScriptLoader()
 
     // uncomment if you use React

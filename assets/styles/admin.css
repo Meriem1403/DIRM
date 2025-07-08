@@ -1,0 +1,26 @@
+:root {
+    /* Arrière-plan */
+    --body-bg: #F5F6FA;
+    --sidebar-bg: #FFFFFF;
+
+    /* Boutons généraux */
+    --button-primary-bg: #0D99FF;
+    --button-primary-color: #FFFFFF;
+    --border-radius: 4px;
+
+    /* Bouton Confirmed */
+    --button-confirmed-bg: #00B69B;
+    --button-confirmed-color: #FFFFFF;
+
+    /* Bouton Pending */
+    --button-pending-bg: #FCBE2D;
+    --button-pending-color: #FFFFFF;
+
+    /* Bouton Cancelled */
+    --button-cancelled-bg: #FD5454;
+    --button-cancelled-color: #FFFFFF;
+
+    /* Bouton Expired */
+    --button-expired-bg: #979797;
+    --button-expired-color: #FFFFFF;
+}
