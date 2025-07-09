@@ -23,4 +23,9 @@
     /* Bouton Expired */
     --button-expired-bg: #979797;
     --button-expired-color: #FFFFFF;
+
+}
+
+.main-content {
+    margin-bottom: 100px;
 }

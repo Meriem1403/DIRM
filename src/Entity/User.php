@@ -9,9 +9,15 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable;
 use DateTime;
+use App\Validator\ServiceDependencies;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+#[ServiceDependencies]
+class User implements PasswordAuthenticatedUserInterface
+
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -56,11 +62,38 @@ class User
     #[ORM\JoinColumn(nullable: false)]
     private ?Service $service = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?DomaineService $domaine = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Lieu $lieu = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Categorie $categorie = null;
+
+    #[Assert\NotBlank(groups: ['create'])]
+    private ?string $plainPassword = null;
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
+
     #[ORM\Column]
     private ?DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'createdUsers')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?self $createdBy = null;
 
     /**
@@ -127,6 +160,40 @@ class User
     public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
+        return $this;
+    }
+
+    public function getDomaine(): ?DomaineService
+    {
+        return $this->domaine;
+    }
+
+    public function setDomaine(?DomaineService $domaine): static
+    {
+        $this->domaine = $domaine;
+        return $this;
+    }
+
+    public function getLieu(): ?Lieu
+    {
+        return $this->lieu;
+    }
+
+    public function setLieu(?Lieu $lieu): static
+    {
+        $this->lieu = $lieu;
+        return $this;
+    }
+
+
+    public function getCategorie(): ?Categorie
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie(?Categorie $categorie): static
+    {
+        $this->categorie = $categorie;
         return $this;
     }
 
@@ -268,6 +335,23 @@ class User
 
         return $this;
     }
+    public function getServiceDomaines(): string
+    {
+        if (!$this->service) return '';
+
+        return implode(', ', $this->service->getDomaines()->map(fn($d) => $d->getNom())->toArray());
+    }
+
+
+    public function getLieuxService(): string
+    {
+        if (!$this->service) {
+            return '';
+        }
+
+        return implode(', ', $this->service->getLieux()->map(fn($l) => $l->getNom())->toArray());
+    }
+
 
     public function getRoles(): array
     {

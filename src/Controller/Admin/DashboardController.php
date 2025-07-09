@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Categorie;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -47,8 +48,9 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-users', User::class);
         yield MenuItem::linkToCrud('Rôles', 'fas fa-user-tag', Role::class);
         yield MenuItem::linkToCrud('Services', 'fas fa-building', Service::class);
-        yield MenuItem::linkToCrud('Domaines', 'fas fa-tags', DomaineService::class);
+        yield MenuItem::linkToCrud('Domaines', 'fas fa-briefcase', DomaineService::class);
         yield MenuItem::linkToCrud('Lieux', 'fas fa-map-marker-alt', Lieu::class);
+        yield MenuItem::linkToCrud('Categories', 'fas fa-layer-group', Categorie::class);
 
         yield MenuItem::section('Applications & Habilitations');
         yield MenuItem::linkToCrud('Applications Cerbère', 'fas fa-cogs', ApplicationCerbere::class);

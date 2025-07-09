@@ -3,10 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\DomaineService;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 
 class DomaineServiceCrudController extends AbstractCrudController
 {
@@ -15,14 +17,28 @@ class DomaineServiceCrudController extends AbstractCrudController
         return DomaineService::class;
     }
 
-    /*
-    public function configureFields(string $pageName): iterable
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('📚 Domaine')
+            ->setEntityLabelInPlural('📚 Domaines')
+            ->setPageTitle(Crud::PAGE_INDEX, 'Gestion des domaines fonctionnels')
+            ->setDefaultSort(['nom' => 'ASC']);
+    }
+
+    public function configureFields(string $pageName): array
     {
         return [
-            IdField::new('id'),
-            TextField::new('title'),
-            TextEditorField::new('description'),
+            TextField::new('nom', '🏷️ Nom du domaine')
+                ->setHelp('Exemple : RH, Informatique, Moyens généraux...'),
+            AssociationField::new('services', '🏢 Services concernés')
+                ->setFormTypeOption('by_reference', false)
+                ->setHelp('Services liés à ce domaine'),
         ];
     }
-    */
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions;
+    }
 }
