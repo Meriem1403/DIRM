@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Bienvenue sur la plateforme</h1>
+        <p>Vous êtes connecté en tant que {{ app.user }}</p>
+    </div>
+{% endblock %}

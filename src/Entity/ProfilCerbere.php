@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ProfilCerbereRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProfilCerbereRepository::class)]
@@ -15,6 +16,9 @@ class ProfilCerbere
 
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'profils')]
     #[ORM\JoinColumn(nullable: false)]
@@ -33,7 +37,17 @@ class ProfilCerbere
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+        return $this;
+    }
 
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
         return $this;
     }
 
@@ -45,12 +59,11 @@ class ProfilCerbere
     public function setApplication(?ApplicationCerbere $application): static
     {
         $this->application = $application;
-
         return $this;
     }
 
     public function __toString(): string
     {
-        return $this->nom;
+        return $this->nom ?? 'Profil';
     }
 }

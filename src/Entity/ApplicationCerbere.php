@@ -28,8 +28,9 @@ class ApplicationCerbere
     /**
      * @var Collection<int, ProfilCerbere>
      */
-    #[ORM\OneToMany(targetEntity: ProfilCerbere::class, mappedBy: 'application')]
+    #[ORM\OneToMany(targetEntity: ProfilCerbere::class, mappedBy: 'application', cascade: ['persist'], orphanRemoval: true)]
     private Collection $profils;
+
 
     public function __construct()
     {
@@ -107,4 +108,6 @@ class ApplicationCerbere
 
         return $this;
     }
+
+
 }

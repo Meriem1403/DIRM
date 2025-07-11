@@ -7,6 +7,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 #[ORM\Entity(repositoryClass: DeclarationChantierRepository::class)]
 class DeclarationChantier
 {
@@ -15,7 +19,6 @@ class DeclarationChantier
     #[ORM\Column]
     private ?int $id = null;
 
-    // Exploitant
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
@@ -28,23 +31,18 @@ class DeclarationChantier
     #[ORM\Column(length: 100)]
     private ?string $email = null;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $emailOrganisme = null;
+
     #[ORM\Column(length: 20)]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $qualiteDeclarant = null; // chantier, autre...
-
-    // Déclaration
-    #[ORM\Column(length: 50)]
-    private ?string $typeDemande = null; // mise_en_chantier, modification...
-
-    #[ORM\Column(length: 50)]
-    private ?string $typeProjet = null; // commerce, pêche, plaisance pro...
+    private ?string $typeDemande = null;
 
     #[ORM\Column(type: Types::JSON)]
-    private array $activites = []; // ex: transport, services, chargement
+    private array $activites = [];
 
-    // Navire
     #[ORM\Column(length: 150)]
     private ?string $nomNavire = null;
 
@@ -64,22 +62,27 @@ class DeclarationChantier
     private ?float $largeur = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $propulsion = null; // thermique, électrique...
+    private ?string $propulsion = null;
 
     #[ORM\Column(type: Types::FLOAT)]
     private ?float $puissanceKw = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $vitesse = null; // à 12 nds, 12-20, etc.
+    private ?string $vitesse = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $materiau = null; // Acier, PRVT, etc.
+    private ?string $materiau = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $eloignementCote = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $dureeSejourMer = null;
+
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?DateTimeInterface $datePoseQuille = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $chantierNaval = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $architecteNaval = null;
@@ -88,7 +91,7 @@ class DeclarationChantier
     private ?string $organismeClasse = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $categorieConception = null; // A, B, C, D...
+    private ?string $categorieConception = null;
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $numeroSerie = null;
@@ -102,9 +105,11 @@ class DeclarationChantier
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $organismeNotifie = null;
 
-    // Personnes physiques déclarées
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $autreNom = null;
+    private ?string $nomChantier = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $nomChantierConception = null;
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $autrePrenom = null;
@@ -115,9 +120,61 @@ class DeclarationChantier
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $autreTelephone = null;
 
-    // Suivi
+    #[ORM\Column(nullable: true)]
+    private ?bool $chantierAvecContrat = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $adresseChantier = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $contactChantier = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $architecteMail = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $contactArchitecte = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $contactOrganismeClasse = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $numeroExamenCe = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $nomMandataire = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $prenomMandataire = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $qualiteMandataire = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $telephoneMandataire = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $emailMandataire = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $nomMandataireIa = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $prenomMandataireIa = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $qualiteMandataireIa = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $telephoneMandataireIa = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $emailMandataireIa = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $portDepart = null;
+
     #[ORM\Column(length: 50)]
-    private ?string $statut = null; // en_attente / validee / refusee
+    private ?string $statut = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?DateTimeImmutable $dateSoumission = null;
@@ -129,7 +186,29 @@ class DeclarationChantier
     private ?User $validePar = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $recepissePath = null; // chemin vers PDF
+    private ?string $recepissePath = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $noteExplicativePath = null;
+
+
+    #[ORM\OneToMany(targetEntity: PersonneABord::class, mappedBy: 'declarationChantier', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $personnesABord;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $nbEquipage = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $nbPassagers = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $nbPersonnelSpecial = null;
+
+
+    public function __construct()
+    {
+        $this->personnesABord = new ArrayCollection();
+    }
 
     public function __toString(): string
     {
@@ -141,12 +220,71 @@ class DeclarationChantier
         return $this->id;
     }
 
+    public function getNomChantier(): ?string
+    {
+        return $this->nomChantier;
+    }
+
+    public function setNomChantier(?string $nomChantier): static
+    {
+        $this->nomChantier = $nomChantier;
+
+        return $this;
+    }
+
+    public function getNomChantierConception(): ?string
+    {
+        return $this->nomChantierConception;
+    }
+
+    public function setNomChantierConception(?string $nomChantierConception): static
+    {
+        $this->nomChantierConception = $nomChantierConception;
+
+        return $this;
+    }
+
+    public function getNbEquipage(): ?int
+    {
+        return $this->nbEquipage;
+    }
+
+    public function setNbEquipage(?int $nbEquipage): static
+    {
+        $this->nbEquipage = $nbEquipage;
+        return $this;
+    }
+
+    public function getNbPersonnelSpecial(): ?int
+    {
+        return $this->nbPersonnelSpecial;
+    }
+
+    public function setNbPersonnelSpecial(?int $nbPersonnelSpecial): static
+    {
+        $this->nbPersonnelSpecial = $nbPersonnelSpecial;
+        return $this;
+    }
+
+    public function getNbPassagers(): ?int
+    {
+        return $this->nbPassagers;
+    }
+
+    public function setNbPassagers(?int $nbPassagers): static
+    {
+        $this->nbPassagers = $nbPassagers;
+        return $this;
+    }
+
+
+
     public function getNom(): ?string
     {
         return $this->nom;
     }
 
-    public function setNom(?string $nom): static
+    public function setNom(string $nom): static
     {
         $this->nom = $nom;
         return $this;
@@ -157,7 +295,7 @@ class DeclarationChantier
         return $this->prenom;
     }
 
-    public function setPrenom(?string $prenom): static
+    public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
         return $this;
@@ -168,42 +306,56 @@ class DeclarationChantier
         return $this->adresse;
     }
 
-    public function setAdresse(?string $adresse): static
+    public function setAdresse(string $adresse): static
     {
         $this->adresse = $adresse;
         return $this;
     }
+
+    public function getPortDepart(): ?string
+    {
+        return $this->portDepart;
+    }
+
+    public function setPortDepart(?string $portDepart): static
+    {
+        $this->portDepart = $portDepart;
+        return $this;
+    }
+
+
 
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(?string $email): static
+    public function setEmail(string $email): static
     {
         $this->email = $email;
         return $this;
     }
+
+    public function getEmailOrganisme(): ?string
+    {
+        return $this->emailOrganisme;
+    }
+
+    public function setEmailOrganisme(string $emailOrganisme): static
+    {
+        $this->emailOrganisme = $emailOrganisme;
+        return $this;
+    }
+
 
     public function getTelephone(): ?string
     {
         return $this->telephone;
     }
 
-    public function setTelephone(?string $telephone): static
+    public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
-        return $this;
-    }
-
-    public function getQualiteDeclarant(): ?string
-    {
-        return $this->qualiteDeclarant;
-    }
-
-    public function setQualiteDeclarant(?string $qualiteDeclarant): static
-    {
-        $this->qualiteDeclarant = $qualiteDeclarant;
         return $this;
     }
 
@@ -212,24 +364,13 @@ class DeclarationChantier
         return $this->typeDemande;
     }
 
-    public function setTypeDemande(?string $typeDemande): static
+    public function setTypeDemande(string $typeDemande): static
     {
         $this->typeDemande = $typeDemande;
         return $this;
     }
 
-    public function getTypeProjet(): ?string
-    {
-        return $this->typeProjet;
-    }
-
-    public function setTypeProjet(?string $typeProjet): static
-    {
-        $this->typeProjet = $typeProjet;
-        return $this;
-    }
-
-    public function getActivites(): ?array
+    public function getActivites(): array
     {
         return $this->activites;
     }
@@ -240,12 +381,39 @@ class DeclarationChantier
         return $this;
     }
 
+    /**
+     * @return Collection<int, PersonneABord>
+     */
+    public function getPersonnesABord(): Collection
+    {
+        return $this->personnesABord;
+    }
+
+    public function addPersonneAbord(PersonneABord $personne): static
+    {
+        if (!$this->personnesABord->contains($personne)) {
+            $this->personnesABord[] = $personne;
+            $personne->setDeclarationChantier($this);
+        }
+        return $this;
+    }
+
+    public function removePersonneAbord(PersonneABord $personne): static
+    {
+        if ($this->personnesABord->removeElement($personne)) {
+            if ($personne->getDeclarationChantier() === $this) {
+                $personne->setDeclarationChantier(null);
+            }
+        }
+        return $this;
+    }
+
     public function getNomNavire(): ?string
     {
         return $this->nomNavire;
     }
 
-    public function setNomNavire(?string $nomNavire): static
+    public function setNomNavire(string $nomNavire): static
     {
         $this->nomNavire = $nomNavire;
         return $this;
@@ -267,7 +435,7 @@ class DeclarationChantier
         return $this->quartierImmatriculation;
     }
 
-    public function setQuartierImmatriculation(?string $quartierImmatriculation): static
+    public function setQuartierImmatriculation(string $quartierImmatriculation): static
     {
         $this->quartierImmatriculation = $quartierImmatriculation;
         return $this;
@@ -278,7 +446,7 @@ class DeclarationChantier
         return $this->jauge;
     }
 
-    public function setJauge(?float $jauge): static
+    public function setJauge(float $jauge): static
     {
         $this->jauge = $jauge;
         return $this;
@@ -289,7 +457,7 @@ class DeclarationChantier
         return $this->longueur;
     }
 
-    public function setLongueur(?float $longueur): static
+    public function setLongueur(float $longueur): static
     {
         $this->longueur = $longueur;
         return $this;
@@ -300,7 +468,7 @@ class DeclarationChantier
         return $this->largeur;
     }
 
-    public function setLargeur(?float $largeur): static
+    public function setLargeur(float $largeur): static
     {
         $this->largeur = $largeur;
         return $this;
@@ -311,7 +479,7 @@ class DeclarationChantier
         return $this->propulsion;
     }
 
-    public function setPropulsion(?string $propulsion): static
+    public function setPropulsion(string $propulsion): static
     {
         $this->propulsion = $propulsion;
         return $this;
@@ -322,7 +490,7 @@ class DeclarationChantier
         return $this->puissanceKw;
     }
 
-    public function setPuissanceKw(?float $puissanceKw): static
+    public function setPuissanceKw(float $puissanceKw): static
     {
         $this->puissanceKw = $puissanceKw;
         return $this;
@@ -333,7 +501,7 @@ class DeclarationChantier
         return $this->vitesse;
     }
 
-    public function setVitesse(?string $vitesse): static
+    public function setVitesse(string $vitesse): static
     {
         $this->vitesse = $vitesse;
         return $this;
@@ -343,32 +511,37 @@ class DeclarationChantier
     {
         return $this->materiau;
     }
-
-    public function setMateriau(?string $materiau): static
+    public function setMateriau(string $materiau): static
     {
         $this->materiau = $materiau;
         return $this;
     }
+
+    public function getEloignementCote(): ?string
+    {
+        return $this->eloignementCote;
+    }
+
+    public function setEloignementCote(string $eloignementCote): static
+    {
+        $this->eloignementCote = $eloignementCote;
+        return $this;
+    }
+
+
+
+
+
+
 
     public function getDatePoseQuille(): ?DateTimeInterface
     {
         return $this->datePoseQuille;
     }
 
-    public function setDatePoseQuille(?DateTimeInterface $datePoseQuille): static
+    public function setDatePoseQuille(DateTime $datePoseQuille): static
     {
         $this->datePoseQuille = $datePoseQuille;
-        return $this;
-    }
-
-    public function getChantierNaval(): ?string
-    {
-        return $this->chantierNaval;
-    }
-
-    public function setChantierNaval(?string $chantierNaval): static
-    {
-        $this->chantierNaval = $chantierNaval;
         return $this;
     }
 
@@ -383,10 +556,22 @@ class DeclarationChantier
         return $this;
     }
 
+    public function getArchitecteMail(): ?string
+    {
+        return $this->architecteMail;
+    }
+
+    public function setArchitecteMail(?string $architecteMail): static
+    {
+        $this->architecteMail = $architecteMail;
+        return $this;
+    }
+
     public function getOrganismeClasse(): ?string
     {
         return $this->organismeClasse;
     }
+
 
     public function setOrganismeClasse(?string $organismeClasse): static
     {
@@ -449,16 +634,7 @@ class DeclarationChantier
         return $this;
     }
 
-    public function getAutreNom(): ?string
-    {
-        return $this->autreNom;
-    }
 
-    public function setAutreNom(?string $autreNom): static
-    {
-        $this->autreNom = $autreNom;
-        return $this;
-    }
 
     public function getAutrePrenom(): ?string
     {
@@ -468,6 +644,7 @@ class DeclarationChantier
     public function setAutrePrenom(?string $autrePrenom): static
     {
         $this->autrePrenom = $autrePrenom;
+
         return $this;
     }
 
@@ -479,6 +656,7 @@ class DeclarationChantier
     public function setAutreQualite(?string $autreQualite): static
     {
         $this->autreQualite = $autreQualite;
+
         return $this;
     }
 
@@ -490,6 +668,139 @@ class DeclarationChantier
     public function setAutreTelephone(?string $autreTelephone): static
     {
         $this->autreTelephone = $autreTelephone;
+
+        return $this;
+    }
+
+    public function isChantierAvecContrat(): ?bool
+    {
+        return $this->chantierAvecContrat;
+    }
+
+    public function setChantierAvecContrat(?bool $chantierAvecContrat): static
+    {
+        $this->chantierAvecContrat = $chantierAvecContrat;
+
+        return $this;
+    }
+
+    public function getAdresseChantier(): ?string
+    {
+        return $this->adresseChantier;
+    }
+
+    public function setAdresseChantier(?string $adresseChantier): static
+    {
+        $this->adresseChantier = $adresseChantier;
+
+        return $this;
+    }
+
+    public function getContactChantier(): ?string
+    {
+        return $this->contactChantier;
+    }
+
+    public function setContactChantier(?string $contactChantier): static
+    {
+        $this->contactChantier = $contactChantier;
+
+        return $this;
+    }
+
+    public function getContactArchitecte(): ?string
+    {
+        return $this->contactArchitecte;
+    }
+
+    public function setContactArchitecte(?string $contactArchitecte): static
+    {
+        $this->contactArchitecte = $contactArchitecte;
+
+        return $this;
+    }
+
+    public function getContactOrganismeClasse(): ?string
+    {
+        return $this->contactOrganismeClasse;
+    }
+
+    public function setContactOrganismeClasse(?string $contactOrganismeClasse): static
+    {
+        $this->contactOrganismeClasse = $contactOrganismeClasse;
+
+        return $this;
+    }
+
+    public function getNumeroExamenCe(): ?string
+    {
+        return $this->numeroExamenCe;
+    }
+
+    public function setNumeroExamenCe(?string $numeroExamenCe): static
+    {
+        $this->numeroExamenCe = $numeroExamenCe;
+
+        return $this;
+    }
+
+    public function getNomMandataire(): ?string
+    {
+        return $this->nomMandataire;
+    }
+
+    public function setNomMandataire(?string $nomMandataire): static
+    {
+        $this->nomMandataire = $nomMandataire;
+
+        return $this;
+    }
+
+    public function getPrenomMandataire(): ?string
+    {
+        return $this->prenomMandataire;
+    }
+
+    public function setPrenomMandataire(?string $prenomMandataire): static
+    {
+        $this->prenomMandataire = $prenomMandataire;
+
+        return $this;
+    }
+
+    public function getQualiteMandataire(): ?string
+    {
+        return $this->qualiteMandataire;
+    }
+
+    public function setQualiteMandataire(?string $qualiteMandataire): static
+    {
+        $this->qualiteMandataire = $qualiteMandataire;
+
+        return $this;
+    }
+
+    public function getTelephoneMandataire(): ?string
+    {
+        return $this->telephoneMandataire;
+    }
+
+    public function setTelephoneMandataire(?string $telephoneMandataire): static
+    {
+        $this->telephoneMandataire = $telephoneMandataire;
+
+        return $this;
+    }
+
+    public function getDureeSejourMer(): ?string
+    {
+        return $this->dureeSejourMer;
+    }
+
+    public function setDureeSejourMer(?string $dureeSejourMer): static
+    {
+        $this->dureeSejourMer = $dureeSejourMer;
+
         return $this;
     }
 
@@ -498,42 +809,34 @@ class DeclarationChantier
         return $this->statut;
     }
 
-    public function setStatut(?string $statut): static
+    public function setStatut(string $statut): static
     {
         $this->statut = $statut;
+
         return $this;
     }
 
-    public function getDateSoumission(): ?DateTimeImmutable
+    public function getDateSoumission(): ?\DateTimeImmutable
     {
         return $this->dateSoumission;
     }
 
-    public function setDateSoumission(?DateTimeImmutable $dateSoumission): static
+    public function setDateSoumission(\DateTimeImmutable $dateSoumission): static
     {
         $this->dateSoumission = $dateSoumission;
+
         return $this;
     }
 
-    public function getDateValidation(): ?DateTimeImmutable
+    public function getDateValidation(): ?\DateTimeImmutable
     {
         return $this->dateValidation;
     }
 
-    public function setDateValidation(?DateTimeImmutable $dateValidation): static
+    public function setDateValidation(?\DateTimeImmutable $dateValidation): static
     {
         $this->dateValidation = $dateValidation;
-        return $this;
-    }
 
-    public function getValidePar(): ?User
-    {
-        return $this->validePar;
-    }
-
-    public function setValidePar(?User $validePar): static
-    {
-        $this->validePar = $validePar;
         return $this;
     }
 
@@ -545,7 +848,119 @@ class DeclarationChantier
     public function setRecepissePath(?string $recepissePath): static
     {
         $this->recepissePath = $recepissePath;
+
         return $this;
     }
 
+    public function getNoteExplicativePath(): ?string
+    {
+        return $this->noteExplicativePath;
+    }
+
+    public function setNoteExplicativePath(?string $noteExplicativePath): static
+    {
+        $this->noteExplicativePath = $noteExplicativePath;
+
+        return $this;
+    }
+
+    public function getValidePar(): ?User
+    {
+        return $this->validePar;
+    }
+
+    public function setValidePar(?User $validePar): static
+    {
+        $this->validePar = $validePar;
+
+        return $this;
+    }
+    public function getEmailMandataire(): ?string
+    {
+        return $this->emailMandataire;
+    }
+
+    public function setEmailMandataire(?string $emailMandataire): static
+    {
+        $this->emailMandataire = $emailMandataire;
+        return $this;
+    }
+
+    public function getNomMandataireIa(): ?string
+    {
+        return $this->nomMandataireIa;
+    }
+
+    public function setNomMandataireIa(?string $nomMandataireIa): static
+    {
+        $this->nomMandataireIa = $nomMandataireIa;
+        return $this;
+    }
+
+    public function getPrenomMandataireIa(): ?string
+    {
+        return $this->prenomMandataireIa;
+    }
+
+    public function setPrenomMandataireIa(?string $prenomMandataireIa): static
+    {
+        $this->prenomMandataireIa = $prenomMandataireIa;
+        return $this;
+    }
+
+    public function getQualiteMandataireIa(): ?string
+    {
+        return $this->qualiteMandataireIa;
+    }
+
+    public function setQualiteMandataireIa(?string $qualiteMandataireIa): static
+    {
+        $this->qualiteMandataireIa = $qualiteMandataireIa;
+        return $this;
+    }
+
+    public function getTelephoneMandataireIa(): ?string
+    {
+        return $this->telephoneMandataireIa;
+    }
+
+    public function setTelephoneMandataireIa(?string $telephoneMandataireIa): static
+    {
+        $this->telephoneMandataireIa = $telephoneMandataireIa;
+        return $this;
+    }
+
+    public function getEmailMandataireIa(): ?string
+    {
+        return $this->emailMandataireIa;
+    }
+
+    public function setEmailMandataireIa(?string $emailMandataireIa): static
+    {
+        $this->emailMandataireIa = $emailMandataireIa;
+        return $this;
+    }
+
+
+    public function addPersonnesABord(PersonneABord $personnesABord): static
+    {
+        if (!$this->personnesABord->contains($personnesABord)) {
+            $this->personnesABord->add($personnesABord);
+            $personnesABord->setDeclarationChantier($this);
+        }
+
+        return $this;
+    }
+
+    public function removePersonnesABord(PersonneABord $personnesABord): static
+    {
+        if ($this->personnesABord->removeElement($personnesABord)) {
+            // set the owning side to null (unless already changed)
+            if ($personnesABord->getDeclarationChantier() === $this) {
+                $personnesABord->setDeclarationChantier(null);
+            }
+        }
+
+        return $this;
+    }
 }

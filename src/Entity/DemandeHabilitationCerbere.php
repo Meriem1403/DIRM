@@ -31,9 +31,6 @@ class DemandeHabilitationCerbere
     #[ORM\ManyToMany(targetEntity: ApplicationCerbere::class)]
     private Collection $applications;
 
-    #[ORM\Column(length: 255)]
-    private ?string $no = null;
-
     /**
      * @var Collection<int, ProfilCerbere>
      */
@@ -62,6 +59,7 @@ class DemandeHabilitationCerbere
     {
         $this->applications = new ArrayCollection();
         $this->profils = new ArrayCollection();
+        $this->dateSoumission = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -111,17 +109,6 @@ class DemandeHabilitationCerbere
     public function removeApplication(ApplicationCerbere $application): static
     {
         $this->applications->removeElement($application);
-        return $this;
-    }
-
-    public function getNo(): ?string
-    {
-        return $this->no;
-    }
-
-    public function setNo(string $no): static
-    {
-        $this->no = $no;
         return $this;
     }
 
@@ -216,6 +203,6 @@ class DemandeHabilitationCerbere
 
     public function __toString(): string
     {
-        return 'Demande n°' . ($this->no ?? $this->id);
+        return 'Demande #' . ($this->id ?? 'nouvelle');
     }
 }

@@ -1,0 +1,9 @@
+{# templates/admin/field/badges.html.twig #}
+
+{% if field.value is iterable %}
+    {% for label in field.value %}
+        <span class="badge bg-info text-dark me-1">{{ label }}</span>
+    {% endfor %}
+{% else %}
+    <span class="text-muted">Aucun</span>
+{% endif %}

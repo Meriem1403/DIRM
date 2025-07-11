@@ -3,9 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ApplicationCerbere;
+use App\Form\ProfilCerbereType;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class ApplicationCerbereCrudController extends AbstractCrudController
@@ -15,14 +18,30 @@ class ApplicationCerbereCrudController extends AbstractCrudController
         return ApplicationCerbere::class;
     }
 
-    /*
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInPlural('Applications Cerbère')
+            ->setEntityLabelInSingular('Application Cerbère')
+            ->setPageTitle(Crud::PAGE_INDEX, '📦 Applications Cerbère')
+            ->setPageTitle(Crud::PAGE_NEW, 'Ajouter une application')
+            ->setDefaultSort(['nom' => 'ASC']);
+    }
+
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id'),
-            TextField::new('title'),
-            TextEditorField::new('description'),
+            TextField::new('code', 'Code'),
+            TextField::new('nom', 'Nom'),
+            TextareaField::new('description', 'Description'),
+
+
+        CollectionField::new('profils')
+                ->setEntryType(ProfilCerbereType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->setFormTypeOption('by_reference', false)
+                ->setEntryIsComplex(),
         ];
     }
-    */
 }

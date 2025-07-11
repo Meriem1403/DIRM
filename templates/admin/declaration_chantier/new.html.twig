@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Déclaration de chantier{% endblock %}
+
+{% block body %}
+    <h1>Déclaration de chantier</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-primary mt-3">Soumettre la demande</button>
+    {{ form_end(form) }}
+{% endblock %}

@@ -10,14 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable;
 use DateTime;
 use App\Validator\ServiceDependencies;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ServiceDependencies]
-class User implements PasswordAuthenticatedUserInterface
-
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -63,48 +62,26 @@ class User implements PasswordAuthenticatedUserInterface
     private ?Service $service = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
     private ?DomaineService $domaine = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
     private ?Lieu $lieu = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
     private ?Categorie $categorie = null;
 
     #[Assert\NotBlank(groups: ['create'])]
     private ?string $plainPassword = null;
 
-    public function getPlainPassword(): ?string
-    {
-        return $this->plainPassword;
-    }
-
-    public function setPlainPassword(?string $plainPassword): static
-    {
-        $this->plainPassword = $plainPassword;
-        return $this;
-    }
-
-
     #[ORM\Column]
     private ?DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'createdUsers')]
-    #[ORM\JoinColumn(nullable: true)]
     private ?self $createdBy = null;
 
-    /**
-     * @var Collection<int, self>
-     */
     #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'createdBy')]
     private Collection $createdUsers;
 
-    /**
-     * @var Collection<int, DemandeHabilitationCerbere>
-     */
     #[ORM\OneToMany(targetEntity: DemandeHabilitationCerbere::class, mappedBy: 'validePar')]
     private Collection $demandeHabilitationCerberes;
 
@@ -160,40 +137,6 @@ class User implements PasswordAuthenticatedUserInterface
     public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
-        return $this;
-    }
-
-    public function getDomaine(): ?DomaineService
-    {
-        return $this->domaine;
-    }
-
-    public function setDomaine(?DomaineService $domaine): static
-    {
-        $this->domaine = $domaine;
-        return $this;
-    }
-
-    public function getLieu(): ?Lieu
-    {
-        return $this->lieu;
-    }
-
-    public function setLieu(?Lieu $lieu): static
-    {
-        $this->lieu = $lieu;
-        return $this;
-    }
-
-
-    public function getCategorie(): ?Categorie
-    {
-        return $this->categorie;
-    }
-
-    public function setCategorie(?Categorie $categorie): static
-    {
-        $this->categorie = $categorie;
         return $this;
     }
 
@@ -285,6 +228,39 @@ class User implements PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getCategorie(): ?Categorie
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie(?Categorie $categorie): static
+    {
+        $this->categorie = $categorie;
+        return $this;
+    }
+
+    public function getDomaine(): ?DomaineService
+    {
+        return $this->domaine;
+    }
+
+    public function setDomaine(?DomaineService $domaine): static
+    {
+        $this->domaine = $domaine;
+        return $this;
+    }
+
+    public function getLieu(): ?Lieu
+    {
+        return $this->lieu;
+    }
+
+    public function setLieu(?Lieu $lieu): static
+    {
+        $this->lieu = $lieu;
+        return $this;
+    }
+
     public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
@@ -307,9 +283,47 @@ class User implements PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, self>
-     */
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
+    public function getServiceDomaines(): string
+    {
+        return $this->service ? implode(', ', $this->service->getDomaines()->map(fn($d) => $d->getNom())->toArray()) : '';
+    }
+
+    public function getLieuxService(): string
+    {
+        return $this->service ? implode(', ', $this->service->getLieux()->map(fn($l) => $l->getNom())->toArray()) : '';
+    }
+
+    public function getRoles(): array
+    {
+        return [$this->role?->getCode() ?? 'ROLE_AGENT'];
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email ?? '';
+    }
+
+    public function eraseCredentials(): void
+    {
+        $this->plainPassword = null;
+    }
+
+    public function __toString(): string
+    {
+        return $this->prenom . ' ' . $this->nom;
+    }
+
     public function getCreatedUsers(): Collection
     {
         return $this->createdUsers;
@@ -321,7 +335,6 @@ class User implements PasswordAuthenticatedUserInterface
             $this->createdUsers->add($user);
             $user->setCreatedBy($this);
         }
-
         return $this;
     }
 
@@ -332,64 +345,30 @@ class User implements PasswordAuthenticatedUserInterface
                 $user->setCreatedBy(null);
             }
         }
-
         return $this;
     }
-    public function getServiceDomaines(): string
-    {
-        if (!$this->service) return '';
 
-        return implode(', ', $this->service->getDomaines()->map(fn($d) => $d->getNom())->toArray());
-    }
-
-
-    public function getLieuxService(): string
-    {
-        if (!$this->service) {
-            return '';
-        }
-
-        return implode(', ', $this->service->getLieux()->map(fn($l) => $l->getNom())->toArray());
-    }
-
-
-    public function getRoles(): array
-    {
-        return [$this->role?->getCode() ?? 'ROLE_AGENT'];
-    }
-
-    public function __toString(): string
-    {
-        return $this->prenom . ' ' . $this->nom;
-    }
-
-    /**
-     * @return Collection<int, DemandeHabilitationCerbere>
-     */
     public function getDemandeHabilitationCerberes(): Collection
     {
         return $this->demandeHabilitationCerberes;
     }
 
-    public function addDemandeHabilitationCerbere(DemandeHabilitationCerbere $demandeHabilitationCerbere): static
+    public function addDemandeHabilitationCerbere(DemandeHabilitationCerbere $demande): static
     {
-        if (!$this->demandeHabilitationCerberes->contains($demandeHabilitationCerbere)) {
-            $this->demandeHabilitationCerberes->add($demandeHabilitationCerbere);
-            $demandeHabilitationCerbere->setValidePar($this);
+        if (!$this->demandeHabilitationCerberes->contains($demande)) {
+            $this->demandeHabilitationCerberes->add($demande);
+            $demande->setValidePar($this);
         }
-
         return $this;
     }
 
-    public function removeDemandeHabilitationCerbere(DemandeHabilitationCerbere $demandeHabilitationCerbere): static
+    public function removeDemandeHabilitationCerbere(DemandeHabilitationCerbere $demande): static
     {
-        if ($this->demandeHabilitationCerberes->removeElement($demandeHabilitationCerbere)) {
-            // set the owning side to null (unless already changed)
-            if ($demandeHabilitationCerbere->getValidePar() === $this) {
-                $demandeHabilitationCerbere->setValidePar(null);
+        if ($this->demandeHabilitationCerberes->removeElement($demande)) {
+            if ($demande->getValidePar() === $this) {
+                $demande->setValidePar(null);
             }
         }
-
         return $this;
     }
 }

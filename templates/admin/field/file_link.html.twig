@@ -1,0 +1,5 @@
+{% if field.value %}
+    <a href="{{ asset(field.value) }}" target="_blank">📎 Voir la pièce jointe</a>
+{% else %}
+    <span class="text-muted">Aucune pièce jointe</span>
+{% endif %}

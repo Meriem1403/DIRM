@@ -3,10 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ProfilCerbere;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 
 class ProfilCerbereCrudController extends AbstractCrudController
 {
@@ -15,14 +18,27 @@ class ProfilCerbereCrudController extends AbstractCrudController
         return ProfilCerbere::class;
     }
 
-    /*
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('🔐 Profil Cerbère')
+            ->setEntityLabelInPlural('🔐 Profils Cerbère')
+            ->setPageTitle(Crud::PAGE_INDEX, 'Liste des profils Cerbère')
+            ->setDefaultSort(['nom' => 'ASC']);
+    }
+
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id'),
-            TextField::new('title'),
-            TextEditorField::new('description'),
+            FormField::addPanel('🧾 Informations du profil'),
+            AssociationField::new('application', 'Application liée')->setColumns(6),
+            TextField::new('nom', 'Identifiant du profil')->setColumns(6),
+            TextareaField::new('description', 'Description détaillée')->setColumns(12),
         ];
     }
-    */
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions;
+    }
 }
