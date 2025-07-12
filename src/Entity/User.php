@@ -217,6 +217,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getRoles(): array
+    {
+        $code = $this->role?->getCode();
+
+        if (!$code || !str_starts_with($code, 'ROLE_')) {
+            return ['ROLE_AGENT'];
+        }
+
+        return [$code];
+    }
+
     public function getService(): ?Service
     {
         return $this->service;
@@ -302,11 +313,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getLieuxService(): string
     {
         return $this->service ? implode(', ', $this->service->getLieux()->map(fn($l) => $l->getNom())->toArray()) : '';
-    }
-
-    public function getRoles(): array
-    {
-        return [$this->role?->getCode() ?? 'ROLE_AGENT'];
     }
 
     public function getUserIdentifier(): string

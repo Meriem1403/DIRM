@@ -19,14 +19,14 @@ security:
             custom_authenticator: App\Security\LoginFormAuthenticator
 
             logout:
-                path: logout
-                target: login
+                path: app_logout
+                target: app_login
 
 
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/, roles: ROLE_USER }
+        - { path: ^/, roles: ROLE_AGENT }
 
     role_hierarchy:
-        ROLE_ADMIN: ROLE_USER
+        ROLE_ADMIN: ROLE_AGENT

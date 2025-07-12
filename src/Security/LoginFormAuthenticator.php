@@ -2,7 +2,6 @@
 
 namespace App\Security;
 
-use App\Controller\SecurityController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,18 +20,13 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    private UrlGeneratorInterface $urlGenerator;
-
-    public function __construct(UrlGeneratorInterface $urlGenerator)
-    {
-        $this->urlGenerator = $urlGenerator;
-    }
+    public function __construct(
+        private readonly UrlGeneratorInterface $urlGenerator
+    ) {}
 
     public function authenticate(Request $request): Passport
     {
         $email = $request->request->get('email', '');
-
-        $request->getSession()->set(SecurityController::class, $email);
 
         return new Passport(
             new UserBadge($email),
