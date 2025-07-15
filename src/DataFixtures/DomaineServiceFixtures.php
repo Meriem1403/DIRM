@@ -16,6 +16,7 @@ class DomaineServiceFixtures extends Fixture
         'Affaires juridiques',
         'Communication',
         'Sécurité maritime',
+        'enseignement',
     ];
 
     public function load(ObjectManager $manager): void

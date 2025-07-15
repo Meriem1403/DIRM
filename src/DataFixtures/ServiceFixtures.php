@@ -29,6 +29,32 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
                 'domaines' => ['domaine_budget'],
                 'lieux' => ['lieu_sète', 'lieu_montpellier'],
             ],
+            [
+                'nom' => 'Secrétariat Général',
+                'domaines' => ['domaine_budget'],
+                'lieux' => ['lieu_marseille', 'lieu_montpellier'],
+            ],
+            [
+                'nom' => 'Polmar',
+                'domaines' => ['domaine_budget'], // à adapter selon ta logique
+                'lieux' => ['lieu_marseille'],
+            ],
+            [
+                'nom' => 'CSN',
+                'domaines' => ['domaine_ressources_humaines'],
+                'lieux' => ['lieu_toulon'],
+            ],
+            [
+                'nom' => 'CROSS Med',
+                'domaines' => ['domaine_informatique'],
+                'lieux' => ['lieu_ajaccio'],
+            ],
+            [
+                'nom' => 'Lycée Professionnel Maritime',
+                'domaines' => ['domaine_enseignement'],
+                'lieux' => ['lieu_marseille'],
+            ],
+
         ];
 
         foreach ($services as $data) {
