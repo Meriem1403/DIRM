@@ -1,31 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-    /* Arrière-plan */
+    /* Couleurs globales */
     --body-bg: #F5F6FA;
     --sidebar-bg: #FFFFFF;
-
-    /* Boutons généraux */
-    --button-primary-bg: #0D99FF;
-    --button-primary-color: #FFFFFF;
     --border-radius: 4px;
 
-    /* Bouton Confirmed */
+    /* Boutons principaux */
+    --button-primary-bg: #0D99FF;
+    --button-primary-color: #FFFFFF;
+
+    /* Boutons statut */
     --button-confirmed-bg: #00B69B;
     --button-confirmed-color: #FFFFFF;
 
-    /* Bouton Pending */
     --button-pending-bg: #FCBE2D;
     --button-pending-color: #FFFFFF;
 
-    /* Bouton Cancelled */
     --button-cancelled-bg: #FD5454;
     --button-cancelled-color: #FFFFFF;
 
-    /* Bouton Expired */
     --button-expired-bg: #979797;
     --button-expired-color: #FFFFFF;
 
+    /* Couleurs tailwind */
+    --gray-500: #6b7280;
+    --indigo-600: #4f46e5;
+    --emerald-600: #059669;
+    --rose-600: #e11d48;
 }
 
+/* Structure principale */
 .main-content {
     margin-bottom: 100px;
+}
+.dashboard-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.dashboard-heading {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+    color: #1F2937;
+    text-align: left;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.dashboard-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-habilitation i {
+    color: #6366f1;
+}
+
+.stat-mobilite i {
+    color: #10b981;
+}
+
+.stat-chantier i {
+    color: #f43f5e;
+}
+
+.dashboard-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-number {
+    font-size: 2.25rem;
+    font-weight: bold;
+    color: #111827;
+}
+/* === VARIANTS POUR D'AUTRES BLOCS === */
+
+/* Liste des statuts – commun */
+.dashboard-status-list {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+/* Élément de statut */
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+/* Couleurs pour chaque statut */
+
+/* HABILITATION */
+.status-pending {
+    border-left: 4px solid var(--button-pending-bg);
+}
+.status-valid {
+    border-left: 4px solid var(--button-confirmed-bg);
+}
+.status-refused {
+    border-left: 4px solid var(--button-cancelled-bg);
+}
+
+/* MOBILITÉ */
+.status-accepted {
+    border-left: 4px solid #22c55e; /* Vert Tailwind */
+}
+.status-rejected {
+    border-left: 4px solid #ef4444; /* Rouge Tailwind */
+}
+.status-processing {
+    border-left: 4px solid #facc15; /* Jaune Tailwind */
+}
+
+/* CHANTIER */
+.status-open {
+    border-left: 4px solid #38bdf8; /* Bleu clair */
+}
+.status-closed {
+    border-left: 4px solid #64748b; /* Gris bleuté */
+}
+.status-archived {
+    border-left: 4px solid #a855f7; /* Violet */
+}
+
+/* Labels et chiffres */
+.status-label {
+    color: #6b7280;
+}
+.status-count {
+    font-weight: 700;
+    color: #111827;
+}
+.ea-header .logo img {
+    height: 40px;
+}
+
+
+/* Animation d’apparition */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }

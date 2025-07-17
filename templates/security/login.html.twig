@@ -1,49 +1,65 @@
+{# templates/security/login.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Connexion{% endblock %}
+{% block title %}Connexion — DIRM{% endblock %}
+{% set hide_footer = true %}
 
 {% block body %}
-    <div class="container mt-5" style="max-width: 400px;">
-        <h1 class="h3 mb-3 text-center">Veuillez vous connecter</h1>
-
-        {% if error %}
-            <div class="alert alert-danger">
-                {{ error.messageKey|trans(error.messageData, 'security') }}
-            </div>
-        {% endif %}
-
-        <form method="post">
-            <div class="mb-3">
-                <label for="email" class="form-label">Adresse email</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value="{{ last_email|default('') }}"
-                    class="form-control"
-                    autocomplete="email"
-                    required
-                    autofocus
-                >
+    <div
+        class="min-h-screen flex items-start justify-center px-4 pt-28" {# ← pt-28 au lieu de pt-20 #}
+        style="background: url('{{ asset('uploads/logo/hp.jpg') }}') no-repeat center center fixed; background-size: cover;"
+    >
+        <div class="bg-white/80 text-black backdrop-blur p-8 rounded-xl w-full max-w-md shadow-xl space-y-6">
+            <div class="text-center">
+                <img src="{{ asset('uploads/logo/logo2.png') }}"
+                     alt="DIRM Logo"
+                     class="mx-auto mb-8 h-32 sm:h-36 md:h-44 lg:h-48">
+                <h1 class="text-3xl font-bold">Se connecter</h1>
             </div>
 
-            <div class="mb-3">
-                <label for="password" class="form-label">Mot de passe</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    class="form-control"
-                    autocomplete="current-password"
-                    required
-                >
+            {% if error %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm mb-4">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            <form method="post" class="space-y-4 text-left">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div>
+                    <label for="email" class="text-sm font-medium text-gray-700">Adresse e-mail</label>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           value="{{ last_email|default('') }}"
+                           required
+                           autofocus
+                           class="w-full bg-white border border-gray-300 rounded px-3 py-2 mt-1"
+                           placeholder="ex: jean.dupont@mer.gouv.fr">
+                </div>
+
+                <div>
+                    <label for="password" class="text-sm font-medium text-gray-700">Mot de passe</label>
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           required
+                           class="w-full bg-white border border-gray-300 rounded px-3 py-2 mt-1"
+                           placeholder="••••••••">
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition">
+                        Connexion
+                    </button>
+                </div>
+            </form>
+
+            <div class="flex justify-between text-sm text-blue-700 mt-6">
+                <a href="#" class="hover:underline">Mot de passe oublié ?</a>
+                <a href="#" class="hover:underline">Créer un compte</a>
             </div>
-
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-            <button class="btn btn-primary w-100" type="submit">
-                Connexion
-            </button>
-        </form>
+        </div>
     </div>
 {% endblock %}

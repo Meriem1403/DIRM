@@ -1,0 +1,77 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}Tableau de bord admin{% endblock %}
+
+{% block content %}
+    <div class="main-content fade-in px-6">
+        <h1 class="dashboard-heading text-left mb-8">Tableau de bord administrateur</h1>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="dashboard-icon stat-habilitation">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="dashboard-title">Demandes d'habilitation</div>
+                <div class="dashboard-number">{{ nbDemandesHabilitation }}</div>
+                <ul class="dashboard-status-list mt-4">
+                    <li class="status-item status-pending">
+                        <span class="status-label">En attente</span>
+                        <span class="status-count">{{ nbHabilitationsEnAttente }}</span>
+                    </li>
+                    <li class="status-item status-valid">
+                        <span class="status-label">Validées</span>
+                        <span class="status-count">{{ nbHabilitationsValidees }}</span>
+                    </li>
+                    <li class="status-item status-refused">
+                        <span class="status-label">Refusées</span>
+                        <span class="status-count">{{ nbHabilitationsRefusees }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-icon stat-mobilite">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="dashboard-title">Demandes de mobilité</div>
+                <div class="dashboard-number">{{ nbDemandesMobilite }}</div>
+                <ul class="dashboard-status-list mt-4">
+                    <li class="status-item status-pending">
+                        <span class="status-label">En attente</span>
+                        <span class="status-count">{{ nbMobilitesEnAttente }}</span>
+                    </li>
+                    <li class="status-item status-valid">
+                        <span class="status-label">Validées</span>
+                        <span class="status-count">{{ nbMobilitesValidees }}</span>
+                    </li>
+                    <li class="status-item status-refused">
+                        <span class="status-label">Refusées</span>
+                        <span class="status-count">{{ nbMobilitesRefusees }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-icon stat-chantier">
+                    <i class="fas fa-anchor"></i>
+                </div>
+                <div class="dashboard-title">Déclarations de chantier</div>
+                <div class="dashboard-number">{{ nbChantiers }}</div>
+                <ul class="dashboard-status-list mt-4">
+                    <li class="status-item status-pending">
+                        <span class="status-label">En attente</span>
+                        <span class="status-count">{{ nbChantiersEnAttente }}</span>
+                    </li>
+                    <li class="status-item status-valid">
+                        <span class="status-label">Validées</span>
+                        <span class="status-count">{{ nbChantiersValidees }}</span>
+                    </li>
+                    <li class="status-item status-refused">
+                        <span class="status-label">Refusées</span>
+                        <span class="status-count">{{ nbChantiersRefusees }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

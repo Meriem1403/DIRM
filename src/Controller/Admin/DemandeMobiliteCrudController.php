@@ -46,7 +46,7 @@ class DemandeMobiliteCrudController extends AbstractCrudController
             ChoiceField::new('statut', 'Statut de la demande')
                 ->setChoices([
                     'En attente' => 'en_attente',
-                    'Traitée' => 'traitee',
+                    'Validée' => 'Validee',
                     'Refusée' => 'refusee',
                 ])
                 ->setColumns(6),

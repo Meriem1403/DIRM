@@ -167,7 +167,7 @@ class DeclarationChantierCrudController extends AbstractCrudController
             TelephoneField::new('autreTelephone', 'Téléphone'),
 
             FormField::addTab('📎 Architecte'),
-            BooleanField::new('architecteNaval', 'Nom de l\'architecte ou du BE'),
+            TextField::new('architecteNaval', 'Nom de l\'architecte ou du BE'),
             TelephoneField::new('contactArchitecte','Telephone'),
             EmailField::new('architecteMail','Adresse mail'),
 
@@ -230,7 +230,7 @@ class DeclarationChantierCrudController extends AbstractCrudController
 
             FormField::addTab('📍 Suivi'),
             ChoiceField::new('statut')->setChoices([
-                'En attente' => 'en_attente',
+                'En attente' => 'en attente',
                 'Validée' => 'validee',
                 'Refusée' => 'refusee',
             ]),

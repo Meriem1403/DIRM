@@ -1,0 +1,56 @@
+{# templates/home/partials/_header.html.twig #}
+<header class="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-md shadow-md fixed w-full z-50">
+    <!-- Logo + Navigation -->
+    <div class="flex items-center space-x-6">
+        <a href="{{ path('homepage') }}">
+            <img src="{{ asset('uploads/logo/logo.png') }}" alt="DIRM Logo" class="h-16">
+        </a>
+        <nav class="hidden md:flex space-x-8 text-gray-800 font-medium text-lg">
+            <a href="{{ path('homepage') }}" class="hover:text-blue-600">Accueil</a>
+            <a href="{{ path('app_login') }}" class="hover:text-blue-600">Vos démarches</a>
+            <a href="{{ path('app_login') }}" class="hover:text-blue-600">Aide & Contact</a>
+        </nav>
+    </div>
+
+    <!-- Compte utilisateur -->
+    <div data-controller="account-dropdown" class="relative">
+        <button
+            type="button"
+            data-action="account-dropdown#toggle"
+            class="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+        >
+            <i class="fas fa-user text-gray-700"></i>
+            {% if app.user %}
+                <span class="font-semibold text-gray-800">{{ app.user.fullName }}</span>
+            {% else %}
+                <span class="font-semibold text-gray-800">Mon compte</span>
+            {% endif %}
+            <i class="fas fa-chevron-down text-sm text-gray-500"></i>
+        </button>
+
+        <div
+            data-account-dropdown-target="menu"
+            class="hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md z-50 py-2"
+        >
+            {% if app.user %}
+                <a href="{{ path('homepage') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Mes demandes
+                </a>
+                <form method="post" action="{{ path('app_logout') }}">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                    <button type="submit"
+                            class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        Déconnexion
+                    </button>
+                </form>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Connexion
+                </a>
+                <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Créer un compte
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</header>

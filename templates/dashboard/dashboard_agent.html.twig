@@ -1,0 +1,26 @@
+{% block content %}
+    <div class="main-content fade-in px-6">
+        <h1 class="dashboard-heading text-left mb-8">Mon tableau de bord</h1>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="dashboard-icon stat-habilitation">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <div class="dashboard-title">Demandes envoyées</div>
+                <div class="dashboard-number">{{ nbMesDemandes }}</div>
+
+                <ul class="dashboard-status-list mt-4">
+                    <li class="status-item status-pending">
+                        <span class="status-label">En attente</span>
+                        <span class="status-count">{{ nbEnAttente }}</span>
+                    </li>
+                    <li class="status-item status-valid">
+                        <span class="status-label">Traitées</span>
+                        <span class="status-count">{{ nbTraitees }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

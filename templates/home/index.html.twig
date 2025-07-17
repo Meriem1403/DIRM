@@ -1,10 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}Accueil — DIRM{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1>Bienvenue sur la plateforme</h1>
-        <p>Vous êtes connecté en tant que {{ app.user }}</p>
-    </div>
+    {% include 'home/partials/_header.html.twig' %}
+
+    <main class="mt-32 px-8">
+        <h1 class="text-4xl font-bold text-center text-gray-800">Bienvenue sur le portail DIRM Méditerranée</h1>
+        <p class="text-center text-gray-600 mt-4">Accédez à vos démarches administratives et suivez vos demandes.</p>
+
+        {# On ajoutera ici le hero plus tard #}
+    </main>
 {% endblock %}

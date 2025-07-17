@@ -87,6 +87,7 @@ class DeclarationChantier
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $architecteNaval = null;
 
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $organismeClasse = null;
 

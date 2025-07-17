@@ -1,3 +1,45 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* === LOGIN PAGE === */
+/* === LOGIN PAGE === */
+.login-page {
+    /* header fixe = 4rem (py-4 dans votre header) + un petit espace */
+    @apply pt-20;           /* 5rem = 80px de padding top */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+.login-container {
+    @apply bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-md;
+}
+
+.login-logo {
+    @apply mx-auto mb-4 h-24;
+}
+
+.login-title {
+    @apply text-2xl font-bold text-gray-800 mb-6 text-center;
+}
+
+.login-form .form-group {
+    @apply mb-4;
+}
+
+.input-login {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400;
+}
+
+.login-button {
+    @apply w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition;
+}
+
+.login-error {
+    @apply bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm mb-4;
+}
+.auth-link {
+    @apply text-blue-700 hover:underline text-sm;
+}

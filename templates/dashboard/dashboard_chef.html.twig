@@ -1,0 +1,30 @@
+{% block content %}
+    <div class="main-content fade-in px-6">
+        <h1 class="dashboard-heading text-left mb-8">Tableau de bord Chef de service</h1>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="dashboard-icon stat-mobilite">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <div class="dashboard-title">Demandes de votre service</div>
+                <div class="dashboard-number">{{ nbDemandesService }}</div>
+
+                <ul class="dashboard-status-list mt-4">
+                    <li class="status-item status-processing">
+                        <span class="status-label">En cours</span>
+                        <span class="status-count">{{ nbEnCours }}</span>
+                    </li>
+                    <li class="status-item status-accepted">
+                        <span class="status-label">Validées</span>
+                        <span class="status-count">{{ nbValidees }}</span>
+                    </li>
+                    <li class="status-item status-rejected">
+                        <span class="status-label">Refusées</span>
+                        <span class="status-count">{{ nbRefusees }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
