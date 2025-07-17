@@ -1,0 +1,49 @@
+{# templates/home/partials/_footer.html.twig #}
+<footer class="bg-white text-gray-800 font-sans">
+    <div class="max-w-7xl mx-auto px-6 py-16">
+
+        {# Logo DIRM #}
+        <div class="mb-8 text-center md:text-left">
+            <img src="{{ asset('uploads/logo/logo3.png') }}" alt="DIRM Logo" class="h-16 mx-auto md:mx-0">
+        </div>
+
+        {# Grille d’informations #}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-sm mb-12">
+            <div class="leading-relaxed">
+                <strong class="block mb-2">À propos de DIRM GESTION</strong>
+                Plateforme dédiée aux agents de la DIRM, centralisant vos demandes d’accès et de ressources.
+            </div>
+            <div>
+                <h3 class="font-semibold mb-3">Nos services</h3>
+                <ul class="space-y-1">
+                    <li>Informatique</li>
+                    <li>Ressources Humaines</li>
+                    <li>Logistique</li>
+                    <li>Budget</li>
+                    <li>Mobilité & Véhicules</li>
+                    <li>Direction Générale</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-semibold mb-3">Assistance</h3>
+                <p class="leading-relaxed">
+                    Consultez la FAQ ou contactez le support via le formulaire.<br>
+                    Du lundi au vendredi, 9h‑17h.
+                </p>
+            </div>
+        </div>
+
+        {# Mentions légales #}
+        <div class="border-t border-gray-200 pt-6 text-xs flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                <a href="#" class="hover:underline">Mentions légales</a>
+                <a href="#" class="hover:underline">Politique de confidentialité</a>
+                <a href="#" class="hover:underline">Accessibilité</a>
+                <a href="https://www.ecologie.gouv.fr/" target="_blank" class="hover:underline">Ministère de la Transition écologique</a>
+            </div>
+            <div class="text-center md:text-right">
+                © 2025 DIRM GESTION  |  Direction Interrégionale de la Mer Méditerranée
+            </div>
+        </div>
+    </div>
+</footer>

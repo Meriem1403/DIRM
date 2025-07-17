@@ -1,0 +1,153 @@
+{# templates/security/register.html.twig #}
+{% extends 'base.html.twig' %}
+{% block title %}Créer un compte — DIRM{% endblock %}
+{% set hide_footer = true %}
+
+{% block body %}
+    <div
+        class="min-h-screen flex items-start justify-center px-4 pt-24"
+        style="background: url('{{ asset('uploads/logo/hp.jpg') }}') no-repeat center center fixed; background-size: cover;"
+    >
+        <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-8 w-full max-w-xl space-y-6">
+            <div class="text-center">
+                <img src="{{ asset('uploads/logo/logo2.png') }}"
+                     alt="DIRM Logo"
+                     class="mx-auto mb-4 h-24">
+                <h1 class="text-3xl font-bold">Créer un compte</h1>
+            </div>
+
+            {{ form_start(registrationForm, { attr: { class: 'space-y-6' } }) }}
+
+            {# Identité #}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {{ form_widget(registrationForm.prenom, {
+                    label: 'Prénom',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { placeholder: 'Prénom', class: 'input-field' }
+                }) }}
+                {{ form_widget(registrationForm.nom, {
+                    label: 'Nom',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { placeholder: 'Nom', class: 'input-field' }
+                }) }}
+            </div>
+
+            {# Date de naissance #}
+            <div>
+                {{ form_widget(registrationForm.dateNaissance, {
+                    label: 'Date de naissance',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { class: 'input-field' }
+                }) }}
+            </div>
+
+            {# Adresse complète #}
+            <div>
+                {{ form_widget(registrationForm.adresse, {
+                    label: 'Adresse',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { placeholder: 'Adresse', class: 'input-field' }
+                }) }}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {{ form_widget(registrationForm.ville, {
+                    label: 'Ville',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { placeholder: 'Ville', class: 'input-field' }
+                }) }}
+                {{ form_widget(registrationForm.codePostal, {
+                    label: 'Code postal',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { placeholder: 'Code postal', class: 'input-field' }
+                }) }}
+            </div>
+
+            <div>
+                {{ form_widget(registrationForm.pays, {
+                    label: 'Pays',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { placeholder: 'Pays', class: 'input-field' }
+                }) }}
+            </div>
+
+            {# Poste et service #}
+            <div>
+                {{ form_widget(registrationForm.poste, {
+                    label: 'Poste',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { placeholder: 'Poste occupé', class: 'input-field' }
+                }) }}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {{ form_widget(registrationForm.service, {
+                    label: 'Service',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { class: 'input-field' }
+                }) }}
+                {{ form_widget(registrationForm.domaine, {
+                    label: 'Domaine',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { class: 'input-field' }
+                }) }}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {{ form_widget(registrationForm.lieu, {
+                    label: 'Lieu',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { class: 'input-field' }
+                }) }}
+                {{ form_widget(registrationForm.categorie, {
+                    label: 'Catégorie',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { class: 'input-field' }
+                }) }}
+            </div>
+
+            {# Rôle et login #}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {{ form_widget(registrationForm.role, {
+                    label: 'Rôle',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { class: 'input-field' }
+                }) }}
+                {{ form_widget(registrationForm.email, {
+                    label: 'Adresse e‑mail',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: { placeholder: 'ex: jean.dupont@mer.gouv.fr', class: 'input-field' }
+                }) }}
+            </div>
+
+            {# Mot de passe #}
+            <div>
+                {{ form_widget(registrationForm.plainPassword, {
+                    label: 'Mot de passe',
+                    label_attr: { class: 'block text-sm font-medium text-gray-700 mb-1' },
+                    attr: {
+                        placeholder: '••••••••',
+                        autocomplete: 'new-password',
+                        class: 'input-field'
+                    }
+                }) }}
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition"
+            >
+                Valider l’inscription
+            </button>
+
+            {{ form_end(registrationForm) }}
+
+            <p class="text-center text-sm pt-4">
+                Vous avez déjà un compte ?
+                <a href="{{ path('app_login') }}" class="text-blue-600 hover:underline ml-1">
+                    Se connecter
+                </a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

@@ -32,6 +32,9 @@ class Role
         $this->users = new ArrayCollection();
     }
 
+    /**
+     * Permet à EasyAdmin et aux ChoiceType de caster l’entité en chaîne.
+     */
     public function __toString(): string
     {
         return $this->label ?? $this->code ?? 'Role';
@@ -67,6 +70,21 @@ class Role
     }
 
     /**
+     * Alias pour les formulaires qui utilisent `choice_label: 'nom'`
+     */
+    public function getNom(): ?string
+    {
+        return $this->label;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->label = $nom;
+
+        return $this;
+    }
+
+    /**
      * @return Collection<int, User>
      */
     public function getUsers(): Collection
@@ -87,7 +105,6 @@ class Role
     public function removeUser(User $user): static
     {
         if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
             if ($user->getRole() === $this) {
                 $user->setRole(null);
             }

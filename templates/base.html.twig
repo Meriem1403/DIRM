@@ -1,24 +1,48 @@
+{# templates/base.html.twig #}
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Welcome!{% endblock %}</title>
-    <link rel="icon" href="{{ asset('uploads/logo/favicon.png') }}">
 
+    {# favicon #}
+    <link rel="icon" href="{{ asset('uploads/logo/favicon.png') }}" type="image/png">
+
+    {# ——————————————————————————————————————————————
+       Feuilles de style (Tailwind, app.css…)
+       —————————————————————————————————————————————— #}
     {% block stylesheets %}
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
-
-    {% block javascripts %}
-        {{ encore_entry_script_tags('app') }}
-    {% endblock %}
 </head>
-<body>
-{# ✅ On inclut le header ici sauf si une page demande à le masquer #}
+<body class="antialiased font-sans text-gray-900">
+
+{# ——————————————————————————————————————————————
+       Header (on peut masquer avec hide_header=true)
+       —————————————————————————————————————————————— #}
 {% if hide_header is not defined or not hide_header %}
     {% include 'home/partials/_header.html.twig' %}
 {% endif %}
 
-{% block body %}{% endblock %}
+{# ——————————————————————————————————————————————
+       Contenu principal
+       —————————————————————————————————————————————— #}
+<main>
+    {% block body %}{% endblock %}
+</main>
+
+{# ——————————————————————————————————————————————
+       Footer (on peut masquer avec hide_footer=true)
+       —————————————————————————————————————————————— #}
+{% if hide_footer is not defined or not hide_footer %}
+    {% include 'home/partials/_footer.html.twig' %}
+{% endif %}
+
+{# ——————————————————————————————————————————————
+       Scripts JS (Webpack Encore, etc.)
+       —————————————————————————————————————————————— #}
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
 </body>
 </html>

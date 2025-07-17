@@ -43,3 +43,36 @@
 .auth-link {
     @apply text-blue-700 hover:underline text-sm;
 }
+
+/* === REGISTER PAGE === */
+.register-page {
+    @apply min-h-screen bg-cover bg-center flex items-start justify-center;
+}
+.register-container {
+    @apply bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-lg;
+}
+
+.input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-gray-400
+    focus:outline-none focus:ring-2 focus:ring-blue-400;
+}
+/* === HERO FULLSCREEN === */
+#hero {
+    /* hauteur = 100vh – header (~4rem) */
+    height: calc(100vh - 4rem);
+    @apply relative overflow-hidden;
+}
+
+.hero-slide {
+    @apply absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out;
+    opacity: 0;
+}
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+.hero-content {
+    @apply relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4;
+}
+
