@@ -3,6 +3,7 @@ import './styles/app.css';
 
 import { startStimulusApp } from '@symfony/stimulus-bridge';
 
+
 // Registers all controllers in assets/controllers/**/*_controller.js
 export const app = startStimulusApp(
     require.context(

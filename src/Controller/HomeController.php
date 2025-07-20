@@ -1,5 +1,5 @@
 <?php
-
+// src/Controller/HomeController.php
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,7 +11,7 @@ class HomeController extends AbstractController
     #[Route('/', name: 'homepage')]
     public function index(): Response
     {
-        // liste des images de fond pour le carousel
+        // Liste des slides du hero (chemins relatifs vers public/)
         $heroImages = [
             'uploads/hero/slide1.jpg',
             'uploads/hero/slide2.jpg',

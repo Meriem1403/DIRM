@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+{% import '_forms.html.twig' as forms %}
+
+{% block title %}Nouvelle demande de mobilité{% endblock %}
+
+{% block body %}
+    <div class="max-w-4xl mx-auto py-12 space-y-8">
+
+        <h1 class="text-3xl font-extrabold text-gray-900">📋 Nouvelle demande de mobilité</h1>
+
+        {{ form_start(form, { attr: { class: 'space-y-8' } }) }}
+
+        {# 1. Agent concerné #}
+        <fieldset class="bg-white p-6 rounded-lg shadow">
+            <legend class="text-lg font-semibold text-gray-800">1. Agent concerné</legend>
+            <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
+                {{ forms.row(form.prenom) }}
+                {{ forms.row(form.nom) }}
+                {{ forms.row(form.statutAgent) }}
+                {{ forms.select(form.statut) }}
+                {{ forms.row(form.corps) }}
+                {{ forms.row(form.grade) }}
+            </div>
+        </fieldset>
+
+        {# 2. Objet de la demande #}
+        <fieldset class="bg-white p-6 rounded-lg shadow">
+            <legend class="text-lg font-semibold text-gray-800">2. Objet de la demande</legend>
+            <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
+                {{ forms.select(form.typeDemande) }}
+                {{ forms.row(form.ministereOrigine) }}
+                {{ forms.row(form.directionOrigine) }}
+                {{ forms.row(form.serviceOrigine) }}
+                {{ forms.row(form.serviceActuel) }}
+                {{ forms.row(form.dateDepart) }}
+                {{ forms.row(form.motifDepart) }}
+                {{ forms.select(form.natureMutation) }}
+            </div>
+        </fieldset>
+
+        {# 3. Affectation #}
+        <fieldset class="bg-white p-6 rounded-lg shadow">
+            <legend class="text-lg font-semibold text-gray-800">3. Affectation</legend>
+            <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
+                {{ forms.row(form.datePrisePoste) }}
+                {{ forms.row(form.serviceAffectation) }}
+                {{ forms.row(form.siteGeographique) }}
+                {{ forms.row(form.bureau) }}
+                {{ forms.row(form.fonction) }}
+            </div>
+        </fieldset>
+
+        {# 4. Type de poste #}
+        <fieldset class="bg-white p-6 rounded-lg shadow">
+            <legend class="text-lg font-semibold text-gray-800">4. Type de poste</legend>
+            <div class="mt-4">
+                {{ forms.checkbox(form.posteRemplacement) }}
+                {{ forms.checkbox(form.posteCreation) }}
+                <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
+                    {{ forms.row(form.prenomRemplace) }}
+                    {{ forms.row(form.nomRemplace) }}
+                </div>
+            </div>
+        </fieldset>
+
+        {# 5. Besoins particuliers #}
+        <fieldset class="bg-white p-6 rounded-lg shadow">
+            <legend class="text-lg font-semibold text-gray-800">5. Besoins particuliers</legend>
+            <div class="mt-4 flex flex-wrap gap-6">
+                {{ forms.checkbox(form.besoinMobilier) }}
+                {{ forms.checkbox(form.besoinFournitures) }}
+                {{ forms.checkbox(form.besoinInformatique) }}
+            </div>
+        </fieldset>
+
+        {# 6. Questions diverses #}
+        <fieldset class="bg-white p-6 rounded-lg shadow">
+            <legend class="text-lg font-semibold text-gray-800">6. Questions diverses</legend>
+            <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
+                {{ forms.select(form.carteANTS) }}
+                {{ forms.select(form.carteAchats) }}
+                {{ forms.select(form.chargeVoyages) }}
+                {{ forms.select(form.correspondantBudgetaire) }}
+                {{ forms.select(form.encadreAgents) }}
+                {{ forms.select(form.utiliseChorus) }}
+            </div>
+        </fieldset>
+
+        {# 7. Commentaire #}
+        <fieldset class="bg-white p-6 rounded-lg shadow">
+            <legend class="text-lg font-semibold text-gray-800">7. Commentaire</legend>
+            <div class="mt-4">
+                {{ forms.row(form.commentaire) }}
+            </div>
+        </fieldset>
+
+        <div class="flex justify-end">
+            <button type="submit"
+                    class="inline-flex items-center px-6 py-3 bg-primary hover:bg-primary-light text-white font-semibold rounded-md shadow transition">
+                Enregistrer la demande
+                <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          d="M5 13l4 4L19 7"/>
+                </svg>
+            </button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

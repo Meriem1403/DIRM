@@ -21,9 +21,9 @@
             {{ subtitle|default('Gérez vos accès, demandes et validations informatiques') }}
         </p>
 
-        {# Si on a passé un bouton, on l’affiche, sinon on propose un lien générique #}
+        {# Le bouton, toujours présent, pointe vers vos demandes #}
         <a
-            href="{{ button.href|default('#') }}"
+            href="{{ button.href|default(path('app_demandes')) }}"
             class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition"
         >
             {{ button.text|default('Accéder à vos demandes') }}

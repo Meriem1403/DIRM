@@ -18,31 +18,34 @@
 <body class="antialiased font-sans text-gray-900">
 
 {# ——————————————————————————————————————————————
-       Header (on peut masquer avec hide_header=true)
-       —————————————————————————————————————————————— #}
+   Header (on peut masquer avec hide_header=true)
+   —————————————————————————————————————————————— #}
 {% if hide_header is not defined or not hide_header %}
     {% include 'home/partials/_header.html.twig' %}
 {% endif %}
 
 {# ——————————————————————————————————————————————
-       Contenu principal
-       —————————————————————————————————————————————— #}
-<main>
+   Contenu principal
+   pt-20 pour compenser header h-20 (5rem = 80px),
+   md:pt-24 si tu veux plus d’air en tablette/desktop
+   —————————————————————————————————————————————— #}
+<main class="pt-20 md:pt-24">
     {% block body %}{% endblock %}
 </main>
 
 {# ——————————————————————————————————————————————
-       Footer (on peut masquer avec hide_footer=true)
-       —————————————————————————————————————————————— #}
+   Footer (on peut masquer avec hide_footer=true)
+   —————————————————————————————————————————————— #}
 {% if hide_footer is not defined or not hide_footer %}
     {% include 'home/partials/_footer.html.twig' %}
 {% endif %}
 
 {# ——————————————————————————————————————————————
-       Scripts JS (Webpack Encore, etc.)
-       —————————————————————————————————————————————— #}
+   Scripts JS (Webpack Encore, etc.)
+   —————————————————————————————————————————————— #}
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}
+
 </body>
 </html>

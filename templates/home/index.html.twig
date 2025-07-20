@@ -12,17 +12,15 @@
 {% endblock %}
 
 {% block body %}
-    {# --- Header fixe --- #}
-    {% include 'home/partials/_header.html.twig' %}
 
     {# Décalage pour laisser la place au header (hauteur ≃ 4rem) #}
-    <div class="pt-16">
+    <div>
         {# --- Hero full viewport --- #}
         {% include 'home/partials/_hero.html.twig' with {
             backgroundImages: heroImages,
             title:    'Bienvenue sur la plateforme DIRM',
             subtitle: 'Gérez vos accès, demandes et validations informatiques',
-            button:   { href: '#', text: '' }
+            button:   { href: 'demandes', text: 'Accéder à vos demandes' }
         } %}
     </div>
 {% endblock %}

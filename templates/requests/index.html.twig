@@ -1,0 +1,22 @@
+{# templates/requests/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Vos demandes — DIRM{% endblock %}
+
+{% block body %}
+
+    <main class="mt-32 px-4 pb-12 max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Choisissez votre type de demande</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for req in requests %}
+                <a href="{{ req.path }}"
+                   class="block bg-white/80 backdrop-blur-md rounded-lg shadow-md hover:shadow-xl transition p-6 text-center">
+                    <div class="text-4xl text-blue-600 mb-4">
+                        <i class="fas {{ req.icon }}"></i>
+                    </div>
+                    <div class="font-semibold text-lg text-gray-800">{{ req.label }}</div>
+                </a>
+            {% endfor %}
+        </div>
+    </main>
+{% endblock %}
