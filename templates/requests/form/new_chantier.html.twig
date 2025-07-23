@@ -1,110 +1,312 @@
+{# templates/requests/form/new_chantier.html.twig #}
 {% extends 'base.html.twig' %}
-{% import '_forms.html.twig' as forms %}
 
-{% block title %}Nouvelle demande de mobilité{% endblock %}
+{% block title %}Déclaration de chantier – Nouvelle{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+{% endblock %}
 
 {% block body %}
-    <div class="max-w-4xl mx-auto py-12 space-y-8">
+    <div data-controller="wizard" class="wizard-container max-w-4xl mx-auto mt-12">
+        <h1 class="text-3xl font-bold mb-8">Nouvelle déclaration de chantier</h1>
 
-        <h1 class="text-3xl font-extrabold text-gray-900">📋 Nouvelle demande de mobilité</h1>
+        {{ form_start(form, { attr: { enctype: 'multipart/form-data' } }) }}
 
-        {{ form_start(form, { attr: { class: 'space-y-8' } }) }}
-
-        {# 1. Agent concerné #}
-        <fieldset class="bg-white p-6 rounded-lg shadow">
-            <legend class="text-lg font-semibold text-gray-800">1. Agent concerné</legend>
-            <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
-                {{ forms.row(form.prenom) }}
-                {{ forms.row(form.nom) }}
-                {{ forms.row(form.statutAgent) }}
-                {{ forms.select(form.statut) }}
-                {{ forms.row(form.corps) }}
-                {{ forms.row(form.grade) }}
+        {# ── Étape 1 – Exploitant ── #}
+        <div data-wizard-target="step" data-wizard-step-value="1" class="space-y-6">
+            <div class="wizard-step-title">1 – Exploitant</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{ form_row(form.nom) }}
+                {{ form_row(form.prenom) }}
+                {{ form_row(form.adresse) }}
+                {{ form_row(form.email) }}
+                {{ form_row(form.telephone) }}
             </div>
-        </fieldset>
-
-        {# 2. Objet de la demande #}
-        <fieldset class="bg-white p-6 rounded-lg shadow">
-            <legend class="text-lg font-semibold text-gray-800">2. Objet de la demande</legend>
-            <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
-                {{ forms.select(form.typeDemande) }}
-                {{ forms.row(form.ministereOrigine) }}
-                {{ forms.row(form.directionOrigine) }}
-                {{ forms.row(form.serviceOrigine) }}
-                {{ forms.row(form.serviceActuel) }}
-                {{ forms.row(form.dateDepart) }}
-                {{ forms.row(form.motifDepart) }}
-                {{ forms.select(form.natureMutation) }}
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#nextStep"
+                    data-wizard-target="nextBtn"
+                    class="btn-secondary"
+                >Suivant</button>
             </div>
-        </fieldset>
-
-        {# 3. Affectation #}
-        <fieldset class="bg-white p-6 rounded-lg shadow">
-            <legend class="text-lg font-semibold text-gray-800">3. Affectation</legend>
-            <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
-                {{ forms.row(form.datePrisePoste) }}
-                {{ forms.row(form.serviceAffectation) }}
-                {{ forms.row(form.siteGeographique) }}
-                {{ forms.row(form.bureau) }}
-                {{ forms.row(form.fonction) }}
-            </div>
-        </fieldset>
-
-        {# 4. Type de poste #}
-        <fieldset class="bg-white p-6 rounded-lg shadow">
-            <legend class="text-lg font-semibold text-gray-800">4. Type de poste</legend>
-            <div class="mt-4">
-                {{ forms.checkbox(form.posteRemplacement) }}
-                {{ forms.checkbox(form.posteCreation) }}
-                <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
-                    {{ forms.row(form.prenomRemplace) }}
-                    {{ forms.row(form.nomRemplace) }}
-                </div>
-            </div>
-        </fieldset>
-
-        {# 5. Besoins particuliers #}
-        <fieldset class="bg-white p-6 rounded-lg shadow">
-            <legend class="text-lg font-semibold text-gray-800">5. Besoins particuliers</legend>
-            <div class="mt-4 flex flex-wrap gap-6">
-                {{ forms.checkbox(form.besoinMobilier) }}
-                {{ forms.checkbox(form.besoinFournitures) }}
-                {{ forms.checkbox(form.besoinInformatique) }}
-            </div>
-        </fieldset>
-
-        {# 6. Questions diverses #}
-        <fieldset class="bg-white p-6 rounded-lg shadow">
-            <legend class="text-lg font-semibold text-gray-800">6. Questions diverses</legend>
-            <div class="mt-4 grid gap-6 grid-cols-1 md:grid-cols-2">
-                {{ forms.select(form.carteANTS) }}
-                {{ forms.select(form.carteAchats) }}
-                {{ forms.select(form.chargeVoyages) }}
-                {{ forms.select(form.correspondantBudgetaire) }}
-                {{ forms.select(form.encadreAgents) }}
-                {{ forms.select(form.utiliseChorus) }}
-            </div>
-        </fieldset>
-
-        {# 7. Commentaire #}
-        <fieldset class="bg-white p-6 rounded-lg shadow">
-            <legend class="text-lg font-semibold text-gray-800">7. Commentaire</legend>
-            <div class="mt-4">
-                {{ forms.row(form.commentaire) }}
-            </div>
-        </fieldset>
-
-        <div class="flex justify-end">
-            <button type="submit"
-                    class="inline-flex items-center px-6 py-3 bg-primary hover:bg-primary-light text-white font-semibold rounded-md shadow transition">
-                Enregistrer la demande
-                <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          d="M5 13l4 4L19 7"/>
-                </svg>
-            </button>
         </div>
 
-        {{ form_end(form) }}
+        {# ── Étape 2 – Déclaration ── #}
+        <div data-wizard-target="step" data-wizard-step-value="2" class="space-y-6">
+            <div class="wizard-step-title">2 – Déclaration</div>
+            <div class="space-y-4">
+                {{ form_row(form.typeDemande) }}
+                {{ form_row(form.activites) }}
+            </div>
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#prevStep"
+                    data-wizard-target="prevBtn"
+                    class="btn-secondary"
+                >Précédent</button>
+                <button
+                    type="button"
+                    data-action="click->wizard#nextStep"
+                    data-wizard-target="nextBtn"
+                    class="btn-secondary"
+                >Suivant</button>
+            </div>
+        </div>
+
+        {# ── Étape 3 – Caractéristiques ── #}
+        <div data-wizard-target="step" data-wizard-step-value="3" class="space-y-6">
+            <div class="wizard-step-title">3 – Caractéristiques</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{ form_row(form.nomNavire) }}
+                {{ form_row(form.pavillonOrigine) }}
+                {{ form_row(form.quartierImmatriculation) }}
+                {{ form_row(form.jauge) }}
+                {{ form_row(form.longueur) }}
+                {{ form_row(form.largeur) }}
+                {{ form_row(form.propulsion) }}
+                {{ form_row(form.puissanceKw) }}
+                {{ form_row(form.vitesse) }}
+                {{ form_row(form.materiau) }}
+                {{ form_row(form.datePoseQuille) }}
+            </div>
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#prevStep"
+                    data-wizard-target="prevBtn"
+                    class="btn-secondary"
+                >Précédent</button>
+                <button
+                    type="button"
+                    data-action="click->wizard#nextStep"
+                    data-wizard-target="nextBtn"
+                    class="btn-secondary"
+                >Suivant</button>
+            </div>
+        </div>
+
+        {# ── Étape 4 – Exploitation ── #}
+        <div data-wizard-target="step" data-wizard-step-value="4" class="space-y-6">
+            <div class="wizard-step-title">4 – Exploitation</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{ form_row(form.portDepart) }}
+                {{ form_row(form.eloignementCote) }}
+                {{ form_row(form.dureeSejourMer) }}
+            </div>
+
+            {# Collection « Personnes à bord » #}
+            <div class="mt-6">
+                <label class="form-label block mb-2">Personnes à bord</label>
+                <div
+                    data-collection-holder
+                    data-prototype="{{ form_widget(form.personnesABord.vars.prototype)|e('html_attr') }}"
+                    class="space-y-4"
+                >
+                    {% for sub in form.personnesABord %}
+                        <div class="p-4 bg-gray-50 rounded collection-item mb-4">
+                            {{ form_row(sub.equipage) }}
+                            {{ form_row(sub.passagers) }}
+                            {{ form_row(sub.personnes) }}
+                        </div>
+                    {% endfor %}
+                    <button type="button" id="add-personne" class="btn-secondary">
+                        Ajouter une ligne
+                    </button>
+                </div>
+            </div>
+
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#prevStep"
+                    data-wizard-target="prevBtn"
+                    class="btn-secondary"
+                >Précédent</button>
+                <button
+                    type="button"
+                    data-action="click->wizard#nextStep"
+                    data-wizard-target="nextBtn"
+                    class="btn-secondary"
+                >Suivant</button>
+            </div>
+        </div>
+
+        {# ── Étape 5 – Détails complémentaires ── #}
+        <div data-wizard-target="step" data-wizard-step-value="5" class="space-y-6">
+            <div class="wizard-step-title">5 – Détails complémentaires</div>
+            <div class="space-y-4">
+                {{ form_row(form.chantierAvecContrat) }}
+                {{ form_row(form.nomChantier) }}
+                {{ form_row(form.adresseChantier) }}
+                {{ form_row(form.contactChantier) }}
+            </div>
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#prevStep"
+                    data-wizard-target="prevBtn"
+                    class="btn-secondary"
+                >Précédent</button>
+                <button
+                    type="button"
+                    data-action="click->wizard#nextStep"
+                    data-wizard-target="nextBtn"
+                    class="btn-secondary"
+                >Suivant</button>
+            </div>
+        </div>
+
+        {# ── Étape 6 – Architecte naval ── #}
+        <div data-wizard-target="step" data-wizard-step-value="6" class="space-y-6">
+            <div class="wizard-step-title">6 – Architecte naval</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{ form_row(form.architecteNaval) }}
+                {{ form_row(form.contactArchitecte) }}
+                {{ form_row(form.architecteMail) }}
+            </div>
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#prevStep"
+                    data-wizard-target="prevBtn"
+                    class="btn-secondary"
+                >Précédent</button>
+                <button
+                    type="button"
+                    data-action="click->wizard#nextStep"
+                    data-wizard-target="nextBtn"
+                    class="btn-secondary"
+                >Suivant</button>
+            </div>
+        </div>
+
+        {# ── Étape 7 – Organisme habilité ── #}
+        <div data-wizard-target="step" data-wizard-step-value="7" class="space-y-6">
+            <div class="wizard-step-title">7 – Organisme habilité</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{ form_row(form.organismeClasse) }}
+                {{ form_row(form.contactOrganismeClasse) }}
+                {{ form_row(form.emailOrganisme) }}
+            </div>
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#prevStep"
+                    data-wizard-target="prevBtn"
+                    class="btn-secondary"
+                >Précédent</button>
+                <button
+                    type="button"
+                    data-action="click->wizard#nextStep"
+                    data-wizard-target="nextBtn"
+                    class="btn-secondary"
+                >Suivant</button>
+            </div>
+        </div>
+
+        {# ── Étape 8 – Navire de conception ── #}
+        <div data-wizard-target="step" data-wizard-step-value="8" class="space-y-6">
+            <div class="wizard-step-title">8 – Navire de conception</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{ form_row(form.nomChantierConception) }}
+                {{ form_row(form.numeroSerie) }}
+                {{ form_row(form.numeroCoque) }}
+                {{ form_row(form.categorieConception) }}
+                {{ form_row(form.modulesEvaluation) }}
+            </div>
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#prevStep"
+                    data-wizard-target="prevBtn"
+                    class="btn-secondary"
+                >Précédent</button>
+                <button
+                    type="button"
+                    data-action="click->wizard#nextStep"
+                    data-wizard-target="nextBtn"
+                    class="btn-secondary"
+                >Suivant</button>
+            </div>
+        </div>
+
+        {# ── Étape 9 – Mandataires ── #}
+        <div data-wizard-target="step" data-wizard-step-value="9" class="space-y-6">
+            <div class="wizard-step-title">9 – Mandataires</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{ form_row(form.nomMandataireIa) }}
+                {{ form_row(form.prenomMandataireIa) }}
+                {{ form_row(form.qualiteMandataireIa) }}
+                {{ form_row(form.telephoneMandataireIa) }}
+                {{ form_row(form.emailMandataireIa) }}
+                {{ form_row(form.nomMandataire) }}
+                {{ form_row(form.prenomMandataire) }}
+                {{ form_row(form.qualiteMandataire) }}
+                {{ form_row(form.telephoneMandataire) }}
+                {{ form_row(form.emailMandataire) }}
+            </div>
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#prevStep"
+                    data-wizard-target="prevBtn"
+                    class="btn-secondary"
+                >Précédent</button>
+                <button
+                    type="button"
+                    data-action="click->wizard#nextStep"
+                    data-wizard-target="nextBtn"
+                    class="btn-secondary"
+                >Suivant</button>
+            </div>
+        </div>
+
+        {# ── Étape 10 – Pièces jointes ── #}
+        <div data-wizard-target="step" data-wizard-step-value="10" class="space-y-6">
+            <div class="wizard-step-title">10 – Pièces jointes</div>
+            <div class="space-y-4">
+                {{ form_row(form.recepisseFile) }}
+                {{ form_row(form.noteExplicativeFile) }}
+            </div>
+            <div class="wizard-nav">
+                <button
+                    type="button"
+                    data-action="click->wizard#prevStep"
+                    data-wizard-target="prevBtn"
+                    class="btn-secondary"
+                >Précédent</button>
+                <button
+                    type="submit"
+                    data-wizard-target="submitBtn"
+                    class="btn-primary"
+                >Envoyer la déclaration</button>
+            </div>
+        </div>
+
+        {{ form_widget(form._token) }}
+        {{ form_end(form, { render_rest: false }) }}
     </div>
+
+    {# Script « Ajouter une ligne » pour la collection #}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const holder = document.querySelector('[data-collection-holder]');
+            if (!holder) return;
+            const prototype = holder.dataset.prototype;
+            let index = holder.querySelectorAll('.collection-item').length;
+
+            document.getElementById('add-personne').addEventListener('click', () => {
+                const html = prototype.replace(/__name__/g, index);
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('p-4', 'bg-gray-50', 'rounded', 'collection-item', 'mb-4');
+                wrapper.innerHTML = html;
+                holder.insertBefore(wrapper, document.getElementById('add-personne'));
+                index++;
+            });
+        });
+    </script>
 {% endblock %}

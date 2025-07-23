@@ -4,19 +4,30 @@
 {% block title %}Vos demandes — DIRM{% endblock %}
 
 {% block body %}
+    <main class="min-h-screen bg-[var(--color-bg)] flex flex-col justify-center py-16 px-4">
+        <div class="mx-auto w-full max-w-6xl">
+            <h1 class="text-4xl font-extrabold text-gray-900 text-center mb-12">
+                Choisissez votre type de demande
+            </h1>
 
-    <main class="mt-32 px-4 pb-12 max-w-6xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Choisissez votre type de demande</h1>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for req in requests %}
-                <a href="{{ req.path }}"
-                   class="block bg-white/80 backdrop-blur-md rounded-lg shadow-md hover:shadow-xl transition p-6 text-center">
-                    <div class="text-4xl text-blue-600 mb-4">
-                        <i class="fas {{ req.icon }}"></i>
-                    </div>
-                    <div class="font-semibold text-lg text-gray-800">{{ req.label }}</div>
-                </a>
-            {% endfor %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for req in requests %}
+                    <a href="{{ req.path }}" class="request-card group">
+                        <div class="request-card__content">
+                            <div class="request-card__icon">
+                                <i class="fas {{ req.icon }}"></i>
+                            </div>
+                            <h2 class="request-card__title">
+                                {{ req.label }}
+                            </h2>
+                            <p class="request-card__desc">
+                                Cliquez pour démarrer votre démarche
+                            </p>
+                        </div>
+                        <span class="request-card__footer"></span>
+                    </a>
+                {% endfor %}
+            </div>
         </div>
     </main>
 {% endblock %}

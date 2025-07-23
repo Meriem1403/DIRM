@@ -1,0 +1,66 @@
+{# templates/requests/form/new_habilitation.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle demande d’habilitation Cerbère{% endblock %}
+
+{% block body %}
+    <main class="min-h-screen bg-[var(--color-bg)] py-16 px-4">
+        <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
+            <h1 class="text-2xl font-bold mb-4">Nouvelle demande d’habilitation Cerbère</h1>
+
+            {# INFO BANNER #}
+            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded">
+                ℹ️ Passez la souris sur les listes « Applications » et « Profils » pour voir leur description.
+            </div>
+
+            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+            {{ form_errors(form) }}
+
+            {# Agent & Demandeur #}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                <div>
+                    {{ form_label(form.agent, null, { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.agent, { attr: { class: 'form-select' } }) }}
+                    {{ form_errors(form.agent) }}
+                </div>
+                <div>
+                    {{ form_label(form.demandeur, null, { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.demandeur, { attr: { class: 'form-select' } }) }}
+                    {{ form_errors(form.demandeur) }}
+                </div>
+            </div>
+
+            {# Applications #}
+            <div class="mb-6">
+                {{ form_label(form.applications, null, { label_attr: { class: 'form-label' } }) }}
+                {{ form_widget(form.applications, { attr: { class: 'form-select', title_attr: 'title' } }) }}
+                {{ form_errors(form.applications) }}
+            </div>
+
+            {# Profils #}
+            <div class="mb-6">
+                {{ form_label(form.profils, null, { label_attr: { class: 'form-label' } }) }}
+                {{ form_widget(form.profils, { attr: { class: 'form-select', title_attr: 'title' } }) }}
+                {{ form_errors(form.profils) }}
+            </div>
+
+            {# Règle de portée & Restrictions #}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                <div>
+                    {{ form_label(form.reglePortee, null, { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.reglePortee, { attr: { class: 'form-input' } }) }}
+                    {{ form_errors(form.reglePortee) }}
+                </div>
+                <div>
+                    {{ form_label(form.restrictions, null, { label_attr: { class: 'form-label' } }) }}
+                    {{ form_widget(form.restrictions, { attr: { class: 'form-input h-32' } }) }}
+                    {{ form_errors(form.restrictions) }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary w-full py-3">Envoyer la demande</button>
+
+            {{ form_end(form) }}
+        </div>
+    </main>
+{% endblock %}

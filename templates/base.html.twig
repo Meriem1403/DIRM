@@ -9,7 +9,7 @@
     <link rel="icon" href="{{ asset('uploads/logo/favicon.png') }}" type="image/png">
 
     {# ——————————————————————————————————————————————
-       Feuilles de style (Tailwind, app.css…)
+       Feuilles de style
        —————————————————————————————————————————————— #}
     {% block stylesheets %}
         {{ encore_entry_link_tags('app') }}
@@ -28,8 +28,10 @@
    Contenu principal
    pt-20 pour compenser header h-20 (5rem = 80px),
    md:pt-24 si tu veux plus d’air en tablette/desktop
+   pb-20 pour laisser de l’espace sous le contenu
+   md:pb-24 en grand écran
    —————————————————————————————————————————————— #}
-<main class="pt-20 md:pt-24">
+<main class="pt-20 md:pt-24 pb-20 md:pb-24">
     {% block body %}{% endblock %}
 </main>
 
@@ -41,7 +43,7 @@
 {% endif %}
 
 {# ——————————————————————————————————————————————
-   Scripts JS (Webpack Encore, etc.)
+   Scripts JS (Webpack Encore)
    —————————————————————————————————————————————— #}
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}

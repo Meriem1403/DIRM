@@ -9,16 +9,13 @@
 {% endblock %}
 
 {% block body %}
-    <div
-        data-controller="wizard"
-        class="wizard-container max-w-4xl mx-auto mt-12"
-    >
+    <div data-controller="wizard" class="wizard-container max-w-4xl mx-auto mt-12">
         <h1 class="text-3xl font-bold mb-8">Nouvelle demande de mobilité</h1>
 
         {{ form_start(form) }}
         {{ form_row(form.statut, { row_attr: { hidden: true } }) }}
 
-        {# ───── Étape 1 ───── #}
+        {# ───── Étape 1 – Données personnelles ───── #}
         <div data-wizard-target="step" data-wizard-step-value="1" class="space-y-6">
             <div class="wizard-step-title">1 – Données personnelles</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -28,19 +25,17 @@
                 {{ form_row(form.corps) }}
                 {{ form_row(form.grade) }}
             </div>
-
             <div class="wizard-nav">
-                {# uniquement “Suivant” #}
                 <button
                     type="button"
-                    data-action="wizard#next"
+                    data-action="click->wizard#nextStep"
                     data-wizard-target="nextBtn"
                     class="btn-secondary"
                 >Suivant</button>
             </div>
         </div>
 
-        {# ───── Étape 2 ───── #}
+        {# ───── Étape 2 – Objet de la demande ───── #}
         <div data-wizard-target="step" data-wizard-step-value="2" class="space-y-6">
             <div class="wizard-step-title">2 – Objet de la demande</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -50,25 +45,23 @@
                 {{ form_row(form.serviceOrigine) }}
                 {{ form_row(form.serviceActuel) }}
             </div>
-
             <div class="wizard-nav">
                 <button
                     type="button"
-                    data-action="wizard#prev"
+                    data-action="click->wizard#prevStep"
                     data-wizard-target="prevBtn"
                     class="btn-secondary"
                 >Précédent</button>
-
                 <button
                     type="button"
-                    data-action="wizard#next"
+                    data-action="click->wizard#nextStep"
                     data-wizard-target="nextBtn"
                     class="btn-secondary"
                 >Suivant</button>
             </div>
         </div>
 
-        {# ───── Étape 3 ───── #}
+        {# ───── Étape 3 – Dates & motifs ───── #}
         <div data-wizard-target="step" data-wizard-step-value="3" class="space-y-6">
             <div class="wizard-step-title">3 – Dates & motifs</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -77,24 +70,23 @@
                 {{ form_row(form.natureMutation) }}
                 {{ form_row(form.datePrisePoste) }}
             </div>
-
             <div class="wizard-nav">
                 <button
                     type="button"
-                    data-action="wizard#prev"
+                    data-action="click->wizard#prevStep"
                     data-wizard-target="prevBtn"
                     class="btn-secondary"
                 >Précédent</button>
                 <button
                     type="button"
-                    data-action="wizard#next"
+                    data-action="click->wizard#nextStep"
                     data-wizard-target="nextBtn"
                     class="btn-secondary"
                 >Suivant</button>
             </div>
         </div>
 
-        {# ───── Étape 4 ───── #}
+        {# ───── Étape 4 – Affectation ───── #}
         <div data-wizard-target="step" data-wizard-step-value="4" class="space-y-6">
             <div class="wizard-step-title">4 – Affectation</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -103,24 +95,23 @@
                 {{ form_row(form.bureau) }}
                 {{ form_row(form.fonction) }}
             </div>
-
             <div class="wizard-nav">
                 <button
                     type="button"
-                    data-action="wizard#prev"
+                    data-action="click->wizard#prevStep"
                     data-wizard-target="prevBtn"
                     class="btn-secondary"
                 >Précédent</button>
                 <button
                     type="button"
-                    data-action="wizard#next"
+                    data-action="click->wizard#nextStep"
                     data-wizard-target="nextBtn"
                     class="btn-secondary"
                 >Suivant</button>
             </div>
         </div>
 
-        {# ───── Étape 5 ───── #}
+        {# ───── Étape 5 – Poste & remplacement ───── #}
         <div data-wizard-target="step" data-wizard-step-value="5" class="space-y-6">
             <div class="wizard-step-title">5 – Poste & remplacement</div>
             <div class="space-y-4">
@@ -129,24 +120,23 @@
                 {{ form_row(form.prenomRemplace) }}
                 {{ form_row(form.nomRemplace) }}
             </div>
-
             <div class="wizard-nav">
                 <button
                     type="button"
-                    data-action="wizard#prev"
+                    data-action="click->wizard#prevStep"
                     data-wizard-target="prevBtn"
                     class="btn-secondary"
                 >Précédent</button>
                 <button
                     type="button"
-                    data-action="wizard#next"
+                    data-action="click->wizard#nextStep"
                     data-wizard-target="nextBtn"
                     class="btn-secondary"
                 >Suivant</button>
             </div>
         </div>
 
-        {# ───── Étape 6 ───── #}
+        {# ───── Étape 6 – Besoins particuliers ───── #}
         <div data-wizard-target="step" data-wizard-step-value="6" class="space-y-6">
             <div class="wizard-step-title">6 – Besoins particuliers</div>
             <div class="space-y-4">
@@ -154,24 +144,23 @@
                 {{ form_row(form.besoinFournitures) }}
                 {{ form_row(form.besoinInformatique) }}
             </div>
-
             <div class="wizard-nav">
                 <button
                     type="button"
-                    data-action="wizard#prev"
+                    data-action="click->wizard#prevStep"
                     data-wizard-target="prevBtn"
                     class="btn-secondary"
                 >Précédent</button>
                 <button
                     type="button"
-                    data-action="wizard#next"
+                    data-action="click->wizard#nextStep"
                     data-wizard-target="nextBtn"
                     class="btn-secondary"
                 >Suivant</button>
             </div>
         </div>
 
-        {# ───── Étape 7 ───── #}
+        {# ───── Étape 7 – Cartes & accès ───── #}
         <div data-wizard-target="step" data-wizard-step-value="7" class="space-y-6">
             <div class="wizard-step-title">7 – Cartes & accès</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -182,39 +171,36 @@
                 {{ form_row(form.encadreAgents) }}
                 {{ form_row(form.utiliseChorus) }}
             </div>
-
             <div class="wizard-nav">
                 <button
                     type="button"
-                    data-action="wizard#prev"
+                    data-action="click->wizard#prevStep"
                     data-wizard-target="prevBtn"
                     class="btn-secondary"
                 >Précédent</button>
                 <button
                     type="button"
-                    data-action="wizard#next"
+                    data-action="click->wizard#nextStep"
                     data-wizard-target="nextBtn"
                     class="btn-secondary"
                 >Suivant</button>
             </div>
         </div>
 
-        {# ───── Étape 8 (dernière) ───── #}
+        {# ───── Étape 8 – Commentaire admin ───── #}
         <div data-wizard-target="step" data-wizard-step-value="8" class="space-y-6">
             <div class="wizard-step-title">8 – Commentaire admin</div>
-            <div class="form-group">
-                {{ form_row(form.commentaire) }}
-            </div>
-
+            {{ form_row(form.commentaire) }}
             <div class="wizard-nav">
                 <button
                     type="button"
-                    data-action="wizard#prev"
+                    data-action="click->wizard#prevStep"
                     data-wizard-target="prevBtn"
                     class="btn-secondary"
                 >Précédent</button>
                 <button
                     type="submit"
+                    data-wizard-target="submitBtn"
                     class="btn-primary"
                 >Envoyer la demande</button>
             </div>

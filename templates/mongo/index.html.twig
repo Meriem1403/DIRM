@@ -1,0 +1,57 @@
+{# templates/mongo/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Données MongoDB Atlas{% endblock %}
+
+{% block body %}
+    <main class="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-4xl font-extrabold text-blue-800 mb-8 text-center">
+                📊 Données MongoDB Atlas
+            </h1>
+
+            <div class="text-center mb-10">
+                <a href="{{ path('mongo_insert') }}"
+                   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold
+                py-3 px-6 rounded-lg shadow-lg transition">
+                    ➕ Insérer un document de test
+                </a>
+            </div>
+
+            <div class="grid gap-6">
+                {% for doc in documents %}
+                    <div class="bg-white p-6 rounded-xl shadow hover:shadow-xl transition
+                    grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div class="flex items-center justify-center text-5xl text-blue-500">
+                            🆔
+                        </div>
+                        <div class="space-y-2">
+                            <p>
+                                <strong class="text-gray-700">ID :</strong>
+                                <code class="bg-gray-100 px-1 py-0.5 rounded">{{ doc._id }}</code>
+                            </p>
+                            <p>
+                                <strong class="text-gray-700">Titre :</strong>
+                                {{ doc.titre ?: '—' }}
+                            </p>
+                            <p>
+                                <strong class="text-gray-700">Valeurs :</strong>
+                                {% if doc.valeurs is defined and doc.valeurs is iterable %}
+                                    {{ doc.valeurs|join(', ') }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </p>
+                            <p>
+                                <strong class="text-gray-700">Auteur :</strong>
+                                {{ doc.auteur ?: '—' }}
+                            </p>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-center text-gray-500">Aucun document trouvé.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+{% endblock %}

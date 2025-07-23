@@ -1,0 +1,85 @@
+{# templates/requests/form/recap_habilitation.html.twig #}
+{% extends 'base.html.twig' %}
+{% set hide_header = true %}
+{% set hide_footer = true %}
+
+{% block title %}Récapitulatif — Demande d’habilitation Cerbère{% endblock %}
+
+{% block body %}
+    <main class="min-h-screen bg-[var(--color-bg)] py-16 px-4 print:bg-white print:py-2">
+        <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md space-y-6">
+
+            {# — En‑tête pro avec logo DIRM — #}
+            <div class="flex items-center justify-between mb-6">
+                <img src="{{ asset('uploads/logo/logo.png') }}" alt="DIRM" class="h-12">
+                <h1 class="text-3xl font-bold text-gray-900">
+                    Récapitulatif de la demande d’habilitation
+                </h1>
+            </div>
+
+            {# — Agents — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Agents</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Agent concerné</dt>
+                    <dd>{{ demande.agent.prenom }} {{ demande.agent.nom }}</dd>
+                    <dt class="font-medium">Demandeur</dt>
+                    <dd>{{ demande.demandeur.prenom }} {{ demande.demandeur.nom }}</dd>
+                </dl>
+            </section>
+
+            {# — Applications & Profils — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Applications & Profils</h2>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+                    <div>
+                        <h3 class="font-medium mb-1">Applications</h3>
+                        <ul class="list-disc list-inside text-gray-900">
+                            {# on renomme la variable de boucle pour éviter le conflit #}
+                            {% for application in demande.applications %}
+                                <li>{{ application.nom }} ({{ application.code }})</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-medium mb-1">Profils</h3>
+                        <ul class="list-disc list-inside text-gray-900">
+                            {% for profil in demande.profils %}
+                                <li>{{ profil.application.nom }} / {{ profil.nom }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            {# — Portée & Restrictions — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Portée & Restrictions</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Règle de portée</dt>
+                    <dd>{{ demande.reglePortee }}</dd>
+                    <dt class="font-medium">Restrictions éventuelles</dt>
+                    <dd>{{ demande.restrictions ?: '—' }}</dd>
+                </dl>
+            </section>
+
+            {# — Métadonnées — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Métadonnées</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Date de soumission</dt>
+                    <dd>{{ demande.dateSoumission|date('Y‑m‑d H:i') }}</dd>
+                    <dt class="font-medium">Statut</dt>
+                    <dd>{{ demande.statut|replace({'_':' '})|title }}</dd>
+                </dl>
+            </section>
+
+            {# — Actions — #}
+            <div class="pt-6 border-t flex justify-end space-x-4">
+                <a href="{{ path('demande_habilitation_pdf', { id: demande.id }) }}"
+                   class="btn-primary">📥 Télécharger PDF</a>
+                <a href="{{ path('app_demandes') }}" class="btn-secondary">← Retour</a>
+            </div>
+        </div>
+    </main>
+{% endblock %}

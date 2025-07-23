@@ -5,13 +5,13 @@
 
 /* 2) Variables globales */
 :root {
-    --color-primary:        #FF385C;
-    --color-primary-hover:  #E00052;
-    --color-secondary:      #767676;
-    --color-bg:             #F7F7F7;
-    --color-border:         #D1D1D1;
-    --color-text:           #484848;
-    --color-placeholder:    #A8A8A8;
+    --color-primary:        #3B82F6;
+    --color-primary-hover:  #2563EB;
+    --color-secondary:      #6B7280;
+    --color-bg:             #F9FAFB;
+    --color-border:         #D1D5DB;
+    --color-text:           #1F2937;
+    --color-placeholder:    #9CA3AF;
 }
 
 /* 3) Styles de base */
@@ -28,29 +28,55 @@
         @apply pt-20 bg-center bg-cover bg-no-repeat;
     }
     .login-container {
-        @apply bg-white/70 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-md mx-auto;
+        @apply bg-white p-8 rounded-2xl shadow-lg w-full max-w-md mx-auto;
     }
     .login-logo {
         @apply mx-auto mb-4 h-24;
     }
     .login-title {
-        @apply text-2xl font-bold text-gray-800 mb-6 text-center;
+        @apply text-2xl font-bold text-[var(--color-text)] mb-6 text-center;
     }
     .login-form .form-group {
         @apply mb-4;
     }
     .input-login {
-        @apply w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-gray-400
-        focus:outline-none focus:ring-2 focus:ring-blue-400 transition;
+        @apply w-full px-4 py-2 border border-[var(--color-border)] rounded-md bg-white
+        text-[var(--color-text)] placeholder-[var(--color-placeholder)]
+        focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]
+        transition duration-200 shadow-sm;
     }
     .login-button {
-        @apply w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition;
+        @apply w-full py-2 px-4 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)]
+        text-white font-semibold rounded-md transition duration-200;
     }
     .login-error {
         @apply bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm mb-4;
     }
     .auth-link {
-        @apply text-blue-700 hover:underline text-sm;
+        @apply text-[var(--color-primary)] hover:underline text-sm;
+    }
+
+    /* Carte « type de demande » */
+    .request-card {
+        @apply relative block bg-white rounded-xl shadow-md overflow-hidden
+        transform transition duration-300 hover:shadow-xl hover:scale-[1.03];
+    }
+    .request-card__content {
+        @apply p-8 text-center;
+    }
+    .request-card__icon {
+        @apply text-5xl text-[var(--color-primary)] mb-6 transition-colors duration-300;
+    }
+    .request-card__title {
+        @apply text-xl font-semibold text-[var(--color-text)] mb-2;
+    }
+    .request-card__desc {
+        @apply text-[var(--color-secondary)];
+    }
+    .request-card__footer {
+        @apply absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r
+        from-[var(--color-primary)] to-[var(--color-primary-hover)]
+        opacity-0 group-hover:opacity-100 transition-opacity duration-300;
     }
 
     /* ==== REGISTER PAGE ==== */
@@ -58,11 +84,13 @@
         @apply min-h-screen bg-cover bg-center flex items-start justify-center;
     }
     .register-container {
-        @apply bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-lg mx-auto;
+        @apply bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg mx-auto;
     }
     .input-field {
-        @apply w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 placeholder-gray-400
-        focus:outline-none focus:ring-2 focus:ring-blue-400 transition;
+        @apply w-full px-4 py-2 border border-[var(--color-border)] rounded-md bg-white
+        text-[var(--color-text)] placeholder-[var(--color-placeholder)]
+        focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]
+        transition duration-200 shadow-sm;
     }
 
     /* ==== HERO FULLSCREEN ==== */
@@ -82,76 +110,144 @@
     }
 
     /* ==== FORMULAIRES & WIZARD ==== */
-    .form-group      { @apply mb-8; }
-    .form-label      { @apply block text-base font-medium mb-2 text-[var(--color-text)]; }
+    .form-group {
+        @apply mb-8;
+    }
+    .form-label {
+        @apply block text-base font-medium mb-2 text-[var(--color-text)];
+    }
     .form-input,
-    .form-select     {
-        @apply block w-full bg-white border-2 rounded-lg px-6 py-4 text-base
-        placeholder-[var(--color-placeholder)] placeholder-opacity-75
-        transition-colors duration-200;
-        border-color: var(--color-secondary);
+    .form-select {
+        @apply block w-full bg-white border border-[var(--color-border)] rounded-lg px-6 py-4 text-base
+        placeholder-[var(--color-placeholder)] placeholder-opacity-75 transition-colors duration-200 shadow-sm;
     }
     .form-input:hover,
     .form-select:hover {
-        border-color: var(--color-primary);
+        @apply border-[var(--color-primary)];
     }
     .form-input:focus,
     .form-select:focus {
-        @apply outline-none ring-4;
-        --tw-ring-color: var(--color-primary);
-        border-color: var(--color-primary);
+        @apply outline-none ring-4 ring-[var(--color-primary)] border-[var(--color-primary)];
     }
-    .form-textarea   { @apply form-input h-48 resize-y; }
+    .form-textarea {
+        @apply form-input h-48 resize-y;
+    }
     .form-checkbox,
-    .form-radio      {
-        @apply h-5 w-5 text-[var(--color-primary)] border-2 rounded focus:ring-4 transition;
+    .form-radio {
+        @apply h-5 w-5 text-[var(--color-primary)] border-2 rounded focus:ring-4 focus:ring-[var(--color-primary)]
+        transition duration-200;
         border-color: var(--color-secondary);
     }
     .form-checkbox:focus,
-    .form-radio:focus { --tw-ring-color: var(--color-primary); }
-    .form-error      { @apply mt-2 text-sm text-red-600; }
+    .form-radio:focus {
+        --tw-ring-color: var(--color-primary);
+    }
+    .form-error {
+        @apply mt-2 text-sm text-red-600;
+    }
 
-    .btn             {
+    .btn {
         @apply inline-block font-semibold rounded-lg transition focus:outline-none focus:ring-4 focus:ring-offset-2;
     }
-    .btn-primary     {
-        @apply btn bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-8 py-3;
-        --tw-ring-color: var(--color-primary);
+    .btn-primary {
+        @apply bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-8 py-3;
     }
-    .btn-secondary   {
-        @apply btn bg-white border-2 hover:border-[var(--color-primary)] text-[var(--color-text)] px-6 py-3;
-        border-color: var(--color-secondary);
-        --tw-ring-color: var(--color-primary);
+    .btn-secondary {
+        @apply bg-white border-2 text-[var(--color-text)] px-6 py-3 hover:border-[var(--color-primary)]
+        focus:ring-[var(--color-primary)];
     }
 
-    /* Wizard */
-    .wizard-container   { @apply bg-white p-12 rounded-2xl shadow-2xl; }
-    .wizard-step-title  { @apply text-2xl font-bold mb-6 border-b pb-4 text-[var(--color-text)]; }
-    .wizard-nav         { @apply flex justify-between items-center mt-12 pt-6 border-t; }
-    .wizard-nav > * + * { @apply ml-4; }
+    /* Wizard navigation */
+    .wizard-container {
+        @apply bg-white p-12 rounded-2xl shadow-2xl;
+    }
+    .wizard-step-title {
+        @apply text-2xl font-bold mb-6 border-b pb-4 text-[var(--color-text)];
+    }
+    .wizard-nav {
+        @apply flex justify-between items-center mt-12 pt-6 border-t;
+    }
+    .wizard-nav > * + * {
+        @apply ml-4;
+    }
+    .wizard-container label {
+        @apply block mb-2;
+    }
 }
 
 /* 5) Utilitaires supplémentaires */
 @layer utilities {
-    .checkbox-container { @apply flex items-center space-x-3; }
-}
-/* ==== FORCAGE DU STYLE SUR TOUS LES CONTROLES DE FORMULAIRE ==== */
-@layer components {
-    /* Tous les inputs (hors checkbox/radio), selects et textareas */
+    .checkbox-container {
+        @apply flex items-center space-x-3;
+    }
+
+    /* Forcer style sur tous les contrôles de formulaire */
     input:not([type=checkbox]):not([type=radio]),
     select,
     textarea {
-        @apply block w-full bg-white border-2 border-gray-300
-        rounded-lg px-6 py-4 text-base placeholder-[var(--color-placeholder)]
-        focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]
-        transition-colors duration-200;
+        @apply block w-full bg-white border-2 border-[var(--color-border)] rounded-lg px-6 py-4
+        text-base placeholder-[var(--color-placeholder)] focus:outline-none focus:ring-4
+        focus:ring-[var(--color-primary)] transition-colors duration-200 shadow-sm;
     }
-
-    /* Checkbox et radio, pour ne pas les oublier */
     input[type=checkbox],
     input[type=radio] {
-        @apply h-5 w-5 text-[var(--color-primary)] border-2 rounded
-        focus:ring-4 focus:ring-[var(--color-primary)] transition;
+        @apply h-5 w-5 text-[var(--color-primary)] border-2 rounded focus:ring-4 focus:ring-[var(--color-primary)]
+        transition duration-200;
         border-color: var(--color-secondary);
+    }
+
+    /* Code snippets */
+    code {
+        @apply bg-gray-200 px-1 py-0.5 rounded text-sm;
+    }
+
+    /* === Styles pour l’infobulle (tooltip) === */
+    @layer components {
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            /* L’icône ❔ sera injectée en Twig via <span class="tooltip" style="background-image:url('{{ asset(...) }}')"> */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            cursor: help;
+            margin-right: 0.5rem;
+        }
+        .tooltip:hover::after {
+            content: attr(data-title);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 0.25rem;
+            padding: 0.5rem 0.75rem;
+            background-color: rgba(0,0,0,0.8);
+            color: #fff;
+            font-size: 0.875rem;
+            border-radius: 0.25rem;
+            white-space: nowrap;
+            z-index: 50;
+        }
+
+        /* Boutons PDF / Retour */
+        .btn-primary {
+            @apply bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-semibold rounded-lg px-6 py-3 transition;
+        }
+        .btn-secondary {
+            @apply bg-white border-2 border-[var(--color-border)] text-[var(--color-text)] font-semibold rounded-lg px-6 py-3 hover:border-[var(--color-primary)] transition;
+        }
+    }
+
+    /* Ajustements pour l’impression (PDF) */
+    @media print {
+        header, footer, nav {
+            display: none;
+        }
+        main {
+            padding: 1rem !important;
+            background: #fff !important;
+        }
     }
 }

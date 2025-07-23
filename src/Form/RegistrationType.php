@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints\{
     NotBlank, Length
 };
 
-class RegistrationFormType extends AbstractType
+class RegistrationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

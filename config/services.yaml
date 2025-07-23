@@ -1,21 +1,31 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
+# config/services.yaml
 
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+# 1) Définition unique de vos paramètres d'application
 parameters:
+    # chemin où seront déplacés vos fichiers recepisse/note
     notes_directory: '%kernel.project_dir%/public/uploads/notes'
 
 services:
-    # default configuration for services in *this* file
+    # 2) Configuration par défaut de vos services
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        autowire: true          # injection automatique
+        autoconfigure: true     # enregistrement automatique des tags
+        public: false           # services privés par défaut
+        # 3) Bind global : tout constructeur qui attend $notesDirectory recevra ce paramètre
+        bind:
+            $notesDirectory: '%notes_directory%'
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
+    # 4) Enregistrez tout votre code source sous App\
     App\:
         resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/*'
+            - '../src/Entity/*'
+            - '../src/Migrations/*'
+            - '../src/Tests/*'
+            - '../src/Kernel.php'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    # 5) Spécifique : injection de l'URL MongoDB dans MongoService
+    App\Service\MongoService:
+        arguments:
+            $mongoUrl: '%env(MONGODB_URL)%'

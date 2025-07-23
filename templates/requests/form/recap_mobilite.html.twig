@@ -1,0 +1,160 @@
+{# templates/requests/form/recap_mobilite.html.twig #}
+{% extends 'base.html.twig' %}
+{# Masquer l’en‑tête et le pied à l’impression/PDF #}
+{% set hide_header = true %}
+{% set hide_footer = true %}
+
+{% block title %}Récapitulatif — Demande de mobilité{% endblock %}
+
+{% block body %}
+    <main class="min-h-screen bg-[var(--color-bg)] py-16 px-4 print:bg-white print:py-2">
+        <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md space-y-6">
+
+            {# — En‑tête pro — #}
+            <div class="flex items-center justify-between mb-6">
+                <img src="{{ asset('uploads/logo/logo.png') }}" alt="DIRM" class="h-12">
+                <h1 class="text-3xl font-bold text-gray-900">Récapitulatif de la demande de mobilité</h1>
+            </div>
+
+            {# — Informations de l’agent — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Informations de l’agent</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Demandeur</dt>
+                    <dd>{{ demande.createdBy.prenom }} {{ demande.createdBy.nom }}</dd>
+                    <dt class="font-medium">Identité</dt>
+                    <dd>{{ demande.prenom }} {{ demande.nom }}</dd>
+                    <dt class="font-medium">Statut agent</dt>
+                    <dd>{{ demande.statutAgent }}</dd>
+                    <dt class="font-medium">Corps / Grade</dt>
+                    <dd>{{ demande.corps }} / {{ demande.grade }}</dd>
+                </dl>
+            </section>
+
+            {# — Objet de la demande — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Objet de la demande</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Type de demande</dt>
+                    <dd>{{ demande.typeDemande }}</dd>
+                    <dt class="font-medium">Ministère d’origine</dt>
+                    <dd>{{ demande.ministereOrigine }}</dd>
+                    <dt class="font-medium">Direction d’origine</dt>
+                    <dd>{{ demande.directionOrigine }}</dd>
+                    <dt class="font-medium">Service d’origine</dt>
+                    <dd>{{ demande.serviceOrigine }}</dd>
+                    <dt class="font-medium">Service actuel</dt>
+                    <dd>{{ demande.serviceActuel }}</dd>
+                </dl>
+            </section>
+
+            {# — Dates & motifs — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Dates & motifs</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Date de départ</dt>
+                    <dd>{{ demande.dateDepart ? demande.dateDepart|date('Y‑m‑d') : '—' }}</dd>
+                    <dt class="font-medium">Motif de départ</dt>
+                    <dd>{{ demande.motifDepart }}</dd>
+                    <dt class="font-medium">Nature de la mutation</dt>
+                    <dd>{{ demande.natureMutation }}</dd>
+                    <dt class="font-medium">Prise de poste</dt>
+                    <dd>{{ demande.datePrisePoste ? demande.datePrisePoste|date('Y‑m‑d') : '—' }}</dd>
+                </dl>
+            </section>
+
+            {# — Affectation — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Affectation</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Service d’affectation</dt>
+                    <dd>{{ demande.serviceAffectation }}</dd>
+                    <dt class="font-medium">Site géographique</dt>
+                    <dd>{{ demande.siteGeographique }}</dd>
+                    <dt class="font-medium">Bureau</dt>
+                    <dd>{{ demande.bureau }}</dd>
+                    <dt class="font-medium">Fonction</dt>
+                    <dd>{{ demande.fonction }}</dd>
+                </dl>
+            </section>
+
+            {# — Poste & remplacement — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Poste & remplacement</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Poste de remplacement</dt>
+                    <dd>{{ demande.posteRemplacement ? 'Oui' : 'Non' }}</dd>
+                    <dt class="font-medium">Poste en création</dt>
+                    <dd>{{ demande.posteCreation ? 'Oui' : 'Non' }}</dd>
+                    <dt class="font-medium">Prénom remplacé</dt>
+                    <dd>{{ demande.prenomRemplace ?: '—' }}</dd>
+                    <dt class="font-medium">Nom remplacé</dt>
+                    <dd>{{ demande.nomRemplace ?: '—' }}</dd>
+                </dl>
+            </section>
+
+            {# — Besoins particuliers — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Besoins particuliers</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Mobilier</dt>
+                    <dd>{{ demande.besoinMobilier ? 'Oui' : 'Non' }}</dd>
+                    <dt class="font-medium">Fournitures</dt>
+                    <dd>{{ demande.besoinFournitures ? 'Oui' : 'Non' }}</dd>
+                    <dt class="font-medium">Informatique</dt>
+                    <dd>{{ demande.besoinInformatique ? 'Oui' : 'Non' }}</dd>
+                </dl>
+            </section>
+
+            {# — Cartes & accès — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Cartes & accès</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Carte ANTS</dt>
+                    <dd>{{ demande.carteANTS }}</dd>
+                    <dt class="font-medium">Carte Achats</dt>
+                    <dd>{{ demande.carteAchats }}</dd>
+                    <dt class="font-medium">Charge Voyages</dt>
+                    <dd>{{ demande.chargeVoyages }}</dd>
+                    <dt class="font-medium">Correspondant budgétaire</dt>
+                    <dd>{{ demande.correspondantBudgetaire }}</dd>
+                    <dt class="font-medium">Encadré agents</dt>
+                    <dd>{{ demande.encadreAgents }}</dd>
+                    <dt class="font-medium">Utilise Chorus</dt>
+                    <dd>{{ demande.utiliseChorus }}</dd>
+                </dl>
+            </section>
+
+            {# — Commentaire admin — #}
+            {% if demande.commentaire %}
+                <section>
+                    <h2 class="text-xl font-semibold mb-2">Commentaire admin</h2>
+                    <p>{{ demande.commentaire }}</p>
+                </section>
+            {% endif %}
+
+            {# — Métadonnées — #}
+            <section>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Soumise le</dt>
+                    <dd>{{ demande.createdAt|date('Y‑m‑d H:i') }}</dd>
+                    <dt class="font-medium">Statut</dt>
+                    <dd>{{ demande.statut|replace({'_':' '})|title }}</dd>
+                </dl>
+            </section>
+
+            {# — Actions — #}
+            <div class="pt-6 border-t flex justify-end space-x-4">
+                <a href="{{ path('demande_mobilite_pdf', { id: demande.id }) }}"
+                   class="btn-primary">
+                    Télécharger PDF
+                </a>
+                <a href="{{ path('app_demandes') }}"
+                   class="btn-secondary">
+                    ← Retour
+                </a>
+            </div>
+
+        </div>
+    </main>
+{% endblock %}

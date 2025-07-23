@@ -1,0 +1,235 @@
+{# templates/requests/form/recap_chantier.html.twig #}
+{% extends 'base.html.twig' %}
+{# Masquer en‑tête & pied pour l’impression/PDF #}
+{% set hide_header = true %}
+{% set hide_footer = true %}
+
+{# On importe une macro pour afficher un champ #}
+{% import _self as util %}
+
+{% macro show(val) %}
+    {# Si c’est un tableau ou Collection, on join par des virgules #}
+    {% if val is iterable %}
+        {{ val|join(', ') }}
+        {# Si c’est null ou vide, on affiche un tiret #}
+    {% elseif val is null %}
+        &mdash;
+        {# Sinon, on affiche tel quel #}
+    {% else %}
+        {{ val }}
+    {% endif %}
+{% endmacro %}
+
+{% block title %}Récapitulatif — Déclaration de chantier{% endblock %}
+
+{% block body %}
+    <main class="min-h-screen bg-[var(--color-bg)] py-16 px-4 print:bg-white print:py-2">
+        <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md space-y-6">
+
+            {# — En‑tête pro — #}
+            <div class="flex items-center justify-between mb-6">
+                <img src="{{ asset('uploads/logo/logo.png') }}" alt="DIRM" class="h-12">
+                <h1 class="text-2xl font-bold text-gray-900">Récapitulatif de la déclaration de chantier</h1>
+            </div>
+
+            {# — Exploitant — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Exploitant</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Nom</dt>
+                    <dd>{{ util.show(demande.nom) }}</dd>
+                    <dt class="font-medium">Prénom</dt>
+                    <dd>{{ util.show(demande.prenom) }}</dd>
+                    <dt class="font-medium">Adresse</dt>
+                    <dd>{{ util.show(demande.adresse) }}</dd>
+                    <dt class="font-medium">E‑mail</dt>
+                    <dd>{{ util.show(demande.email) }}</dd>
+                    <dt class="font-medium">Téléphone</dt>
+                    <dd>{{ util.show(demande.telephone) }}</dd>
+                </dl>
+            </section>
+
+            {# — Déclaration — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Déclaration</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Type de demande</dt>
+                    <dd>{{ util.show(demande.typeDemande) }}</dd>
+                    <dt class="font-medium">Activités</dt>
+                    <dd>{{ util.show(demande.activites) }}</dd>
+                </dl>
+            </section>
+
+            {# — Caractéristiques du navire — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Caractéristiques du navire</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    {% for label, prop in {
+                        'Nom du navire': 'nomNavire',
+                        'Pavillon d’origine': 'pavillonOrigine',
+                        'Quartier d’immatriculation': 'quartierImmatriculation',
+                        'Jauge': 'jauge',
+                        'Longueur': 'longueur',
+                        'Largeur': 'largeur',
+                        'Propulsion': 'propulsion',
+                        'Puissance (kW)': 'puissanceKw',
+                        'Vitesse': 'vitesse',
+                        'Matériau': 'materiau'
+                    } %}
+                        <dt class="font-medium">{{ label }}</dt>
+                        <dd>{{ util.show(attribute(demande, prop)) }}</dd>
+                    {% endfor %}
+                    <dt class="font-medium">Date pose de quille</dt>
+                    <dd>{{ demande.datePoseQuille ? demande.datePoseQuille|date('Y‑m‑d') : '—' }}</dd>
+                </dl>
+            </section>
+
+            {# — Exploitation — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Exploitation</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Port de départ</dt>
+                    <dd>{{ util.show(demande.portDepart) }}</dd>
+                    <dt class="font-medium">Éloignement côte</dt>
+                    <dd>{{ util.show(demande.eloignementCote) }}</dd>
+                    <dt class="font-medium">Durée séjour mer</dt>
+                    <dd>{{ util.show(demande.dureeSejourMer) }}</dd>
+                </dl>
+                {% if demande.personnesABord|length > 0 %}
+                    <h3 class="mt-4 font-medium">Personnes à bord</h3>
+                    <ul class="list-disc list-inside">
+                        {% for p in demande.personnesABord %}
+                            <li>
+                                Équipage : {{ p.equipage }}, Passagers : {{ p.passagers }}, Autres : {{ p.personnes }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </section>
+
+            {# — Détails complémentaires — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Détails complémentaires</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Chantier avec contrat ?</dt>
+                    <dd>{{ demande.chantierAvecContrat ? 'Oui' : 'Non' }}</dd>
+                    <dt class="font-medium">Nom du chantier</dt>
+                    <dd>{{ util.show(demande.nomChantier) }}</dd>
+                    <dt class="font-medium">Adresse chantier</dt>
+                    <dd>{{ util.show(demande.adresseChantier) }}</dd>
+                    <dt class="font-medium">Contact chantier</dt>
+                    <dd>{{ util.show(demande.contactChantier) }}</dd>
+                </dl>
+            </section>
+
+            {# — Architecte naval — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Architecte naval</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Nom</dt>
+                    <dd>{{ util.show(demande.architecteNaval) }}</dd>
+                    <dt class="font-medium">Contact</dt>
+                    <dd>{{ util.show(demande.contactArchitecte) }}</dd>
+                    <dt class="font-medium">E‑mail</dt>
+                    <dd>{{ util.show(demande.architecteMail) }}</dd>
+                </dl>
+            </section>
+
+            {# — Organisme habilité — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Organisme habilité</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Organisme</dt>
+                    <dd>{{ util.show(demande.organismeClasse) }}</dd>
+                    <dt class="font-medium">Contact</dt>
+                    <dd>{{ util.show(demande.contactOrganismeClasse) }}</dd>
+                    <dt class="font-medium">E‑mail</dt>
+                    <dd>{{ util.show(demande.emailOrganisme) }}</dd>
+                </dl>
+            </section>
+
+            {# — Navire de conception — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Navire de conception</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Nom chantier</dt>
+                    <dd>{{ util.show(demande.nomChantierConception) }}</dd>
+                    <dt class="font-medium">N° de série</dt>
+                    <dd>{{ util.show(demande.numeroSerie) }}</dd>
+                    <dt class="font-medium">N° de coque</dt>
+                    <dd>{{ util.show(demande.numeroCoque) }}</dd>
+                    <dt class="font-medium">Catégorie</dt>
+                    <dd>{{ util.show(demande.categorieConception) }}</dd>
+                    <dt class="font-medium">Modules d’évaluation</dt>
+                    <dd>{{ util.show(demande.modulesEvaluation) }}</dd>
+                </dl>
+            </section>
+
+            {# — Mandataires — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Mandataires</h2>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    {% for label, fields in {
+                        'Mandataire IA': ['nomMandataireIa', 'prenomMandataireIa'],
+                        'Qualité IA': ['qualiteMandataireIa'],
+                        'Tél. IA': ['telephoneMandataireIa'],
+                        'E‑mail IA': ['emailMandataireIa'],
+                        'Mandataire': ['nomMandataire','prenomMandataire'],
+                        'Qualité': ['qualiteMandataire'],
+                        'Tél.': ['telephoneMandataire'],
+                        'E‑mail': ['emailMandataire']
+                    } %}
+                        <dt class="font-medium">{{ label }}</dt>
+                        <dd>
+                            {% if fields|length > 1 %}
+                                {{ util.show(attribute(demande, fields[0])) }} {{ util.show(attribute(demande, fields[1])) }}
+                            {% else %}
+                                {{ util.show(attribute(demande, fields[0])) }}
+                            {% endif %}
+                        </dd>
+                    {% endfor %}
+                </dl>
+            </section>
+
+            {# — Pièces jointes — #}
+            <section>
+                <h2 class="text-xl font-semibold mb-2">Pièces jointes</h2>
+                <ul class="list-disc list-inside">
+                    <li>
+                        Récépissé :
+                        {% if demande.recepissePath %}
+                            <a href="{{ asset('uploads/notes/'~demande.recepissePath) }}">Télécharger</a>
+                        {% else %}&mdash;{% endif %}
+                    </li>
+                    <li>
+                        Note explicative :
+                        {% if demande.noteExplicativePath %}
+                            <a href="{{ asset('uploads/notes/'~demande.noteExplicativePath) }}">Télécharger</a>
+                        {% else %}&mdash;{% endif %}
+                    </li>
+                </ul>
+            </section>
+
+            {# — Métadonnées — #}
+            <section>
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <dt class="font-medium">Soumise le</dt>
+                    <dd>{{ demande.dateSoumission|date('Y‑m‑d H:i') }}</dd>
+                    <dt class="font-medium">Statut</dt>
+                    <dd>{{ demande.statut|replace({'_':' '})|title }}</dd>
+                </dl>
+            </section>
+
+            {# — Actions — #}
+            <div class="pt-6 border-t flex justify-end space-x-4">
+                <a href="{{ path('declaration_chantier_pdf',{id:demande.id}) }}" class="btn-primary">
+                    📥 Télécharger PDF
+                </a>
+                <a href="{{ path('app_demandes') }}" class="btn-secondary">
+                    ← Retour
+                </a>
+            </div>
+
+        </div>
+    </main>
+{% endblock %}

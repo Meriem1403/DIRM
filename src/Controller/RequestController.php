@@ -9,37 +9,33 @@ use App\Entity\DeclarationChantier;
 use App\Form\DemandeHabilitationCerbereType;
 use App\Form\DemandeMobiliteType;
 use App\Form\DeclarationChantierType;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use DateTimeImmutable;
+use Throwable;
 
 class RequestController extends AbstractController
 {
-    /**
-     * Page de choix : on affiche simplement les 3 cards/liens.
-     */
+    private string $notesDirectory;
+
+    public function __construct(string $notesDirectory)
+    {
+        $this->notesDirectory = $notesDirectory;
+    }
+
     #[Route('/demandes', name: 'app_demandes')]
     public function index(): Response
     {
         $requests = [
-            [
-                'path'  => $this->generateUrl('demande_habilitation_new'),
-                'icon'  => 'fa-user-shield',
-                'label' => 'Demande d’habilitation',
-            ],
-            [
-                'path'  => $this->generateUrl('demande_mobilite_new'),
-                'icon'  => 'fa-exchange-alt',
-                'label' => 'Demande de mobilité',
-            ],
-            [
-                'path'  => $this->generateUrl('declaration_chantier_new'),
-                'icon'  => 'fa-anchor',
-                'label' => 'Déclaration de chantier',
-            ],
+            ['path' => $this->generateUrl('demande_habilitation_new'), 'icon' => 'fa-user-shield',  'label' => 'Demande d’habilitation'],
+            ['path' => $this->generateUrl('demande_mobilite_new'),      'icon' => 'fa-exchange-alt', 'label' => 'Demande de mobilité'],
+            ['path' => $this->generateUrl('declaration_chantier_new'),  'icon' => 'fa-anchor',       'label' => 'Déclaration de chantier'],
         ];
 
         return $this->render('requests/index.html.twig', [
@@ -47,21 +43,29 @@ class RequestController extends AbstractController
         ]);
     }
 
-    /**
-     * Formulaire de création d’une demande d’habilitation.
-     */
+    // --- Habilitation ---
+
     #[Route('/demandes/habilitation/new', name: 'demande_habilitation_new')]
     public function newHabilitation(Request $request, EntityManagerInterface $em): Response
     {
         $demande = new DemandeHabilitationCerbere();
-        $form    = $this->createForm(DemandeHabilitationCerbereType::class, $demande);
+        $demande->setStatut('en_attente');
+        $demande->setDateSoumission(new DateTimeImmutable());
+
+        $form = $this->createForm(DemandeHabilitationCerbereType::class, $demande);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($demande);
-            $em->flush();
-            $this->addFlash('success', 'Votre demande d’habilitation a bien été envoyée.');
-            return $this->redirectToRoute('homepage');
+            try {
+                $em->persist($demande);
+                $em->flush();
+                $this->addFlash('success', 'Votre demande d’habilitation a bien été envoyée.');
+                return $this->redirectToRoute('demande_habilitation_recap', ['id' => $demande->getId()]);
+            } catch (Throwable) {
+                $this->addFlash('error', 'Impossible d’enregistrer votre demande. Veuillez réessayer.');
+            }
+        } elseif ($form->isSubmitted()) {
+            $this->addFlash('error', 'Le formulaire contient des erreurs, veuillez les corriger.');
         }
 
         return $this->render('requests/form/new_habilitation.html.twig', [
@@ -69,9 +73,40 @@ class RequestController extends AbstractController
         ]);
     }
 
-    /**
-     * Formulaire de création d’une demande de mobilité.
-     */
+    #[Route('/demandes/habilitation/{id}/recap', name: 'demande_habilitation_recap')]
+    public function recapHabilitation(DemandeHabilitationCerbere $demande): Response
+    {
+        return $this->render('requests/form/recap_habilitation.html.twig', [
+            'demande' => $demande,
+        ]);
+    }
+
+    #[Route('/demandes/habilitation/{id}/pdf', name: 'demande_habilitation_pdf')]
+    public function pdfHabilitation(DemandeHabilitationCerbere $demande): Response
+    {
+        $options = new Options();
+        $options->set('defaultFont', 'Helvetica');
+        $dompdf = new Dompdf($options);
+
+        $html = $this->renderView('requests/form/recap_habilitation.html.twig', [
+            'demande' => $demande,
+            'pdfMode' => true,
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = sprintf('habilitation_%d.pdf', $demande->getId());
+        return new Response(
+            $dompdf->stream($filename, ['Attachment' => true]),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/pdf']
+        );
+    }
+
+    // --- Mobilité ---
+
     #[Route('/demandes/mobilite/new', name: 'demande_mobilite_new')]
     public function newMobilite(Request $request, EntityManagerInterface $em): Response
     {
@@ -80,15 +115,20 @@ class RequestController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // On renseigne automatiquement la date, l'utilisateur et le statut
             $demande->setCreatedAt(new DateTimeImmutable());
             $demande->setCreatedBy($this->getUser());
             $demande->setStatut('en_attente');
 
-            $em->persist($demande);
-            $em->flush();
-            $this->addFlash('success', 'Votre demande de mobilité a bien été envoyée.');
-            return $this->redirectToRoute('homepage');
+            try {
+                $em->persist($demande);
+                $em->flush();
+                $this->addFlash('success', 'Votre demande de mobilité a bien été envoyée.');
+                return $this->redirectToRoute('demande_mobilite_recap', ['id' => $demande->getId()]);
+            } catch (Throwable) {
+                $this->addFlash('error', 'Impossible d’enregistrer votre demande. Veuillez réessayer.');
+            }
+        } elseif ($form->isSubmitted()) {
+            $this->addFlash('error', 'Le formulaire contient des erreurs, veuillez les corriger.');
         }
 
         return $this->render('requests/form/new_mobilite.html.twig', [
@@ -96,9 +136,40 @@ class RequestController extends AbstractController
         ]);
     }
 
-    /**
-     * Formulaire de déclaration de chantier.
-     */
+    #[Route('/demandes/mobilite/{id}/recap', name: 'demande_mobilite_recap')]
+    public function recapMobilite(DemandeMobilite $demande): Response
+    {
+        return $this->render('requests/form/recap_mobilite.html.twig', [
+            'demande' => $demande,
+        ]);
+    }
+
+    #[Route('/demandes/mobilite/{id}/pdf', name: 'demande_mobilite_pdf')]
+    public function pdfMobilite(DemandeMobilite $demande): Response
+    {
+        $options = new Options();
+        $options->set('defaultFont', 'Helvetica');
+        $dompdf = new Dompdf($options);
+
+        $html = $this->renderView('requests/form/recap_mobilite.html.twig', [
+            'demande' => $demande,
+            'pdfMode' => true,
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = sprintf('mobilite_%d.pdf', $demande->getId());
+        return new Response(
+            $dompdf->stream($filename, ['Attachment' => true]),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/pdf']
+        );
+    }
+
+    // --- Chantier ---
+
     #[Route('/demandes/chantier/new', name: 'declaration_chantier_new')]
     public function newChantier(Request $request, EntityManagerInterface $em): Response
     {
@@ -107,14 +178,66 @@ class RequestController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($demande);
-            $em->flush();
-            $this->addFlash('success', 'Votre déclaration de chantier a bien été enregistrée.');
-            return $this->redirectToRoute('homepage');
+            $demande->setStatut('en_attente');
+            $demande->setDateSoumission(new DateTimeImmutable());
+
+            if ($rec = $form->get('recepisseFile')->getData()) {
+                $fn = uniqid('recp_').'.'.$rec->guessExtension();
+                $rec->move($this->notesDirectory, $fn);
+                $demande->setRecepissePath($fn);
+            }
+            if ($note = $form->get('noteExplicativeFile')->getData()) {
+                $fn = uniqid('note_').'.'.$note->guessExtension();
+                $note->move($this->notesDirectory, $fn);
+                $demande->setNoteExplicativePath($fn);
+            }
+
+            try {
+                $em->persist($demande);
+                $em->flush();
+                $this->addFlash('success', 'Votre déclaration de chantier a bien été enregistrée.');
+                return $this->redirectToRoute('declaration_chantier_recap', ['id' => $demande->getId()]);
+            } catch (Throwable) {
+                $this->addFlash('error', 'Impossible d’enregistrer la déclaration. Veuillez réessayer.');
+            }
+        } elseif ($form->isSubmitted()) {
+            $this->addFlash('error', 'Le formulaire contient des erreurs, veuillez les corriger.');
         }
 
         return $this->render('requests/form/new_chantier.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/demandes/chantier/{id}/recap', name: 'declaration_chantier_recap')]
+    public function recapChantier(DeclarationChantier $demande): Response
+    {
+        return $this->render('requests/form/recap_chantier.html.twig', [
+            'demande' => $demande,
+        ]);
+    }
+
+    #[Route('/demandes/chantier/{id}/pdf', name: 'declaration_chantier_pdf')]
+    public function pdfChantier(DeclarationChantier $demande): Response
+    {
+        $options = new Options();
+        $options->set('defaultFont', 'Helvetica');
+        $dompdf = new Dompdf($options);
+
+        $html = $this->renderView('requests/form/recap_chantier.html.twig', [
+            'demande' => $demande,
+            'pdfMode' => true,
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = sprintf('chantier_%d.pdf', $demande->getId());
+        return new Response(
+            $dompdf->stream($filename, ['Attachment' => true]),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/pdf']
+        );
     }
 }
