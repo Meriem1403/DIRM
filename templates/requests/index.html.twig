@@ -5,29 +5,86 @@
 
 {% block body %}
     <main class="min-h-screen bg-[var(--color-bg)] flex flex-col justify-center py-16 px-4">
-        <div class="mx-auto w-full max-w-6xl">
-            <h1 class="text-4xl font-extrabold text-gray-900 text-center mb-12">
-                Choisissez votre type de demande
-            </h1>
+        <div class="mx-auto w-full max-w-6xl space-y-12">
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {% for req in requests %}
-                    <a href="{{ req.path }}" class="request-card group">
-                        <div class="request-card__content">
-                            <div class="request-card__icon">
-                                <i class="fas {{ req.icon }}"></i>
+            {# ─── Cartes de création ─── #}
+            <section>
+                <h1 class="text-4xl font-extrabold text-gray-900 text-center mb-8">
+                    Choisissez votre type de demande
+                </h1>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {% for req in requests %}
+                        <a href="{{ req.path }}" class="request-card group">
+                            <div class="request-card__content">
+                                <div class="request-card__icon">
+                                    <i class="fas {{ req.icon }}"></i>
+                                </div>
+                                <h2 class="request-card__title">{{ req.label }}</h2>
+                                <p class="request-card__desc">Cliquez pour démarrer votre démarche</p>
                             </div>
-                            <h2 class="request-card__title">
-                                {{ req.label }}
-                            </h2>
-                            <p class="request-card__desc">
-                                Cliquez pour démarrer votre démarche
-                            </p>
-                        </div>
-                        <span class="request-card__footer"></span>
-                    </a>
-                {% endfor %}
-            </div>
+                            <span class="request-card__footer"></span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </section>
+
+            {# ─── Historique des demandes de l’utilisateur ─── #}
+            {% if habilitations|length or mobilites|length or chantiers|length %}
+                <section>
+                    <h2 class="text-2xl font-semibold mb-4">Vos demandes en cours</h2>
+                    <table class="w-full table-auto border-collapse">
+                        <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-2 text-left">Type</th>
+                            <th class="px-4 py-2 text-left">Date</th>
+                            <th class="px-4 py-2 text-left">Statut</th>
+                            <th class="px-4 py-2"></th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                        {# Habilitations #}
+                        {% for d in habilitations %}
+                            <tr>
+                                <td class="px-4 py-2">Habilitation Cerbère</td>
+                                <td class="px-4 py-2">{{ d.dateSoumission|date('Y-m-d H:i') }}</td>
+                                <td class="px-4 py-2">{{ d.statut|replace({'_':' '})|title }}</td>
+                                <td class="px-4 py-2 text-right">
+                                    <a href="{{ path('demande_habilitation_recap', {id: d.id}) }}"
+                                       class="text-blue-600 hover:underline">Voir</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        {# Mobilités #}
+                        {% for d in mobilites %}
+                            <tr>
+                                <td class="px-4 py-2">Mobilité</td>
+                                <td class="px-4 py-2">{{ d.createdAt|date('Y-m-d H:i') }}</td>
+                                <td class="px-4 py-2">{{ d.statut|replace({'_':' '})|title }}</td>
+                                <td class="px-4 py-2 text-right">
+                                    <a href="{{ path('demande_mobilite_recap', {id: d.id}) }}"
+                                       class="text-blue-600 hover:underline">Voir</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        {# Chantiers #}
+                        {% for d in chantiers %}
+                            <tr>
+                                <td class="px-4 py-2">Déclaration chantier</td>
+                                <td class="px-4 py-2">{{ d.dateSoumission|date('Y-m-d H:i') }}</td>
+                                <td class="px-4 py-2">{{ d.statut|replace({'_':' '})|title }}</td>
+                                <td class="px-4 py-2 text-right">
+                                    <a href="{{ path('declaration_chantier_recap', {id: d.id}) }}"
+                                       class="text-blue-600 hover:underline">Voir</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+            {% endif %}
+
         </div>
     </main>
 {% endblock %}
