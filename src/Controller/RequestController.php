@@ -14,9 +14,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
@@ -46,7 +47,7 @@ class RequestController extends AbstractController
     // --- Habilitation ---
 
     #[Route('/demandes/habilitation/new', name: 'demande_habilitation_new')]
-    public function newHabilitation(Request $request, EntityManagerInterface $em): Response
+    public function newHabilitation(Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
     {
         $demande = new DemandeHabilitationCerbere();
         $demande->setStatut('en_attente');
@@ -59,6 +60,32 @@ class RequestController extends AbstractController
             try {
                 $em->persist($demande);
                 $em->flush();
+
+                // Envoi de l'email de notification
+                $pdfOptions = (new Options())->set('defaultFont', 'Helvetica');
+                $dompdf     = new Dompdf($pdfOptions);
+                $html       = $this->renderView('requests/form/recap_habilitation.html.twig', [
+                    'demande' => $demande,
+                    'pdfMode' => true,
+                ]);
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4');
+                $dompdf->render();
+                $pdfContent = $dompdf->output();
+                $filename   = sprintf('habilitation_%d.pdf', $demande->getId());
+
+                $email = (new Email())
+                    ->from('no-reply@votre-domaine.fr')
+                    // vous pouvez remplacer par une adresse de responsable
+                    ->to('responsable@votre-domaine.fr')
+                    ->subject('Nouvelle demande d’habilitation Cerbère')
+                    ->html($this->renderView('emails/nouvelle_habilitation.html.twig', [
+                        'demande' => $demande,
+                    ]))
+                    ->attach($pdfContent, $filename, 'application/pdf')
+                ;
+                $mailer->send($email);
+
                 $this->addFlash('success', 'Votre demande d’habilitation a bien été envoyée.');
                 return $this->redirectToRoute('demande_habilitation_recap', ['id' => $demande->getId()]);
             } catch (Throwable) {
@@ -94,21 +121,26 @@ class RequestController extends AbstractController
         ]);
 
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('A4');
         $dompdf->render();
 
-        $filename = sprintf('habilitation_%d.pdf', $demande->getId());
+        $pdfContent = $dompdf->output();
+        $filename   = sprintf('habilitation_%d.pdf', $demande->getId());
+
         return new Response(
-            $dompdf->stream($filename, ['Attachment' => true]),
+            $pdfContent,
             Response::HTTP_OK,
-            ['Content-Type' => 'application/pdf']
+            [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            ]
         );
     }
 
     // --- Mobilité ---
 
     #[Route('/demandes/mobilite/new', name: 'demande_mobilite_new')]
-    public function newMobilite(Request $request, EntityManagerInterface $em): Response
+    public function newMobilite(Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
     {
         $demande = new DemandeMobilite();
         $form    = $this->createForm(DemandeMobiliteType::class, $demande);
@@ -122,6 +154,32 @@ class RequestController extends AbstractController
             try {
                 $em->persist($demande);
                 $em->flush();
+
+                // Génération et envoi du PDF par email
+                $options = (new Options())->set('defaultFont', 'Helvetica');
+                $dompdf  = new Dompdf($options);
+                $html    = $this->renderView('requests/form/recap_mobilite.html.twig', [
+                    'demande' => $demande,
+                    'pdfMode' => true,
+                ]);
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4');
+                $dompdf->render();
+                $pdfContent = $dompdf->output();
+                $filename   = sprintf('mobilite_%d.pdf', $demande->getId());
+
+                $email = (new Email())
+                    ->from('no-reply@votre-domaine.fr')
+                    // ici l’agent ou le responsable
+                    ->to('responsable@votre-domaine.fr')
+                    ->subject('Nouvelle demande de mobilité')
+                    ->html($this->renderView('emails/nouvelle_mobilite.html.twig', [
+                        'demande' => $demande,
+                    ]))
+                    ->attach($pdfContent, $filename, 'application/pdf')
+                ;
+                $mailer->send($email);
+
                 $this->addFlash('success', 'Votre demande de mobilité a bien été envoyée.');
                 return $this->redirectToRoute('demande_mobilite_recap', ['id' => $demande->getId()]);
             } catch (Throwable) {
@@ -157,21 +215,26 @@ class RequestController extends AbstractController
         ]);
 
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('A4');
         $dompdf->render();
 
-        $filename = sprintf('mobilite_%d.pdf', $demande->getId());
+        $pdfContent = $dompdf->output();
+        $filename   = sprintf('mobilite_%d.pdf', $demande->getId());
+
         return new Response(
-            $dompdf->stream($filename, ['Attachment' => true]),
+            $pdfContent,
             Response::HTTP_OK,
-            ['Content-Type' => 'application/pdf']
+            [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            ]
         );
     }
 
     // --- Chantier ---
 
     #[Route('/demandes/chantier/new', name: 'declaration_chantier_new')]
-    public function newChantier(Request $request, EntityManagerInterface $em): Response
+    public function newChantier(Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
     {
         $demande = new DeclarationChantier();
         $form    = $this->createForm(DeclarationChantierType::class, $demande);
@@ -195,6 +258,31 @@ class RequestController extends AbstractController
             try {
                 $em->persist($demande);
                 $em->flush();
+
+                // Envoi du PDF par email
+                $options = (new Options())->set('defaultFont', 'Helvetica');
+                $dompdf  = new Dompdf($options);
+                $html    = $this->renderView('requests/form/recap_chantier.html.twig', [
+                    'demande' => $demande,
+                    'pdfMode' => true,
+                ]);
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4');
+                $dompdf->render();
+                $pdfContent = $dompdf->output();
+                $filename   = sprintf('chantier_%d.pdf', $demande->getId());
+
+                $email = (new Email())
+                    ->from('no-reply@votre-domaine.fr')
+                    ->to('responsable@votre-domaine.fr')
+                    ->subject('Nouvelle déclaration de chantier')
+                    ->html($this->renderView('emails/nouvelle_chantier.html.twig', [
+                        'demande' => $demande,
+                    ]))
+                    ->attach($pdfContent, $filename, 'application/pdf')
+                ;
+                $mailer->send($email);
+
                 $this->addFlash('success', 'Votre déclaration de chantier a bien été enregistrée.');
                 return $this->redirectToRoute('declaration_chantier_recap', ['id' => $demande->getId()]);
             } catch (Throwable) {
@@ -230,14 +318,19 @@ class RequestController extends AbstractController
         ]);
 
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('A4');
         $dompdf->render();
 
-        $filename = sprintf('chantier_%d.pdf', $demande->getId());
+        $pdfContent = $dompdf->output();
+        $filename   = sprintf('chantier_%d.pdf', $demande->getId());
+
         return new Response(
-            $dompdf->stream($filename, ['Attachment' => true]),
+            $pdfContent,
             Response::HTTP_OK,
-            ['Content-Type' => 'application/pdf']
+            [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+            ]
         );
     }
 }

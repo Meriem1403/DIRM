@@ -1,0 +1,21 @@
+{% block subject %}
+    Nouvelle demande de mobilité #{{ demande.id }}
+{% endblock %}
+
+<p>Bonjour,</p>
+
+<p>Une nouvelle demande de mobilité a été déposée par <strong>{{ demande.createdBy.prenom }} {{ demande.createdBy.nom }}</strong>.</p>
+
+<ul>
+    <li><strong>Identité :</strong> {{ demande.prenom }} {{ demande.nom }}</li>
+    <li><strong>Objet :</strong> {{ demande.typeDemande }}</li>
+    <li><strong>Date de départ :</strong> {{ demande.dateDepart|date('Y‑m‑d') }}</li>
+</ul>
+
+<p>
+    <a href="{{ url('demande_mobilite_recap', {id: demande.id}) }}">
+        Voir le récapitulatif et le PDF
+    </a>
+</p>
+
+<p>Merci.</p>

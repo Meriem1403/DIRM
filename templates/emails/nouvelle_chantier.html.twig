@@ -1,0 +1,21 @@
+{% block subject %}
+    Nouvelle déclaration de chantier #{{ demande.id }}
+{% endblock %}
+
+<p>Bonjour,</p>
+
+<p>Une nouvelle déclaration de chantier a été enregistrée par <strong>{{ demande.nom }} {{ demande.prenom }}</strong>.</p>
+
+<ul>
+    <li><strong>Navire :</strong> {{ demande.nomNavire }}</li>
+    <li><strong>Pavillon :</strong> {{ demande.pavillonOrigine }}</li>
+    <li><strong>Port de départ :</strong> {{ demande.portDepart }}</li>
+</ul>
+
+<p>
+    <a href="{{ url('declaration_chantier_recap', {id: demande.id}) }}">
+        Voir le récapitulatif et le PDF
+    </a>
+</p>
+
+<p>Merci.</p>

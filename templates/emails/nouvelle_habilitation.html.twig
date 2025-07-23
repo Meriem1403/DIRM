@@ -1,0 +1,30 @@
+{# templates/emails/nouvelle_habilitation.html.twig #}
+{% block subject %}
+    Nouvelle demande d’habilitation Cerbère #{{ demande.id }}
+{% endblock %}
+
+<p>Bonjour,</p>
+
+<p>Une nouvelle demande d’habilitation Cerbère a été soumise par <strong>{{ demande.demandeur.prenom }} {{ demande.demandeur.nom }}</strong>.</p>
+
+<ul>
+    <li><strong>Agent concerné :</strong> {{ demande.agent.prenom }} {{ demande.agent.nom }}</li>
+    <li><strong>Applications :</strong>
+        {% for application in demande.applications %}
+            {{ application.nom }} ({{ application.code }}){% if not loop.last %}, {% endif %}
+        {% endfor %}
+    </li>
+    <li><strong>Profils :</strong>
+        {% for profil in demande.profils %}
+            {{ profil.nom }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    </li>
+</ul>
+
+<p>
+    <a href="{{ url('demande_habilitation_recap', {id: demande.id}) }}">
+        Voir le récapitulatif et télécharger le PDF
+    </a>
+</p>
+
+<p>Merci.</p>
