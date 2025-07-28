@@ -21,16 +21,19 @@ class ProfilCerbereCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('🔐 Profil Cerbère')
-            ->setEntityLabelInPlural('🔐 Profils Cerbère')
-            ->setPageTitle(Crud::PAGE_INDEX, 'Liste des profils Cerbère')
+            ->setEntityLabelInSingular('un profil')
+            ->setEntityLabelInPlural(' des profils')
+            ->setPageTitle(Crud::PAGE_INDEX, '🔐 Gestion des profils Cerbère')
+            ->setPageTitle(Crud::PAGE_EDIT, '🔐Modifier le des profil Cerbère')
+            ->setPageTitle(Crud::PAGE_NEW, '🔐Créer un profil Cerbère')
+            ->setPageTitle(Crud::PAGE_DETAIL, '🔐 Détail du des profils Cerbère')
             ->setDefaultSort(['nom' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable
     {
         return [
-            FormField::addPanel('🧾 Informations du profil'),
+            FormField::addFieldset('🧾 Informations du profil'),
             AssociationField::new('application', 'Application liée')->setColumns(6),
             TextField::new('nom', 'Identifiant du profil')->setColumns(6),
             TextareaField::new('description', 'Description détaillée')->setColumns(12),

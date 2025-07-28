@@ -20,9 +20,12 @@ class LieuCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('📍 Lieu')
-            ->setEntityLabelInPlural('📍 Lieux')
-            ->setPageTitle(Crud::PAGE_INDEX, 'Gestion des lieux géographiques')
+            ->setEntityLabelInSingular('un lieu')
+            ->setEntityLabelInPlural('des lieux')
+            ->setPageTitle(Crud::PAGE_INDEX, '📍Gestion des lieux géographiques')
+            ->setPageTitle(Crud::PAGE_EDIT, '📍 Modifier un lieu')
+            ->setPageTitle(Crud::PAGE_NEW, '📍Créer un lieu')
+            ->setPageTitle(Crud::PAGE_DETAIL, '📍 Détails du lieu')
             ->setDefaultSort(['nom' => 'ASC']);
     }
 

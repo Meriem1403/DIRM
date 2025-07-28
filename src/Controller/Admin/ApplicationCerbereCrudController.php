@@ -21,10 +21,12 @@ class ApplicationCerbereCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInPlural('Applications Cerbère')
-            ->setEntityLabelInSingular('Application Cerbère')
-            ->setPageTitle(Crud::PAGE_INDEX, '📦 Applications Cerbère')
-            ->setPageTitle(Crud::PAGE_NEW, 'Ajouter une application')
+            ->setEntityLabelInPlural('des applications')
+            ->setEntityLabelInSingular('d\'application')
+            ->setPageTitle(Crud::PAGE_INDEX, '📦 Gestion des applications Cerbère')
+            ->setPageTitle(Crud::PAGE_EDIT, '📦 Modifier l\'application')
+            ->setPageTitle(Crud::PAGE_NEW, '📦 Ajouter une application')
+            ->setPageTitle(Crud::PAGE_DETAIL, '📦 Détails de l\'application')
             ->setDefaultSort(['nom' => 'ASC']);
     }
 

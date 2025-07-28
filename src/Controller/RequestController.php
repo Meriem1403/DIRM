@@ -1,11 +1,11 @@
 <?php
-// src/Controller/RequestController.php
 
 namespace App\Controller;
 
 use App\Entity\DemandeHabilitationCerbere;
 use App\Entity\DemandeMobilite;
 use App\Entity\DeclarationChantier;
+use App\Entity\PersonneABord;
 use App\Form\DemandeHabilitationCerbereType;
 use App\Form\DemandeMobiliteType;
 use App\Form\DeclarationChantierType;
@@ -37,7 +37,6 @@ class RequestController extends AbstractController
     #[Route('/demandes', name: 'app_demandes')]
     public function index(EntityManagerInterface $em): Response
     {
-        // Les cartes pour démarrer chaque type de demande
         $requests = [
             ['path' => $this->generateUrl('demande_habilitation_new'), 'icon' => 'fa-user-shield',  'label' => 'Demande d’habilitation'],
             ['path' => $this->generateUrl('demande_mobilite_new'),      'icon' => 'fa-exchange-alt', 'label' => 'Demande de mobilité'],
@@ -46,8 +45,8 @@ class RequestController extends AbstractController
 
         $user = $this->getUser();
         $habilitations = [];
-        $mobilites     = [];
-        $chantiers     = []; // pas de createdBy sur DeclarationChantier
+        $mobilites = [];
+        $chantiers = [];
 
         if ($user) {
             $habilitations = $em->getRepository(DemandeHabilitationCerbere::class)
@@ -55,8 +54,6 @@ class RequestController extends AbstractController
 
             $mobilites = $em->getRepository(DemandeMobilite::class)
                 ->findBy(['createdBy' => $user], ['createdAt' => 'DESC']);
-
-            // on ne peut pas filtrer DeclarationChantier par createdBy car ce champ n'existe pas
         }
 
         return $this->render('requests/index.html.twig', [
@@ -66,8 +63,6 @@ class RequestController extends AbstractController
             'chantiers'     => $chantiers,
         ]);
     }
-
-    // --- Habilitation ---
 
     #[Route('/demandes/habilitation/new', name: 'demande_habilitation_new')]
     public function newHabilitation(Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
@@ -79,29 +74,25 @@ class RequestController extends AbstractController
         $form = $this->createForm(DemandeHabilitationCerbereType::class, $demande);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                try {
-                    $em->persist($demande);
-                    $em->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $em->persist($demande);
+                $em->flush();
 
-                    $this->sendDemandeNotification(
-                        $mailer,
-                        $demande,
-                        'Nouvelle demande d’habilitation Cerbère',
-                        'requests/form/recap_habilitation.html.twig',
-                        'emails/nouvelle_habilitation.html.twig',
-                        'habilitation'
-                    );
+                $this->sendDemandeNotification(
+                    $mailer,
+                    $demande,
+                    'Nouvelle demande d’habilitation Cerbère',
+                    'requests/form/recap_habilitation.html.twig',
+                    'emails/nouvelle_habilitation.html.twig',
+                    'habilitation'
+                );
 
-                    $this->addFlash('success', 'Votre demande d’habilitation a bien été envoyée.');
-                    return $this->redirectToRoute('demande_habilitation_recap', ['id' => $demande->getId()]);
-                } catch (Throwable $e) {
-                    $this->logger->error('Erreur enregistrement habilitation', ['exception' => $e]);
-                    $this->addFlash('error', 'Impossible d’enregistrer votre demande. Veuillez réessayer.');
-                }
-            } else {
-                $this->addFlash('error', 'Le formulaire contient des erreurs, veuillez les corriger.');
+                $this->addFlash('success', 'Votre demande d’habilitation a bien été envoyée.');
+                return $this->redirectToRoute('demande_habilitation_recap', ['id' => $demande->getId()]);
+            } catch (Throwable $e) {
+                $this->logger->error('Erreur enregistrement habilitation', ['exception' => $e]);
+                $this->addFlash('error', 'Impossible d’enregistrer votre demande. Veuillez réessayer.');
             }
         }
 
@@ -128,43 +119,37 @@ class RequestController extends AbstractController
         );
     }
 
-    // --- Mobilité ---
-
     #[Route('/demandes/mobilite/new', name: 'demande_mobilite_new')]
     public function newMobilite(Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
     {
         $demande = new DemandeMobilite();
-        $form    = $this->createForm(DemandeMobiliteType::class, $demande);
+        $form = $this->createForm(DemandeMobiliteType::class, $demande);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                $demande
-                    ->setCreatedAt(new DateTimeImmutable())
-                    ->setCreatedBy($this->getUser())
-                    ->setStatut('en_attente');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $demande
+                ->setCreatedAt(new DateTimeImmutable())
+                ->setCreatedBy($this->getUser())
+                ->setStatut('en_attente');
 
-                try {
-                    $em->persist($demande);
-                    $em->flush();
+            try {
+                $em->persist($demande);
+                $em->flush();
 
-                    $this->sendDemandeNotification(
-                        $mailer,
-                        $demande,
-                        'Nouvelle demande de mobilité',
-                        'requests/form/recap_mobilite.html.twig',
-                        'emails/nouvelle_mobilite.html.twig',
-                        'mobilite'
-                    );
+                $this->sendDemandeNotification(
+                    $mailer,
+                    $demande,
+                    'Nouvelle demande de mobilité',
+                    'requests/form/recap_mobilite.html.twig',
+                    'emails/nouvelle_mobilite.html.twig',
+                    'mobilite'
+                );
 
-                    $this->addFlash('success', 'Votre demande de mobilité a bien été envoyée.');
-                    return $this->redirectToRoute('demande_mobilite_recap', ['id' => $demande->getId()]);
-                } catch (Throwable $e) {
-                    $this->logger->error('Erreur enregistrement mobilite', ['exception' => $e]);
-                    $this->addFlash('error', 'Impossible d’enregistrer votre demande. Veuillez réessayer.');
-                }
-            } else {
-                $this->addFlash('error', 'Le formulaire contient des erreurs, veuillez les corriger.');
+                $this->addFlash('success', 'Votre demande de mobilité a bien été envoyée.');
+                return $this->redirectToRoute('demande_mobilite_recap', ['id' => $demande->getId()]);
+            } catch (Throwable $e) {
+                $this->logger->error('Erreur enregistrement mobilite', ['exception' => $e]);
+                $this->addFlash('error', 'Impossible d’enregistrer votre demande. Veuillez réessayer.');
             }
         }
 
@@ -191,53 +176,52 @@ class RequestController extends AbstractController
         );
     }
 
-    // --- Chantier ---
-
     #[Route('/demandes/chantier/new', name: 'declaration_chantier_new')]
     public function newChantier(Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
     {
         $demande = new DeclarationChantier();
-        $form    = $this->createForm(DeclarationChantierType::class, $demande);
+
+        // ✅ Ajout d’un bloc PersonneABord pour que le formulaire soit valide
+        $demande->addPersonnesABord(new PersonneABord());
+
+        $form = $this->createForm(DeclarationChantierType::class, $demande);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                $demande
-                    ->setStatut('en_attente')
-                    ->setDateSoumission(new DateTimeImmutable());
+        if ($form->isSubmitted() && $form->isValid()) {
+            $demande
+                ->setStatut('en_attente')
+                ->setDateSoumission(new DateTimeImmutable());
 
-                if ($rec = $form->get('recepisseFile')->getData()) {
-                    $fn = uniqid('recp_').'.'.$rec->guessExtension();
-                    $rec->move($this->notesDirectory, $fn);
-                    $demande->setRecepissePath($fn);
-                }
-                if ($note = $form->get('noteExplicativeFile')->getData()) {
-                    $fn = uniqid('note_').'.'.$note->guessExtension();
-                    $note->move($this->notesDirectory, $fn);
-                    $demande->setNoteExplicativePath($fn);
-                }
+            if ($rec = $form->get('recepisseFile')->getData()) {
+                $fn = uniqid('recp_').'.'.$rec->guessExtension();
+                $rec->move($this->notesDirectory, $fn);
+                $demande->setRecepissePath($fn);
+            }
 
-                try {
-                    $em->persist($demande);
-                    $em->flush();
+            if ($note = $form->get('noteExplicativeFile')->getData()) {
+                $fn = uniqid('note_').'.'.$note->guessExtension();
+                $note->move($this->notesDirectory, $fn);
+                $demande->setNoteExplicativePath($fn);
+            }
 
-                    $this->sendDemandeNotification(
-                        $mailer,
-                        $demande,
-                        'Nouvelle déclaration de chantier',
-                        'requests/form/recap_chantier.html.twig',
-                        'emails/nouvelle_chantier.html.twig',
-                        'chantier'
-                    );
+            try {
+                $em->persist($demande);
+                $em->flush();
 
-                    $this->addFlash('success', 'Votre déclaration de chantier a bien été enregistrée.');
-                    return $this->redirectToRoute('declaration_chantier_recap', ['id' => $demande->getId()]);
-                } catch (Throwable $e) {
-                    $this->logger->error('Erreur enregistrement chantier', ['exception' => $e]);
-                    $this->addFlash('error', 'Impossible d’enregistrer la déclaration. Veuillez réessayer.');
-                }
-            } else {
-                $this->addFlash('error', 'Le formulaire contient des erreurs, veuillez les corriger.');
+                $this->sendDemandeNotification(
+                    $mailer,
+                    $demande,
+                    'Nouvelle déclaration de chantier',
+                    'requests/form/recap_chantier.html.twig',
+                    'emails/nouvelle_chantier.html.twig',
+                    'chantier'
+                );
+
+                $this->addFlash('success', 'Votre déclaration de chantier a bien été enregistrée.');
+                return $this->redirectToRoute('declaration_chantier_recap', ['id' => $demande->getId()]);
+            } catch (Throwable $e) {
+                $this->logger->error('Erreur enregistrement chantier', ['exception' => $e]);
+                $this->addFlash('error', 'Impossible d’enregistrer la déclaration. Veuillez réessayer.');
             }
         }
 
@@ -267,8 +251,8 @@ class RequestController extends AbstractController
     private function generatePdfContent(string $twig, array $context): string
     {
         $options = (new Options())->set('defaultFont', 'Helvetica');
-        $dompdf  = new Dompdf($options);
-        $html    = $this->renderView($twig, $context);
+        $dompdf = new Dompdf($options);
+        $html = $this->renderView($twig, $context);
 
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4');
@@ -281,19 +265,12 @@ class RequestController extends AbstractController
     {
         $pdf = $this->generatePdfContent($twig, $context);
 
-        return new Response(
-            $pdf,
-            Response::HTTP_OK,
-            [
-                'Content-Type'        => 'application/pdf',
-                'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
-            ]
-        );
+        return new Response($pdf, Response::HTTP_OK, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+        ]);
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     */
     private function sendDemandeNotification(
         MailerInterface $mailer,
         object $demande,
@@ -314,8 +291,7 @@ class RequestController extends AbstractController
             ->to('responsable@votre-domaine.fr')
             ->subject($subject)
             ->html($this->renderView($emailTemplate, ['demande' => $demande]))
-            ->attach($pdfContent, $filename, 'application/pdf')
-        ;
+            ->attach($pdfContent, $filename, 'application/pdf');
 
         try {
             $mailer->send($email);

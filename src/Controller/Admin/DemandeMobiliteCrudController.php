@@ -27,9 +27,12 @@ class DemandeMobiliteCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Demande de mobilité')
-            ->setEntityLabelInPlural('Demandes de mobilité')
-            ->setPageTitle(Crud::PAGE_INDEX, '📤 Mobilités internes')
+            ->setEntityLabelInSingular('une demande de mobilité')
+            ->setEntityLabelInPlural('des demandes de mobilité')
+            ->setPageTitle(Crud::PAGE_INDEX, '📤 Liste des demandes de mobilités')
+            ->setPageTitle(Crud::PAGE_DETAIL, '🔎 Détails des demandes')
+            ->setPageTitle(Crud::PAGE_NEW, '➕ Nouvelle demande')
+            ->setPageTitle(Crud::PAGE_EDIT, '✏️ Modifier la demande')
             ->setDefaultSort(['createdAt' => 'DESC']);
     }
 

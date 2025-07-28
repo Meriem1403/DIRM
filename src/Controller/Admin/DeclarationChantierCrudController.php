@@ -40,7 +40,7 @@ class DeclarationChantierCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('déclarations de chantier')
             ->setEntityLabelInSingular('déclaration de chantier')
             ->setPageTitle(Crud::PAGE_INDEX, '📋 Liste des déclarations')
-            ->setPageTitle(Crud::PAGE_DETAIL, '🔎 Détails')
+            ->setPageTitle(Crud::PAGE_DETAIL, '🔎 Détails de la déclaration')
             ->setPageTitle(Crud::PAGE_NEW, '➕ Nouvelle déclaration')
             ->setPageTitle(Crud::PAGE_EDIT, '✏️ Modifier la déclaration')
             ->setDefaultSort(['dateSoumission' => 'DESC']);

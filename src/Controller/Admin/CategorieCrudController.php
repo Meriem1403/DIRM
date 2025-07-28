@@ -19,9 +19,12 @@ class CategorieCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('📂 Catégorie')
-            ->setEntityLabelInPlural('📂 Catégories')
-            ->setPageTitle(Crud::PAGE_INDEX, 'Gestion des catégories de personnel')
+            ->setEntityLabelInSingular('une catégorie')
+            ->setEntityLabelInPlural('des catégories')
+            ->setPageTitle(Crud::PAGE_INDEX, '📂 Gestion des catégories de poste')
+            ->setPageTitle(Crud::PAGE_EDIT, '📂 Modifier une catégorie')
+            ->setPageTitle(Crud::PAGE_NEW, '📂Créer une catégorie')
+            ->setPageTitle(Crud::PAGE_DETAIL, '📂 Détails de la catégorie')
             ->setDefaultSort(['nom' => 'ASC']);
     }
 

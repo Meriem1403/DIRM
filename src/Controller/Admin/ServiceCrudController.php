@@ -20,9 +20,13 @@ class ServiceCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('🏢 Service')
-            ->setEntityLabelInPlural('🏢 Services')
-            ->setPageTitle(Crud::PAGE_INDEX, 'Gestion des services')
+            ->setEntityLabelInSingular('un service')
+            ->setEntityLabelInPlural('des services')
+            ->setPageTitle(Crud::PAGE_INDEX, '🏢 Gestion des services')
+            ->setPageTitle(Crud::PAGE_DETAIL, '🏢 Détail du service')
+            ->setPageTitle(Crud::PAGE_EDIT, '🏢 Modifier le service')
+            ->setPageTitle(Crud::PAGE_NEW, '🏢 Création d\'un service')
+
             ->setDefaultSort(['nom' => 'ASC']);
     }
 

@@ -35,6 +35,9 @@ class UserCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('un utilisateur')
             ->setEntityLabelInPlural('des utilisateurs')
             ->setPageTitle(Crud::PAGE_INDEX, 'Gestion des utilisateurs')
+            ->setPageTitle(Crud::PAGE_DETAIL, 'Informations de l\'utilisateur')
+            ->setPageTitle(Crud::PAGE_EDIT, 'Modification des informations de l\'utilisateur')
+            ->setPageTitle(Crud::PAGE_NEW, 'Creer un nouvel utilisateurs')
             ->setDefaultSort(['createdAt' => 'DESC']);
     }
 
@@ -44,21 +47,21 @@ class UserCrudController extends AbstractCrudController
     public function configureFields(string $pageName): array
     {
         return [
-            FormField::addPanel('🧍 Identité'),
+            FormField::addFieldset('🧍 Identité'),
 
             TextField::new('prenom', 'Prénom')->setColumns(6),
             TextField::new('nom', 'Nom')->setColumns(6),
-            EmailField::new('email', '✉️ Email')->setColumns(6),
-            DateField::new('dateNaissance', '📅 Date de naissance')->setColumns(6),
+            EmailField::new('email', 'Email')->setColumns(6),
+            DateField::new('dateNaissance', 'Date de naissance')->setColumns(6)->hideOnIndex(),
 
-            FormField::addPanel('🏠 Adresse'),
+            FormField::addFieldset('🏠 Adresse'),
 
-            TextField::new('adresse', 'Adresse')->setColumns(12),
-            TextField::new('codePostal', 'Code postal')->setColumns(4),
-            TextField::new('ville', 'Ville')->setColumns(4),
-            TextField::new('pays', 'Pays')->setColumns(4),
+            TextField::new('adresse', 'Adresse')->setColumns(12)->hideOnIndex(),
+            TextField::new('codePostal', 'Code postal')->setColumns(4)->hideOnIndex(),
+            TextField::new('ville', 'Ville')->setColumns(4)->hideOnIndex(),
+            TextField::new('pays', 'Pays')->setColumns(4)->hideOnIndex(),
 
-            FormField::addPanel('🏢 Affectation'),
+            FormField::addFieldset('🏢 Affectation')->hideOnIndex(),
 
             TextField::new('poste', 'Poste occupé')->setColumns(12),
             AssociationField::new('service', 'Service')->setColumns(6),
@@ -75,7 +78,7 @@ class UserCrudController extends AbstractCrudController
                 ->setColumns(6),
             AssociationField::new('categorie', 'Catégorie')->setColumns(6),
 
-            FormField::addPanel('🔐 Sécurité'),
+            FormField::addFieldset('🔐 Sécurité'),
 
             AssociationField::new('role', 'Rôle')->setColumns(6),
             TextField::new('plainPassword', 'Mot de passe')
@@ -84,9 +87,9 @@ class UserCrudController extends AbstractCrudController
                 ->setHelp('Laisser vide pour ne pas modifier')
                 ->setColumns(6),
 
-            FormField::addPanel('🕓 Infos système')->onlyOnIndex(),
-            DateField::new('createdAt', 'Créé le')->onlyOnIndex(),
-            AssociationField::new('createdBy', 'Créé par')->onlyOnIndex(),
+            FormField::addFieldset('🕓 Infos système')->hideOnForm(),
+            DateField::new('createdAt', 'Créé le')->hideOnForm(),
+            AssociationField::new('createdBy', 'Créé par')->hideOnForm(),
         ];
     }
 

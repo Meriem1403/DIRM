@@ -20,12 +20,13 @@ class RoleCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('🔐 Rôle')
-            ->setEntityLabelInPlural('🔐 Rôles')
+            ->setEntityLabelInSingular('un rôle')
+            ->setEntityLabelInPlural(' des rôles')
             ->setDefaultSort(['code' => 'ASC'])
             ->setPageTitle(Crud::PAGE_INDEX, '🔐 Gestion des rôles')
-            ->setPageTitle(Crud::PAGE_EDIT, 'Modifier un rôle')
-            ->setPageTitle(Crud::PAGE_NEW, 'Créer un rôle');
+            ->setPageTitle(Crud::PAGE_EDIT, '🔐Modifier un rôle')
+            ->setPageTitle(Crud::PAGE_NEW, '🔐Créer un rôle')
+            ->setPageTitle(Crud::PAGE_DETAIL, '🔐 Détail du rôle');
     }
 
     public function configureFields(string $pageName): array

@@ -20,9 +20,12 @@ class DomaineServiceCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('📚 Domaine')
-            ->setEntityLabelInPlural('📚 Domaines')
-            ->setPageTitle(Crud::PAGE_INDEX, 'Gestion des domaines fonctionnels')
+            ->setEntityLabelInSingular('un domaine')
+            ->setEntityLabelInPlural('des domaines')
+            ->setPageTitle(Crud::PAGE_INDEX, '📚 Gestion des domaines fonctionnels')
+            ->setPageTitle(Crud::PAGE_EDIT, '📚 Modifier un domaine')
+            ->setPageTitle(Crud::PAGE_NEW, '📚 Créer un domaine')
+            ->setPageTitle(Crud::PAGE_DETAIL, '📚 Détails du domaine')
             ->setDefaultSort(['nom' => 'ASC']);
     }
 

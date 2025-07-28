@@ -8,10 +8,6 @@
     --sidebar-bg: #FFFFFF;
     --border-radius: 4px;
 
-    /* Boutons principaux */
-    --button-primary-bg: #0D99FF;
-    --button-primary-color: #FFFFFF;
-
     /* Boutons statut */
     --button-confirmed-bg: #00B69B;
     --button-confirmed-color: #FFFFFF;
@@ -173,8 +169,6 @@
 .ea-header .logo img {
     height: 40px;
 }
-
-
 /* Animation d’apparition */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }

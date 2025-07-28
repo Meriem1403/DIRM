@@ -23,9 +23,12 @@ class DemandeHabilitationCerbereCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Demande Habilitation')
-            ->setEntityLabelInPlural('Demandes Habilitation')
-            ->setPageTitle(Crud::PAGE_INDEX, '📋 Demandes d’habilitation Cerbère')
+            ->setEntityLabelInSingular('une demande d\'abilitation')
+            ->setEntityLabelInPlural('des demandes d\'abilitation')
+            ->setPageTitle(Crud::PAGE_INDEX, '📋 Liste des demandes d\'habilitation Cerère')
+            ->setPageTitle(Crud::PAGE_DETAIL, '🔎 Détails des demandes')
+            ->setPageTitle(Crud::PAGE_NEW, '➕ Nouvelle demande')
+            ->setPageTitle(Crud::PAGE_EDIT, '✏️ Modifier la demande')
             ->setDefaultSort(['dateSoumission' => 'DESC']);
     }
 
