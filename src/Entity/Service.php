@@ -18,6 +18,9 @@ class Service
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
+    #[ORM\Column]
+    private ?bool $actif = true;
+
     #[ORM\ManyToMany(targetEntity: DomaineService::class, mappedBy: 'services')]
     private Collection $domaines;
 
@@ -27,14 +30,21 @@ class Service
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'service')]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'service', cascade: ['remove'])]
     private Collection $users;
+
+    /**
+     * @var Collection<int, Goudurix>
+     */
+    #[ORM\OneToMany(targetEntity: Goudurix::class, mappedBy: 'service', cascade: ['remove'])]
+    private Collection $risques;
 
     public function __construct()
     {
         $this->domaines = new ArrayCollection();
         $this->lieux = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->risques = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -50,6 +60,18 @@ class Service
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function isActif(): ?bool
+    {
+        return $this->actif;
+    }
+
+    public function setActif(bool $actif): static
+    {
+        $this->actif = $actif;
 
         return $this;
     }
@@ -156,6 +178,36 @@ class Service
             // set the owning side to null (unless already changed)
             if ($user->getService() === $this) {
                 $user->setService(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Goudurix>
+     */
+    public function getRisques(): Collection
+    {
+        return $this->risques;
+    }
+
+    public function addRisque(Goudurix $risque): static
+    {
+        if (!$this->risques->contains($risque)) {
+            $this->risques->add($risque);
+            $risque->setService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRisque(Goudurix $risque): static
+    {
+        if ($this->risques->removeElement($risque)) {
+            // set the owning side to null (unless already changed)
+            if ($risque->getService() === $this) {
+                $risque->setService(null);
             }
         }
 

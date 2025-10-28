@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test Dashboard{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Test Dashboard</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Services disponibles</h2>
+            <ul>
+                {% for service in services %}
+                    <li class="mb-2">{{ service.nom }} - {{ service.risques|length }} risque(s)</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

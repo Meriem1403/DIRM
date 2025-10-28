@@ -72,6 +72,42 @@
                     </li>
                 </ul>
             </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-icon stat-risque">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="dashboard-title">Risques Goudurix</div>
+                <div class="dashboard-number">{{ nbRisques }}</div>
+                <ul class="dashboard-status-list mt-4">
+                    <li class="status-item status-pending">
+                        <span class="status-label">En cours</span>
+                        <span class="status-count">{{ nbRisquesEnCours }}</span>
+                    </li>
+                    <li class="status-item status-critical">
+                        <span class="status-label">Critiques</span>
+                        <span class="status-count">{{ nbRisquesCritiques }}</span>
+                    </li>
+                    <li class="status-item status-valid">
+                        <span class="status-label">Traités</span>
+                        <span class="status-count">{{ nbRisquesTraites }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Services Cards Section -->
+        <div class="mt-8">
+            <h2 class="dashboard-heading text-left mb-6">Services - Accès rapide</h2>
+            <div class="services-grid">
+                <div class="service-card" onclick="window.location.href='/services'">
+                    <div class="service-icon">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <div class="service-title">Voir tous les services</div>
+                    <div class="service-description">Accéder aux cartes de services et leurs risques</div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

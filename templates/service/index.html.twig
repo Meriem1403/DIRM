@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Services - Gestion des Risques{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Services</h1>
+            <p class="mt-2 text-gray-600">Sélectionnez un service pour consulter ses risques</p>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for service in services %}
+                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
+                     onclick="window.location.href='{{ path('app_service_dashboard', {'id': service.id}) }}'">
+                    
+                    <!-- Service Icon -->
+                    <div class="p-6 pb-4">
+                        <div class="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4 group-hover:bg-blue-200 transition-colors duration-300">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        
+                        <!-- Service Name -->
+                        <h3 class="text-lg font-semibold text-gray-900 text-center mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            {{ service.nom }}
+                        </h3>
+                        
+                        <!-- Service Description -->
+                        {% if service.nom %}
+                            <p class="text-sm text-gray-600 text-center mb-4 line-clamp-2">
+                                Service {{ service.nom }}
+                            </p>
+                        {% endif %}
+                        
+                        <!-- Service Stats -->
+                        <div class="flex justify-center space-x-4 text-sm text-gray-500">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span>{{ service.lieux|length }} lieu(x)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <div class="px-6 pb-6">
+                        <div class="bg-blue-50 text-blue-700 px-4 py-2 rounded-md text-center font-medium group-hover:bg-blue-100 transition-colors duration-300">
+                            Voir les risques
+                            <svg class="w-4 h-4 inline ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Empty State -->
+        {% if services is empty %}
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun service</h3>
+                <p class="mt-1 text-sm text-gray-500">Commencez par créer des services.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
+{% endblock %}

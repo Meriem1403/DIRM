@@ -85,6 +85,10 @@
     color: #f43f5e;
 }
 
+.stat-risque i {
+    color: #dc2626;
+}
+
 .dashboard-title {
     font-size: 1rem;
     font-weight: 600;
@@ -169,7 +173,55 @@
 .ea-header .logo img {
     height: 40px;
 }
-/* Animation d’apparition */
+/* Services Cards */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.service-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.1);
+    border-color: #3b82f6;
+}
+
+.service-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #3b82f6;
+}
+
+.service-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.service-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+/* Status critical pour les risques critiques */
+.status-critical {
+    border-left: 4px solid #dc2626;
+}
+
+/* Animation d'apparition */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }

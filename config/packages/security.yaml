@@ -25,6 +25,10 @@ security:
 
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/services, roles: PUBLIC_ACCESS }
+        - { path: ^/service/, roles: PUBLIC_ACCESS }
+        - { path: ^/goudurix-dashboard, roles: PUBLIC_ACCESS }
+        - { path: ^/risque/, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_AGENT }
 

@@ -13,6 +13,7 @@ use App\Entity\ProfilCerbere;
 use App\Entity\DemandeHabilitationCerbere;
 use App\Entity\DemandeMobilite;
 use App\Entity\DeclarationChantier;
+use App\Entity\Goudurix;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -64,6 +65,13 @@ class DashboardController extends AbstractDashboardController
             $nbChantiersValidees  = $repoChantier->count(['statut' => 'validee']);
             $nbChantiersRefusees  = $repoChantier->count(['statut' => 'refusee']);
 
+            // Risques Goudurix
+            $repoGoudurix = $this->em->getRepository(Goudurix::class);
+            $nbRisques = $repoGoudurix->count();
+            $nbRisquesEnCours = $repoGoudurix->count(['statut' => 'en_cours']);
+            $nbRisquesCritiques = $repoGoudurix->count(['niveauRisque' => 'critique']);
+            $nbRisquesTraites = $repoGoudurix->count(['statut' => 'traité']);
+
             return $this->render('dashboard/dashboard_admin.html.twig', [
                 'nbDemandesHabilitation'     => $nbDemandesHabilitation,
                 'nbHabilitationsEnAttente'   => $nbHabilitationsEnAttente,
@@ -79,6 +87,11 @@ class DashboardController extends AbstractDashboardController
                 'nbChantiersEnAttente'       => $nbChantiersEnAttente,
                 'nbChantiersValidees'        => $nbChantiersValidees,
                 'nbChantiersRefusees'        => $nbChantiersRefusees,
+
+                'nbRisques'                  => $nbRisques,
+                'nbRisquesEnCours'           => $nbRisquesEnCours,
+                'nbRisquesCritiques'         => $nbRisquesCritiques,
+                'nbRisquesTraites'           => $nbRisquesTraites,
             ]);
         }
 
@@ -124,6 +137,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Mobilité & Chantier');
         yield MenuItem::linkToCrud('Demandes de mobilité', 'fas fa-exchange-alt', DemandeMobilite::class);
         yield MenuItem::linkToCrud('Déclarations chantier', 'fas fa-anchor', DeclarationChantier::class);
+
+        yield MenuItem::section('Gestion des Risques');
+        yield MenuItem::linkToUrl('Dashboard Risques', 'fas fa-tachometer-alt', '/goudurix-dashboard')->setLinkTarget('_blank');
+        yield MenuItem::linkToCrud('Risques Goudurix', 'fas fa-exclamation-triangle', Goudurix::class);
+        yield MenuItem::linkToUrl('Cartes des Services', 'fas fa-th-large', '/services')->setLinkTarget('_blank');
 
         yield MenuItem::section('Accès rapide');
         yield MenuItem::linkToUrl('Retour au site', 'fas fa-home', '/')->setLinkTarget('_blank');

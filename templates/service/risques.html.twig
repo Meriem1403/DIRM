@@ -1,0 +1,185 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ service.nom }} - Risques{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ service.nom }} - Risques</h1>
+                    <p class="mt-2 text-gray-600">{{ risques|length }} risque(s) enregistré(s)</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="{{ path('app_service_dashboard', {'id': service.id}) }}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors duration-300">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="{{ path('app_services') }}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Retour aux services
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <div class="flex flex-wrap gap-4">
+                <div class="flex-1 min-w-64">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Rechercher</label>
+                    <input type="text" id="searchInput" placeholder="Titre, description..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                    <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tous les statuts</option>
+                        <option value="en_cours">En cours</option>
+                        <option value="traité">Traité</option>
+                        <option value="surveillé">Surveillé</option>
+                        <option value="archivé">Archivé</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
+                    <select id="levelFilter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tous les niveaux</option>
+                        <option value="critique">Critique</option>
+                        <option value="élevé">Élevé</option>
+                        <option value="moyen">Moyen</option>
+                        <option value="faible">Faible</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risks List -->
+        <div class="space-y-4" id="risksList">
+            {% for risque in risques %}
+                <div class="bg-white rounded-lg shadow p-6 risk-card" 
+                     data-title="{{ risque.titre|lower }}" 
+                     data-description="{{ risque.description|lower }}"
+                     data-status="{{ risque.statut }}"
+                     data-level="{{ risque.niveauRisque }}">
+                    
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900">{{ risque.titre }}</h3>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if risque.niveauRisque == 'critique' %}bg-red-100 text-red-800
+                                    {% elseif risque.niveauRisque == 'élevé' %}bg-orange-100 text-orange-800
+                                    {% elseif risque.niveauRisque == 'moyen' %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-green-100 text-green-800{% endif %}">
+                                    {{ risque.niveauRisque|title }}
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if risque.statut == 'en_cours' %}bg-blue-100 text-blue-800
+                                    {% elseif risque.statut == 'traité' %}bg-green-100 text-green-800
+                                    {% elseif risque.statut == 'surveillé' %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ risque.statut|title }}
+                                </span>
+                            </div>
+                            
+                            <p class="text-gray-600 mb-4">{{ risque.description }}</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-500">
+                                <div>
+                                    <strong>Responsable:</strong> {{ risque.responsable.nom }} {{ risque.responsable.prenom }}
+                                </div>
+                                <div>
+                                    <strong>Date de détection:</strong> {{ risque.dateDetection|date('d/m/Y') }}
+                                </div>
+                                {% if risque.dateResolution %}
+                                    <div>
+                                        <strong>Date de résolution:</strong> {{ risque.dateResolution|date('d/m/Y') }}
+                                    </div>
+                                {% endif %}
+                                {% if risque.scoreRisque %}
+                                    <div>
+                                        <strong>Score de risque:</strong> {{ risque.scoreRisque }}/25
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if risque.mesuresPreventives %}
+                                <div class="mt-4">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Mesures préventives</h4>
+                                    <p class="text-sm text-gray-600">{{ risque.mesuresPreventives }}</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if risque.mesuresCorrectives %}
+                                <div class="mt-4">
+                                    <h4 class="text-sm font-medium text-gray-900 mb-2">Mesures correctives</h4>
+                                    <p class="text-sm text-gray-600">{{ risque.mesuresCorrectives }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="ml-6 text-right text-sm text-gray-500">
+                            <div>Créé le {{ risque.createdAt|date('d/m/Y') }}</div>
+                            {% if risque.updatedAt %}
+                                <div>Modifié le {{ risque.updatedAt|date('d/m/Y') }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="bg-white rounded-lg shadow p-8 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun risque</h3>
+                    <p class="mt-1 text-sm text-gray-500">Aucun risque n'a été enregistré pour ce service.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const levelFilter = document.getElementById('levelFilter');
+    const riskCards = document.querySelectorAll('.risk-card');
+
+    function filterRisks() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedStatus = statusFilter.value;
+        const selectedLevel = levelFilter.value;
+
+        riskCards.forEach(card => {
+            const title = card.dataset.title;
+            const description = card.dataset.description;
+            const status = card.dataset.status;
+            const level = card.dataset.level;
+
+            const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+            const matchesStatus = !selectedStatus || status === selectedStatus;
+            const matchesLevel = !selectedLevel || level === selectedLevel;
+
+            if (matchesSearch && matchesStatus && matchesLevel) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    searchInput.addEventListener('input', filterRisks);
+    statusFilter.addEventListener('change', filterRisks);
+    levelFilter.addEventListener('change', filterRisks);
+});
+</script>
+{% endblock %}

@@ -3,16 +3,32 @@ services:
 ###> doctrine/doctrine-bundle ###
   database:
     ports:
-      - "5432"
+      - "3306:3306"
 ###< doctrine/doctrine-bundle ###
 
 ###> symfony/mailer ###
   mailer:
     image: axllent/mailpit
     ports:
-      - "1025"
-      - "8025"
+      - "1025:1025"
+      - "8025:8025"
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 ###< symfony/mailer ###
+
+###> phpmyadmin ###
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    platform: linux/amd64
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+      PMA_ABSOLUTE_URI: http://localhost:8080/
+    depends_on:
+      - database
+###< phpmyadmin ###

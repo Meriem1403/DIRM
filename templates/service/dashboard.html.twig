@@ -1,0 +1,225 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ service.nom }} - Dashboard{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ service.nom }}</h1>
+                    <p class="mt-2 text-gray-600">{{ service.description ?? 'Service de gestion des risques' }}</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="{{ path('app_services') }}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors duration-300">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Retour aux services
+                    </a>
+                    <a href="{{ path('app_service_risques', {'id': service.id}) }}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                        Voir tous les risques
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Risks -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Total des risques</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ stats.total }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- En Cours -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">En cours</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ stats.en_cours }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Critiques -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Critiques</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ stats.critique }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traités -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Traités</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ stats.traite }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Level Distribution -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- By Status -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Répartition par statut</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                            <span class="text-sm text-gray-600">En cours</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">{{ stats.en_cours }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                            <span class="text-sm text-gray-600">Traités</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">{{ stats.traite }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                            <span class="text-sm text-gray-600">Surveillés</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">{{ stats.surveille }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
+                            <span class="text-sm text-gray-600">Archivés</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">{{ stats.archive }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- By Risk Level -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Répartition par niveau de risque</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-red-600 rounded-full mr-3"></div>
+                            <span class="text-sm text-gray-600">Critique</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">{{ stats.critique }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                            <span class="text-sm text-gray-600">Élevé</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">{{ stats.eleve }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                            <span class="text-sm text-gray-600">Moyen</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">{{ stats.moyen }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                            <span class="text-sm text-gray-600">Faible</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">{{ stats.faible }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Risks -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Risques récents</h3>
+            </div>
+            <div class="divide-y divide-gray-200">
+                {% for risque in risques|slice(0, 5) %}
+                    <div class="px-6 py-4 hover:bg-gray-50 transition-colors duration-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-gray-900">{{ risque.titre }}</h4>
+                                <p class="text-sm text-gray-500 mt-1">{{ risque.description|slice(0, 100) }}{% if risque.description|length > 100 %}...{% endif %}</p>
+                                <div class="flex items-center mt-2 space-x-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if risque.niveauRisque == 'critique' %}bg-red-100 text-red-800
+                                        {% elseif risque.niveauRisque == 'élevé' %}bg-orange-100 text-orange-800
+                                        {% elseif risque.niveauRisque == 'moyen' %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-green-100 text-green-800{% endif %}">
+                                        {{ risque.niveauRisque|title }}
+                                    </span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if risque.statut == 'en_cours' %}bg-blue-100 text-blue-800
+                                        {% elseif risque.statut == 'traité' %}bg-green-100 text-green-800
+                                        {% elseif risque.statut == 'surveillé' %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ risque.statut|title }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="ml-4 text-sm text-gray-500">
+                                {{ risque.dateDetection|date('d/m/Y') }}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="px-6 py-8 text-center text-gray-500">
+                        Aucun risque enregistré pour ce service.
+                    </div>
+                {% endfor %}
+            </div>
+            {% if risques|length > 5 %}
+                <div class="px-6 py-4 border-t border-gray-200 text-center">
+                    <a href="{{ path('app_service_risques', {'id': service.id}) }}" class="text-blue-600 hover:text-blue-500 font-medium">
+                        Voir tous les risques ({{ risques|length }})
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
