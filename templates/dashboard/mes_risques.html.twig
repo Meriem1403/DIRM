@@ -1,0 +1,285 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Risques{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Forcer la visibilité du texte */
+        .nav-section h3 {
+            color: #000000 !important;
+            font-weight: bold !important;
+        }
+        .nav-button {
+            color: #ffffff !important;
+            font-weight: bold !important;
+        }
+        .nav-button:hover {
+            color: #ffffff !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header avec navigation -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Bonjour {{ app.user.prenom }} {{ app.user.nom }}</h1>
+                    <p class="text-gray-600 mt-2">{{ app.user.poste }} - {{ userService.nom }}</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ path('notifications') }}" class="relative bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                        <i class="fas fa-bell mr-2"></i>Notifications
+                    </a>
+                    <a href="{{ path('app_logout') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages flash -->
+        {% for message in app.flashes('success') %}
+        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+        {% endfor %}
+
+        <!-- Navigation principale -->
+        <div class="mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Navigation</h2>
+                
+                <!-- TEST SIMPLE -->
+                <div style="background: red; color: white; padding: 20px; margin: 20px 0;">
+                    <h3 style="color: white !important; font-size: 24px !important;">TEST VISIBILITÉ</h3>
+                    <p style="color: white !important;">Si vous voyez ce texte en blanc sur fond rouge, le CSS fonctionne.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <!-- Statistiques du service -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 nav-section">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-blue-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-chart-bar text-blue-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold" style="color: #000000 !important; font-weight: bold !important;">Statistiques</h3>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">Total:</span>
+                                <span class="font-bold text-blue-800">{{ risques|length }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">En cours:</span>
+                                <span class="font-bold text-yellow-800">{{ risques|filter(r => r.statut == 'en_cours')|length }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">Traités:</span>
+                                <span class="font-bold text-green-800">{{ risques|filter(r => r.statut == 'traité')|length }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions rapides -->
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 nav-section">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-green-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-bolt text-green-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold" style="color: #000000 !important; font-weight: bold !important;">Actions Rapides</h3>
+                        </div>
+                        <div class="space-y-2">
+                            <!-- TEST BOUTON -->
+                            <div style="background: #ff0000; color: #ffffff; padding: 10px; margin: 10px 0; text-align: center; font-weight: bold;">
+                                TEST BOUTON - Si vous voyez ce texte, les boutons fonctionnent
+                            </div>
+                            
+                            <a href="{{ path('app_demandes') }}" class="block w-full bg-green-600 px-3 py-2 rounded-md hover:bg-green-700 transition-colors duration-300 text-center text-sm font-bold" style="color: #ffffff !important;">
+                                <i class="fas fa-file-alt mr-1"></i>Vos Démarches
+                            </a>
+                            <a href="{{ path('aide_contact') }}" class="block w-full bg-green-600 px-3 py-2 rounded-md hover:bg-green-700 transition-colors duration-300 text-center text-sm font-bold" style="color: #ffffff !important;">
+                                <i class="fas fa-question-circle mr-1"></i>Aide & Contact
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard global -->
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 nav-section">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-purple-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-tachometer-alt text-purple-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold" style="color: #000000 !important; font-weight: bold !important;">Dashboard Global</h3>
+                        </div>
+                        <div class="space-y-2">
+                            <a href="/goudurix-dashboard" class="block w-full bg-purple-600 px-3 py-2 rounded-md hover:bg-purple-700 transition-colors duration-300 text-center text-sm font-bold" style="color: #ffffff !important;">
+                                <i class="fas fa-chart-line mr-1"></i>Vue d'Ensemble
+                            </a>
+                            <a href="/services" class="block w-full bg-purple-600 px-3 py-2 rounded-md hover:bg-purple-700 transition-colors duration-300 text-center text-sm font-bold" style="color: #ffffff !important;">
+                                <i class="fas fa-th-large mr-1"></i>Cartes Services
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Administration (si admin) -->
+                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 nav-section">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-red-100 rounded-full p-2 mr-3">
+                                <i class="fas fa-cogs text-red-600"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold" style="color: #000000 !important; font-weight: bold !important;">Administration</h3>
+                        </div>
+                        <div class="space-y-2">
+                            <a href="/admin" class="block w-full bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-300 text-center text-sm nav-button">
+                                <i class="fas fa-tools mr-1"></i>Interface Admin
+                            </a>
+                            <a href="/admin/retours-action" class="block w-full bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-300 text-center text-sm nav-button">
+                                <i class="fas fa-comments mr-1"></i>Retours d'Action
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des risques -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Risques de votre service</h2>
+                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {{ risques|length }} risque(s)
+                </span>
+            </div>
+            
+            {% if risques|length > 0 %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for risque in risques %}
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
+                <!-- Header de la carte -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ risque.titre }}</h3>
+                        <p class="text-sm text-gray-600">{{ risque.service.nom }}</p>
+                    </div>
+                    <div class="flex flex-col space-y-2">
+                        <!-- Badge niveau de risque -->
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                            {% if risque.niveauRisque == 'critique' %}bg-red-100 text-red-800
+                            {% elseif risque.niveauRisque == 'élevé' %}bg-orange-100 text-orange-800
+                            {% elseif risque.niveauRisque == 'moyen' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-green-100 text-green-800{% endif %}">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            {{ risque.niveauRisque|capitalize }}
+                        </span>
+                        
+                        <!-- Badge statut -->
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                            {% if risque.statut == 'en_cours' %}bg-blue-100 text-blue-800
+                            {% elseif risque.statut == 'traité' %}bg-green-100 text-green-800
+                            {% elseif risque.statut == 'surveillé' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {% if risque.statut == 'en_cours' %}<i class="fas fa-clock mr-1"></i>
+                            {% elseif risque.statut == 'traité' %}<i class="fas fa-check mr-1"></i>
+                            {% elseif risque.statut == 'surveillé' %}<i class="fas fa-eye mr-1"></i>
+                            {% else %}<i class="fas fa-archive mr-1"></i>{% endif %}
+                            {{ risque.statut|replace({'_': ' '})|capitalize }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <p class="text-sm text-gray-700 mb-4">{{ risque.description|slice(0, 120) }}{% if risque.description|length > 120 %}...{% endif %}</p>
+
+                <!-- Informations -->
+                <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                    <div>
+                        <span class="text-gray-500">Responsable:</span>
+                        <p class="font-medium text-gray-900">{{ risque.responsable.nom }} {{ risque.responsable.prenom }}</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Date détection:</span>
+                        <p class="font-medium text-gray-900">{{ risque.dateDetection|date('d/m/Y') }}</p>
+                    </div>
+                    {% if risque.scoreRisque %}
+                    <div>
+                        <span class="text-gray-500">Score:</span>
+                        <p class="font-medium text-gray-900">{{ risque.scoreRisque }}/25</p>
+                    </div>
+                    {% endif %}
+                    {% if risque.mesureEnCours %}
+                    <div>
+                        <span class="text-gray-500">Mesure:</span>
+                        <p class="font-medium text-gray-900">
+                            {% if risque.mesureMiseEnPlace %}
+                                <span class="text-green-600"><i class="fas fa-check mr-1"></i>En place</span>
+                            {% else %}
+                                <span class="text-yellow-600"><i class="fas fa-clock mr-1"></i>En cours</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Retours d'action -->
+                {% if risque.retoursAction|length > 0 %}
+                <div class="mb-4">
+                    <h4 class="text-sm font-medium text-gray-700 mb-2">Retours d'action ({{ risque.retoursAction|length }})</h4>
+                    <div class="space-y-2">
+                        {% for retour in risque.retoursAction|slice(0, 2) %}
+                        <div class="bg-gray-50 rounded p-2 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-700">{{ retour.description|slice(0, 50) }}{% if retour.description|length > 50 %}...{% endif %}</span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                    {% if retour.statut == 'validé' %}bg-green-100 text-green-800
+                                    {% elseif retour.statut == 'refusé' %}bg-red-100 text-red-800
+                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                    {% if retour.statut == 'validé' %}<i class="fas fa-check mr-1"></i>Validé
+                                    {% elseif retour.statut == 'refusé' %}<i class="fas fa-times mr-1"></i>Refusé
+                                    {% else %}<i class="fas fa-clock mr-1"></i>En attente{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% if risque.retoursAction|length > 2 %}
+                        <p class="text-xs text-gray-500">+{{ risque.retoursAction|length - 2 }} autres retours</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Actions -->
+                <div class="flex space-x-2">
+                    <a href="/risque/{{ risque.id }}" 
+                       class="flex-1 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 text-center text-sm">
+                        <i class="fas fa-eye mr-1"></i>Consulter
+                    </a>
+                    {% if 'ROLE_CHEF' in app.user.roles %}
+                    <a href="/risque/{{ risque.id }}#retour-action" 
+                       class="flex-1 bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 transition-colors duration-300 text-center text-sm">
+                        <i class="fas fa-comment mr-1"></i>Retour
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-shield-alt text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucun risque dans votre service</h3>
+                <p class="text-gray-600">Votre service n'a pas encore de risques enregistrés.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

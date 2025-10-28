@@ -22,4 +22,10 @@ class HomeController extends AbstractController
             'heroImages' => $heroImages,
         ]);
     }
+
+    #[Route('/aide-contact', name: 'aide_contact')]
+    public function aideContact(): Response
+    {
+        return $this->render('home/aide_contact.html.twig');
+    }
 }

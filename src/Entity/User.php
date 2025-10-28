@@ -227,9 +227,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         // Hiérarchie des rôles selon security.yaml
         $roleHierarchy = [
-            'ROLE_ADMIN' => ['ROLE_ADMIN', 'ROLE_AGENT'],
-            'ROLE_CHEF' => ['ROLE_CHEF', 'ROLE_AGENT'],
-            'ROLE_AGENT' => ['ROLE_AGENT'],
+            'ROLE_ADMIN' => ['ROLE_ADMIN', 'ROLE_USER', 'ROLE_AGENT'],
+            'ROLE_CHEF' => ['ROLE_CHEF', 'ROLE_USER', 'ROLE_AGENT'],
+            'ROLE_AGENT' => ['ROLE_AGENT', 'ROLE_USER'],
         ];
 
         return $roleHierarchy[$code] ?? [$code];

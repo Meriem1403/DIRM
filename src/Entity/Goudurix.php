@@ -97,6 +97,9 @@ class Goudurix
     #[ORM\JoinTable(name: 'goudurix_observateurs')]
     private Collection $observateurs;
 
+    #[ORM\OneToMany(targetEntity: RetourAction::class, mappedBy: 'risque', cascade: ['persist', 'remove'])]
+    private Collection $retoursAction;
+
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $categorie = null;
 
@@ -115,6 +118,7 @@ class Goudurix
     public function __construct()
     {
         $this->observateurs = new ArrayCollection();
+        $this->retoursAction = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->mesureMiseEnPlace = false;
     }
@@ -442,6 +446,36 @@ class Goudurix
     public function setDateRetour(?\DateTime $dateRetour): static
     {
         $this->dateRetour = $dateRetour;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RetourAction>
+     */
+    public function getRetoursAction(): Collection
+    {
+        return $this->retoursAction;
+    }
+
+    public function addRetoursAction(RetourAction $retoursAction): static
+    {
+        if (!$this->retoursAction->contains($retoursAction)) {
+            $this->retoursAction->add($retoursAction);
+            $retoursAction->setRisque($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRetoursAction(RetourAction $retoursAction): static
+    {
+        if ($this->retoursAction->removeElement($retoursAction)) {
+            // set the owning side to null (unless already changed)
+            if ($retoursAction->getRisque() === $this) {
+                $retoursAction->setRisque(null);
+            }
+        }
+
         return $this;
     }
 }

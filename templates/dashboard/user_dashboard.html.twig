@@ -1,0 +1,222 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Tableau de Bord{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Bonjour {{ user.prenom }} {{ user.nom }}</h1>
+                    <p class="text-gray-600 mt-2">{{ user.poste }} - {{ userService.nom }}</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if notificationsNonLues > 0 %}
+                    <a href="/notifications" class="relative bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                        <i class="fas fa-bell mr-2"></i>Notifications
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                            {{ notificationsNonLues }}
+                        </span>
+                    </a>
+                    {% endif %}
+                    <a href="/logout" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages flash -->
+        {% for message in app.flashes('success') %}
+        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+        {% endfor %}
+
+        <!-- Statistiques du service -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Statistiques de votre service</h2>
+            <div class="flex flex-wrap gap-4">
+                <div class="bg-white rounded-lg shadow p-4 flex-1 min-w-[150px]">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 rounded-full p-2 mr-3">
+                            <i class="fas fa-exclamation-triangle text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-600">Total</p>
+                            <p class="text-lg font-bold text-gray-900">{{ statsService.total }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-4 flex-1 min-w-[150px]">
+                    <div class="flex items-center">
+                        <div class="bg-red-100 rounded-full p-2 mr-3">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-600">Critiques</p>
+                            <p class="text-lg font-bold text-red-600">{{ statsService.critiques }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-4 flex-1 min-w-[150px]">
+                    <div class="flex items-center">
+                        <div class="bg-orange-100 rounded-full p-2 mr-3">
+                            <i class="fas fa-exclamation-circle text-orange-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-600">Élevés</p>
+                            <p class="text-lg font-bold text-orange-600">{{ statsService.eleves }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-4 flex-1 min-w-[150px]">
+                    <div class="flex items-center">
+                        <div class="bg-yellow-100 rounded-full p-2 mr-3">
+                            <i class="fas fa-clock text-yellow-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-600">En cours</p>
+                            <p class="text-lg font-bold text-yellow-600">{{ statsService.en_cours }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-4 flex-1 min-w-[150px]">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 rounded-full p-2 mr-3">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-600">Traités</p>
+                            <p class="text-lg font-bold text-green-600">{{ statsService.traites }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Actions rapides</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="/mes-risques" class="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 rounded-full p-3 mr-4">
+                            <i class="fas fa-list text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Mes Risques</h3>
+                            <p class="text-sm text-gray-600">Consulter les risques de votre service</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/goudurix-dashboard" class="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 rounded-full p-3 mr-4">
+                            <i class="fas fa-tachometer-alt text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Dashboard Risques</h3>
+                            <p class="text-sm text-gray-600">Vue d'ensemble de tous les services</p>
+                        </div>
+                    </div>
+                </a>
+
+                {% if 'ROLE_CHEF' in app.user.roles %}
+                <a href="/services" class="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex items-center">
+                        <div class="bg-purple-100 rounded-full p-3 mr-4">
+                            <i class="fas fa-th-large text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Cartes Services</h3>
+                            <p class="text-sm text-gray-600">Accès rapide aux services</p>
+                        </div>
+                    </div>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Risques récents -->
+        {% if risquesService|length > 0 %}
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Risques récents de votre service</h2>
+                <a href="/mes-risques" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    Voir tous <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for risque in risquesService|slice(0, 6) %}
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="text-lg font-semibold text-gray-900">{{ risque.titre }}</h3>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                            {% if risque.niveauRisque == 'critique' %}bg-red-100 text-red-800
+                            {% elseif risque.niveauRisque == 'élevé' %}bg-orange-100 text-orange-800
+                            {% elseif risque.niveauRisque == 'moyen' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-green-100 text-green-800{% endif %}">
+                            {{ risque.niveauRisque|capitalize }}
+                        </span>
+                    </div>
+                    
+                    <p class="text-sm text-gray-700 mb-3">{{ risque.description|slice(0, 100) }}{% if risque.description|length > 100 %}...{% endif %}</p>
+                    
+                    <div class="flex items-center justify-between text-sm text-gray-600 mb-3">
+                        <span>{{ risque.dateDetection|date('d/m/Y') }}</span>
+                        <span>{{ risque.responsable.nom }} {{ risque.responsable.prenom }}</span>
+                    </div>
+                    
+                    <a href="/risque/{{ risque.id }}" class="w-full bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 text-center text-sm">
+                        <i class="fas fa-eye mr-1"></i>Consulter
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Accès admin -->
+        {% if 'ROLE_ADMIN' in app.user.roles %}
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Administration</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="/admin" class="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex items-center">
+                        <div class="bg-red-100 rounded-full p-3 mr-4">
+                            <i class="fas fa-cogs text-red-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Interface Admin</h3>
+                            <p class="text-sm text-gray-600">Gestion complète du système</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/admin/retours-action" class="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex items-center">
+                        <div class="bg-yellow-100 rounded-full p-3 mr-4">
+                            <i class="fas fa-comments text-yellow-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Retours d'Action</h3>
+                            <p class="text-sm text-gray-600">Valider les retours des chefs</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

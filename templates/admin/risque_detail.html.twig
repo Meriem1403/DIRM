@@ -34,6 +34,11 @@
                         {% else %}bg-gray-100 text-gray-800{% endif %}">
                         {{ risque.statut|replace({'_': ' '})|capitalize }}
                     </span>
+                    {% if 'ROLE_CHEF' in app.user.roles and risque.mesureEnCours %}
+                    <button onclick="toggleRetourForm()" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300">
+                        <i class="fas fa-comment mr-2"></i>Retour d'Action
+                    </button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -120,40 +125,65 @@
                     </div>
                 </div>
 
-                <!-- Retour d'action -->
+                <!-- Retours d'action -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-3">Retour d'Action</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">Retours d'Action</h3>
                     
-                    {% if risque.retourAction %}
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                        <p class="text-green-900 mb-3">{{ risque.retourAction }}</p>
-                        <div class="flex items-center justify-between text-sm text-green-700">
-                            <span>
-                                {% if risque.auteurRetour %}
-                                    Par {{ risque.auteurRetour.nom }} {{ risque.auteurRetour.prenom }}
-                                {% endif %}
-                            </span>
-                            <span>
-                                {% if risque.dateRetour %}
-                                    Le {{ risque.dateRetour|date('d/m/Y à H:i') }}
-                                {% endif %}
-                            </span>
+                    <!-- Liste des retours d'action existants -->
+                    {% if risque.retoursAction|length > 0 %}
+                    <div class="mb-6 space-y-4">
+                        {% for retour in risque.retoursAction %}
+                        <div class="border rounded-lg p-4
+                            {% if retour.statut == 'validé' %}bg-green-50 border-green-200
+                            {% elseif retour.statut == 'refusé' %}bg-red-50 border-red-200
+                            {% else %}bg-yellow-50 border-yellow-200{% endif %}">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex-1">
+                                    <p class="text-gray-900 mb-2">{{ retour.description }}</p>
+                                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                        <span>
+                                            <i class="fas fa-user mr-1"></i>
+                                            {{ retour.auteur.nom }} {{ retour.auteur.prenom }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            {{ retour.dateCreation|date('d/m/Y à H:i') }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                    {% if retour.statut == 'validé' %}bg-green-100 text-green-800
+                                    {% elseif retour.statut == 'refusé' %}bg-red-100 text-red-800
+                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                    {% if retour.statut == 'validé' %}<i class="fas fa-check mr-1"></i>Validé
+                                    {% elseif retour.statut == 'refusé' %}<i class="fas fa-times mr-1"></i>Refusé
+                                    {% else %}<i class="fas fa-clock mr-1"></i>En attente{% endif %}
+                                </span>
+                            </div>
+                            
+                            {% if retour.commentaireValidation %}
+                            <div class="mt-2 p-2 bg-gray-100 rounded text-sm">
+                                <strong>Commentaire :</strong> {{ retour.commentaireValidation }}
+                            </div>
+                            {% endif %}
                         </div>
+                        {% endfor %}
                     </div>
                     {% endif %}
 
                     <!-- Formulaire pour ajouter un retour d'action -->
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                         <h4 class="text-md font-medium text-gray-900 mb-3">Ajouter un Retour d'Action</h4>
-                        <form action="{{ path('risque_add_retour', {'id': risque.id}) }}" method="POST" class="space-y-4">
+                        <form action="{{ path('risque_add_retour_action', {'id': risque.id}) }}" method="POST" class="space-y-4">
                             <div>
-                                <label for="retour_action" class="block text-sm font-medium text-gray-700 mb-2">Retour d'action</label>
-                                <textarea id="retour_action" name="retour_action" rows="3" 
+                                <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description des actions mises en place</label>
+                                <textarea id="description" name="description" rows="4" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                                    placeholder="Décrivez les actions mises en place..."></textarea>
+                                    placeholder="Décrivez en détail les actions que vous avez mises en place pour traiter ce risque..."
+                                    required></textarea>
                             </div>
                             <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-300">
-                                <i class="fas fa-comment mr-2"></i>Ajouter le Retour
+                                <i class="fas fa-paper-plane mr-2"></i>Envoyer le Retour d'Action
                             </button>
                         </form>
                     </div>
@@ -201,6 +231,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- Formulaire de retour d'action (masqué par défaut) -->
+        {% if 'ROLE_CHEF' in app.user.roles and risque.mesureEnCours %}
+        <div id="retourForm" class="mt-8 bg-white rounded-lg shadow p-6" style="display: none;">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-comment mr-2"></i>Ajouter un Retour d'Action
+            </h2>
+            <form action="{{ path('risque_add_retour_action', {'id': risque.id}) }}" method="POST" class="space-y-4">
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description des actions mises en place
+                    </label>
+                    <textarea id="description" name="description" rows="4" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Décrivez en détail les actions que vous avez mises en place pour traiter ce risque..."
+                        required></textarea>
+                </div>
+                <div class="flex space-x-4">
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-300">
+                        <i class="fas fa-paper-plane mr-2"></i>Envoyer le Retour d'Action
+                    </button>
+                    <button type="button" onclick="toggleRetourForm()" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                        <i class="fas fa-times mr-2"></i>Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
     </div>
 </div>
+
+<script>
+function toggleRetourForm() {
+    const form = document.getElementById('retourForm');
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+        form.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        form.style.display = 'none';
+    }
+}
+</script>
 {% endblock %}

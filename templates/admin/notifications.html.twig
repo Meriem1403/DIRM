@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Notifications{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Mes Notifications</h1>
+                    <p class="text-gray-600 mt-2">Suivez les retours d'action et les validations</p>
+                </div>
+                {% if notifications|length > 0 %}
+                <button onclick="marquerToutesCommeLues()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                    <i class="fas fa-check-double mr-2"></i>Marquer toutes comme lues
+                </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Messages flash -->
+        {% for message in app.flashes('success') %}
+        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+        {% endfor %}
+
+        <!-- Liste des notifications -->
+        {% if notifications|length > 0 %}
+        <div class="space-y-4">
+            {% for notification in notifications %}
+            <div class="bg-white rounded-lg shadow-md border {% if not notification.lu %}border-blue-200 bg-blue-50{% else %}border-gray-200{% endif %} p-6">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-2">
+                            <h3 class="text-lg font-semibold text-gray-900 mr-3">{{ notification.titre }}</h3>
+                            {% if not notification.lu %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-circle mr-1"></i>Nouveau
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="text-gray-700 mb-3">{{ notification.message }}</p>
+                        
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>
+                                <i class="fas fa-calendar mr-1"></i>
+                                {{ notification.dateCreation|date('d/m/Y à H:i') }}
+                            </span>
+                            {% if notification.expediteur %}
+                            <span>
+                                <i class="fas fa-user mr-1"></i>
+                                {{ notification.expediteur.nom }} {{ notification.expediteur.prenom }}
+                            </span>
+                            {% endif %}
+                            {% if notification.risque %}
+                            <span>
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                {{ notification.risque.titre }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2 ml-4">
+                        {% if not notification.lu %}
+                        <button onclick="marquerCommeLu({{ notification.id }})" 
+                                class="text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-check mr-1"></i>Marquer comme lu
+                        </button>
+                        {% endif %}
+                        
+                        {% if notification.retourAction %}
+                        <a href="/risque/{{ notification.retourAction.risque.id }}" 
+                           class="text-green-600 hover:text-green-800 text-sm">
+                            <i class="fas fa-eye mr-1"></i>Voir le risque
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-bell-slash text-6xl text-gray-400 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucune notification</h3>
+            <p class="text-gray-600">Vous n'avez pas encore de notifications.</p>
+        </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div class="mt-8 flex justify-center">
+            <a href="/admin/goudurix" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>Retour aux Risques
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function marquerCommeLu(notificationId) {
+    fetch('/notifications/marquer-lu/' + notificationId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function marquerToutesCommeLues() {
+    fetch('/notifications/marquer-toutes-lues', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

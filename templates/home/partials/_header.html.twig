@@ -7,8 +7,14 @@
         </a>
         <nav class="hidden md:flex space-x-8 text-gray-800 font-medium text-lg">
             <a href="{{ path('homepage') }}" class="hover:text-blue-600">Accueil</a>
-            <a href="{{ path('app_login') }}" class="hover:text-blue-600">Vos démarches</a>
-            <a href="{{ path('app_login') }}" class="hover:text-blue-600">Aide & Contact</a>
+            <a href="{{ path('app_demandes') }}" class="hover:text-blue-600">Vos démarches</a>
+            <a href="{{ path('aide_contact') }}" class="hover:text-blue-600">Aide & Contact</a>
+            {% if app.user %}
+                <a href="{{ path('mes_risques') }}" class="hover:text-blue-600">Mes Risques</a>
+                {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <a href="/admin" class="hover:text-blue-600">Administration</a>
+                {% endif %}
+            {% endif %}
         </nav>
     </div>
 
@@ -34,13 +40,25 @@
         >
             {% if app.user %}
                 <a href="{{ path('homepage') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                    Mes demandes
+                    <i class="fas fa-home mr-2"></i>Accueil
                 </a>
+                <a href="{{ path('mes_risques') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Mes Risques
+                </a>
+                <a href="{{ path('notifications') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-bell mr-2"></i>Notifications
+                </a>
+                {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <a href="/admin" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-cogs mr-2"></i>Administration
+                    </a>
+                {% endif %}
+                <hr class="my-2">
                 <form method="post" action="{{ path('app_logout') }}">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
                     <button type="submit"
                             class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                        Déconnexion
+                        <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
                     </button>
                 </form>
             {% else %}

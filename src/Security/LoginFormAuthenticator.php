@@ -43,7 +43,8 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('homepage'));
+        // Rediriger vers Mes Risques au lieu du dashboard
+        return new RedirectResponse($this->urlGenerator->generate('mes_risques'));
     }
 
     protected function getLoginUrl(Request $request): string

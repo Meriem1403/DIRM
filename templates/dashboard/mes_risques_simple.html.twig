@@ -1,0 +1,273 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Risques{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div style="min-height: 100vh; background-color: #f0f0f0; padding: 20px;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        
+        <!-- Header -->
+        <div style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 style="font-size: 2rem; font-weight: bold; color: #000000; margin: 0;">Bonjour {{ app.user.prenom }} {{ app.user.nom }}</h1>
+                    <p style="color: #666666; margin: 10px 0 0 0;">{{ app.user.poste }} - {{ userService.nom }}</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a href="{{ path('notifications') }}" style="background-color: #2563eb; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="{{ path('app_logout') }}" style="background-color: #6b7280; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages flash -->
+        {% for message in app.flashes('success') %}
+        <div style="margin-bottom: 20px; background-color: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 15px; border-radius: 5px;">
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+
+        <!-- Navigation principale -->
+        <div style="margin-bottom: 30px;">
+            <div style="background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 30px;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: #000000; margin-bottom: 20px;">Navigation</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    
+                    <!-- Statistiques du service -->
+                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border: 1px solid #cbd5e1; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <div style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; padding: 14px; margin-right: 16px; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);">
+                                <i class="fas fa-chart-bar" style="color: white; font-size: 18px;"></i>
+                            </div>
+                            <h3 style="font-size: 1.3rem; font-weight: 700; color: #1e293b; margin: 0;">Statistiques du Service</h3>
+                        </div>
+                        
+                        <!-- Statistiques principales -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                            <div style="text-align: center; padding: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <div style="font-size: 2rem; font-weight: 800; color: #1e40af; margin-bottom: 6px;">{{ risques|length }}</div>
+                                <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Risques</div>
+                            </div>
+                            <div style="text-align: center; padding: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <div style="font-size: 2rem; font-weight: 800; color: #dc2626; margin-bottom: 6px;">{{ risques|filter(r => r.statut == 'en_cours')|length }}</div>
+                                <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">En Cours</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Détail par niveau de risque -->
+                        <div style="margin-bottom: 16px;">
+                            <h4 style="font-size: 15px; font-weight: 700; color: #374151; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">Par niveau de risque</h4>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 8px; border-left: 4px solid #dc2626;">
+                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation-triangle" style="color: #dc2626; margin-right: 6px;"></i>Critiques</span>
+                                    <span style="font-weight: 800; color: #dc2626; font-size: 16px;">{{ risques|filter(r => r.niveauRisque == 'critique')|length }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%); border-radius: 8px; border-left: 4px solid #ea580c;">
+                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation-circle" style="color: #ea580c; margin-right: 6px;"></i>Élevés</span>
+                                    <span style="font-weight: 800; color: #ea580c; font-size: 16px;">{{ risques|filter(r => r.niveauRisque == 'élevé')|length }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #fefce8 0%, #fde68a 100%); border-radius: 8px; border-left: 4px solid #ca8a04;">
+                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation" style="color: #ca8a04; margin-right: 6px;"></i>Moyens</span>
+                                    <span style="font-weight: 800; color: #ca8a04; font-size: 16px;">{{ risques|filter(r => r.niveauRisque == 'moyen')|length }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); border-radius: 8px; border-left: 4px solid #16a34a;">
+                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-check-circle" style="color: #16a34a; margin-right: 6px;"></i>Faibles</span>
+                                    <span style="font-weight: 800; color: #16a34a; font-size: 16px;">{{ risques|filter(r => r.niveauRisque == 'faible')|length }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Détail par statut -->
+                        <div>
+                            <h4 style="font-size: 15px; font-weight: 700; color: #374151; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">Par statut</h4>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 8px; border-left: 4px solid #2563eb;">
+                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-clock" style="color: #2563eb; margin-right: 6px;"></i>En cours</span>
+                                    <span style="font-weight: 800; color: #2563eb; font-size: 16px;">{{ risques|filter(r => r.statut == 'en_cours')|length }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); border-radius: 8px; border-left: 4px solid #16a34a;">
+                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-check" style="color: #16a34a; margin-right: 6px;"></i>Traités</span>
+                                    <span style="font-weight: 800; color: #16a34a; font-size: 16px;">{{ risques|filter(r => r.statut == 'traité')|length }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #fefce8 0%, #fde68a 100%); border-radius: 8px; border-left: 4px solid #ca8a04;">
+                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-eye" style="color: #ca8a04; margin-right: 6px;"></i>Surveillés</span>
+                                    <span style="font-weight: 800; color: #ca8a04; font-size: 16px;">{{ risques|filter(r => r.statut == 'surveillé')|length }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 8px; border-left: 4px solid #64748b;">
+                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-archive" style="color: #64748b; margin-right: 6px;"></i>Archivés</span>
+                                    <span style="font-weight: 800; color: #64748b; font-size: 16px;">{{ risques|filter(r => r.statut == 'archivé')|length }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions rapides -->
+                    <div style="background-color: #dcfce7; border: 1px solid #22c55e; border-radius: 10px; padding: 20px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <div style="background-color: #bbf7d0; border-radius: 50%; padding: 10px; margin-right: 15px;">
+                                <i class="fas fa-bolt" style="color: #22c55e; font-size: 16px;"></i>
+                            </div>
+                            <h3 style="font-size: 1.2rem; font-weight: 600; color: #000000; margin: 0;">Actions Rapides</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <a href="{{ path('app_demandes') }}" style="display: block; width: 100%; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
+                                <i class="fas fa-file-alt"></i> Vos Démarches
+                            </a>
+                            <a href="{{ path('aide_contact') }}" style="display: block; width: 100%; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
+                                <i class="fas fa-question-circle"></i> Aide & Contact
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard global -->
+                    <div style="background-color: #f3e8ff; border: 1px solid #a855f7; border-radius: 10px; padding: 20px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <div style="background-color: #e9d5ff; border-radius: 50%; padding: 10px; margin-right: 15px;">
+                                <i class="fas fa-tachometer-alt" style="color: #a855f7; font-size: 16px;"></i>
+                            </div>
+                            <h3 style="font-size: 1.2rem; font-weight: 600; color: #000000; margin: 0;">Dashboard Global</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <a href="/goudurix-dashboard" style="display: block; width: 100%; background-color: #a855f7; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
+                                <i class="fas fa-chart-line"></i> Vue d'Ensemble
+                            </a>
+                            <a href="/services" style="display: block; width: 100%; background-color: #a855f7; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
+                                <i class="fas fa-th-large"></i> Cartes Services
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Administration (si admin) -->
+                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <div style="background-color: #fef2f2; border: 1px solid #ef4444; border-radius: 10px; padding: 20px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <div style="background-color: #fecaca; border-radius: 50%; padding: 10px; margin-right: 15px;">
+                                <i class="fas fa-cogs" style="color: #ef4444; font-size: 16px;"></i>
+                            </div>
+                            <h3 style="font-size: 1.2rem; font-weight: 600; color: #000000; margin: 0;">Administration</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <a href="/admin" style="display: block; width: 100%; background-color: #ef4444; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
+                                <i class="fas fa-tools"></i> Interface Admin
+                            </a>
+                            <a href="/admin/retours-action" style="display: block; width: 100%; background-color: #ef4444; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
+                                <i class="fas fa-comments"></i> Retours d'Action
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des risques -->
+        <div style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: #000000; margin: 0;">Risques de votre service</h2>
+                <span style="background-color: #dbeafe; color: #1e40af; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500;">
+                    {{ risques|length }} risque(s)
+                </span>
+            </div>
+            
+            {% if risques|length > 0 %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            {% for risque in risques %}
+            <div style="background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; padding: 24px;">
+                <!-- Header de la carte -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <div style="flex: 1;">
+                        <h3 style="font-size: 1.2rem; font-weight: 600; color: #000000; margin: 0 0 8px 0;">{{ risque.titre }}</h3>
+                        <p style="font-size: 14px; color: #6b7280; margin: 0;">{{ risque.service.nom }}</p>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Badge niveau de risque -->
+                        <span style="display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+                            {% if risque.niveauRisque == 'critique' %}background-color: #fef2f2; color: #dc2626;
+                            {% elseif risque.niveauRisque == 'élevé' %}background-color: #fff7ed; color: #ea580c;
+                            {% elseif risque.niveauRisque == 'moyen' %}background-color: #fefce8; color: #ca8a04;
+                            {% else %}background-color: #f0fdf4; color: #16a34a;{% endif %}">
+                            ⚠️ {{ risque.niveauRisque|capitalize }}
+                        </span>
+                        
+                        <!-- Badge statut -->
+                        <span style="display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+                            {% if risque.statut == 'en_cours' %}background-color: #eff6ff; color: #2563eb;
+                            {% elseif risque.statut == 'traité' %}background-color: #f0fdf4; color: #16a34a;
+                            {% elseif risque.statut == 'surveillé' %}background-color: #fefce8; color: #ca8a04;
+                            {% else %}background-color: #f9fafb; color: #374151;{% endif %}">
+                            {% if risque.statut == 'en_cours' %}<i class="fas fa-clock"></i>
+                            {% elseif risque.statut == 'traité' %}<i class="fas fa-check"></i>
+                            {% elseif risque.statut == 'surveillé' %}<i class="fas fa-eye"></i>
+                            {% else %}<i class="fas fa-archive"></i>{% endif %} {{ risque.statut|replace({'_': ' '})|capitalize }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <p style="font-size: 14px; color: #374151; margin-bottom: 16px;">{{ risque.description|slice(0, 120) }}{% if risque.description|length > 120 %}...{% endif %}</p>
+
+                <!-- Informations -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px; margin-bottom: 16px;">
+                    <div>
+                        <span style="color: #6b7280;">Responsable:</span>
+                        <p style="font-weight: 500; color: #000000; margin: 4px 0 0 0;">{{ risque.responsable.nom }} {{ risque.responsable.prenom }}</p>
+                    </div>
+                    <div>
+                        <span style="color: #6b7280;">Date détection:</span>
+                        <p style="font-weight: 500; color: #000000; margin: 4px 0 0 0;">{{ risque.dateDetection|date('d/m/Y') }}</p>
+                    </div>
+                    {% if risque.scoreRisque %}
+                    <div>
+                        <span style="color: #6b7280;">Score:</span>
+                        <p style="font-weight: 500; color: #000000; margin: 4px 0 0 0;">{{ risque.scoreRisque }}/25</p>
+                    </div>
+                    {% endif %}
+                    {% if risque.mesureEnCours %}
+                    <div>
+                        <span style="color: #6b7280;">Mesure:</span>
+                        <p style="font-weight: 500; margin: 4px 0 0 0;">
+                            {% if risque.mesureMiseEnPlace %}
+                                <span style="color: #16a34a;"><i class="fas fa-check"></i> En place</span>
+                            {% else %}
+                                <span style="color: #ca8a04;"><i class="fas fa-clock"></i> En cours</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Actions -->
+                <div style="display: flex; gap: 8px;">
+                    <a href="/risque/{{ risque.id }}" style="flex: 1; background-color: #2563eb; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px;">
+                        <i class="fas fa-eye"></i> Consulter
+                    </a>
+                    {% if 'ROLE_CHEF' in app.user.roles %}
+                    <a href="/risque/{{ risque.id }}#retour-action" style="flex: 1; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px;">
+                        <i class="fas fa-comment"></i> Retour
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 48px;">
+                <div style="font-size: 4rem; color: #9ca3af; margin-bottom: 16px;"><i class="fas fa-shield-alt"></i></div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: #000000; margin-bottom: 8px;">Aucun risque dans votre service</h3>
+                <p style="color: #6b7280;">Votre service n'a pas encore de risques enregistrés.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

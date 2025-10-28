@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Retours d'Action{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Gestion des Retours d'Action</h1>
+            <p class="text-gray-600 mt-2">Validez ou refusez les retours d'action des chefs de service</p>
+        </div>
+
+        <!-- Messages flash -->
+        {% for message in app.flashes('success') %}
+        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+        {% endfor %}
+
+        <!-- Liste des retours en attente -->
+        {% if retoursEnAttente|length > 0 %}
+        <div class="space-y-6">
+            {% for retour in retoursEnAttente %}
+            <div class="bg-white rounded-lg shadow-md border border-yellow-200">
+                <div class="p-6">
+                    <!-- Header du retour -->
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                                Retour d'action pour : {{ retour.risque.titre }}
+                            </h3>
+                            <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                <span>
+                                    <i class="fas fa-user mr-1"></i>
+                                    {{ retour.auteur.nom }} {{ retour.auteur.prenom }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-building mr-1"></i>
+                                    {{ retour.risque.service.nom }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    {{ retour.dateCreation|date('d/m/Y à H:i') }}
+                                </span>
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                            <i class="fas fa-clock mr-1"></i>En attente
+                        </span>
+                    </div>
+
+                    <!-- Description du retour -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">Description des actions mises en place :</h4>
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <p class="text-gray-900">{{ retour.description }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Informations sur le risque -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">Informations sur le risque :</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <p class="text-sm font-medium text-blue-800">Niveau de risque</p>
+                                <p class="text-lg font-bold text-blue-900">{{ retour.risque.niveauRisque|capitalize }}</p>
+                            </div>
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                <p class="text-sm font-medium text-green-800">Statut actuel</p>
+                                <p class="text-lg font-bold text-green-900">{{ retour.risque.statut|replace({'_': ' '})|capitalize }}</p>
+                            </div>
+                            <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                <p class="text-sm font-medium text-purple-800">Responsable</p>
+                                <p class="text-lg font-bold text-purple-900">{{ retour.risque.responsable.nom }} {{ retour.risque.responsable.prenom }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions de validation -->
+                    <div class="flex space-x-4">
+                        <form action="{{ path('admin_retour_action_valider', {'id': retour.id}) }}" method="POST" class="flex-1">
+                            <div class="mb-3">
+                                <label for="commentaire_valide_{{ retour.id }}" class="block text-sm font-medium text-gray-700 mb-1">Commentaire (optionnel)</label>
+                                <textarea id="commentaire_valide_{{ retour.id }}" name="commentaire" rows="2" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    placeholder="Commentaire de validation..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-300">
+                                <i class="fas fa-check mr-2"></i>Valider le Retour
+                            </button>
+                        </form>
+
+                        <form action="{{ path('admin_retour_action_refuser', {'id': retour.id}) }}" method="POST" class="flex-1">
+                            <div class="mb-3">
+                                <label for="commentaire_refuse_{{ retour.id }}" class="block text-sm font-medium text-gray-700 mb-1">Motif du refus</label>
+                                <textarea id="commentaire_refuse_{{ retour.id }}" name="commentaire" rows="2" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    placeholder="Expliquez pourquoi ce retour est refusé..." required></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-300">
+                                <i class="fas fa-times mr-2"></i>Refuser le Retour
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucun retour d'action en attente</h3>
+            <p class="text-gray-600">Tous les retours d'action ont été traités.</p>
+        </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div class="mt-8 flex justify-center">
+            <a href="/admin/goudurix" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>Retour aux Risques
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

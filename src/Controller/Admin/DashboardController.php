@@ -138,10 +138,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Demandes de mobilité', 'fas fa-exchange-alt', DemandeMobilite::class);
         yield MenuItem::linkToCrud('Déclarations chantier', 'fas fa-anchor', DeclarationChantier::class);
 
-        yield MenuItem::section('Gestion des Risques');
-        yield MenuItem::linkToUrl('Dashboard Risques', 'fas fa-tachometer-alt', '/goudurix-dashboard')->setLinkTarget('_blank');
-        yield MenuItem::linkToCrud('Risques Goudurix', 'fas fa-exclamation-triangle', Goudurix::class);
-        yield MenuItem::linkToUrl('Cartes des Services', 'fas fa-th-large', '/services')->setLinkTarget('_blank');
+            yield MenuItem::section('Gestion des Risques');
+            yield MenuItem::linkToUrl('Dashboard Risques', 'fas fa-tachometer-alt', '/goudurix-dashboard')->setLinkTarget('_blank');
+            yield MenuItem::linkToCrud('Risques Goudurix', 'fas fa-exclamation-triangle', Goudurix::class);
+            yield MenuItem::linkToUrl('Retours d\'Action', 'fas fa-comments', '/admin/retours-action')->setLinkTarget('_blank');
+            yield MenuItem::linkToUrl('Cartes des Services', 'fas fa-th-large', '/services')->setLinkTarget('_blank');
 
         yield MenuItem::section('Accès rapide');
         yield MenuItem::linkToUrl('Retour au site', 'fas fa-home', '/')->setLinkTarget('_blank');
