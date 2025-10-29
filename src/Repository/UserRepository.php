@@ -31,13 +31,20 @@ class UserRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByRole(string $role): array
+    {
+        // Les rôles sont stockés en JSON dans Symfony
+        // On récupère tous les utilisateurs et on filtre en PHP pour être compatible avec toutes les BDD
+        $allUsers = $this->findAll();
+        $usersWithRole = [];
+        
+        foreach ($allUsers as $user) {
+            $roles = $user->getRoles();
+            if (in_array($role, $roles, true)) {
+                $usersWithRole[] = $user;
+            }
+        }
+        
+        return $usersWithRole;
+    }
 }

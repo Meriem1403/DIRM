@@ -85,10 +85,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: DemandeHabilitationCerbere::class, mappedBy: 'validePar')]
     private Collection $demandeHabilitationCerberes;
 
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'destinataire')]
+    private Collection $notifications;
+
     public function __construct()
     {
         $this->createdUsers = new ArrayCollection();
         $this->demandeHabilitationCerberes = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -387,5 +391,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getFullName(): string
     {
         return trim($this->nom . ' ' . $this->prenom);
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setDestinataire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            if ($notification->getDestinataire() === $this) {
+                $notification->setDestinataire(null);
+            }
+        }
+
+        return $this;
     }
 }

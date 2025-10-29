@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes Risques{% endblock %}
+{% block title %}Risques{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -19,8 +19,13 @@
                     <p style="color: #666666; margin: 10px 0 0 0;">{{ app.user.poste }} - {{ userService.nom }}</p>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <a href="{{ path('notifications') }}" style="background-color: #2563eb; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                    <a href="{{ path('notifications') }}" style="background-color: #2563eb; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; position: relative;">
                         <i class="fas fa-bell"></i> Notifications
+                        {% if app.user.notifications|filter(n => not n.lu)|length > 0 %}
+                        <span style="position: absolute; top: -5px; right: -5px; background-color: #dc2626; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center;">
+                            {{ app.user.notifications|filter(n => not n.lu)|length }}
+                        </span>
+                        {% endif %}
                     </a>
                     <a href="{{ path('app_logout') }}" style="background-color: #6b7280; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
                         <i class="fas fa-sign-out-alt"></i> Déconnexion
@@ -39,129 +44,84 @@
         <!-- Navigation principale -->
         <div style="margin-bottom: 30px;">
             <div style="background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 30px;">
-                <h2 style="font-size: 1.5rem; font-weight: 600; color: #000000; margin-bottom: 20px;">Navigation</h2>
                 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                    
-                    <!-- Statistiques du service -->
-                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border: 1px solid #cbd5e1; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                            <div style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 50%; padding: 14px; margin-right: 16px; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);">
-                                <i class="fas fa-chart-bar" style="color: white; font-size: 18px;"></i>
-                            </div>
-                            <h3 style="font-size: 1.3rem; font-weight: 700; color: #1e293b; margin: 0;">Statistiques du Service</h3>
+                <!-- Statistiques du service - sur une ligne -->
+                <div style="margin-bottom: 30px;">
+                    <h3 style="font-size: 1.3rem; font-weight: 600; color: #1e293b; margin: 0 0 20px 0;">Statistiques de votre service</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 10px; border: 2px solid #dc2626;">
+                            <div style="font-size: 2.5rem; font-weight: 800; color: #dc2626; margin-bottom: 8px;">{{ risques|filter(r => r.niveauRisque == 'critique')|length }}</div>
+                            <div style="font-size: 14px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation-triangle" style="color: #dc2626; margin-right: 6px;"></i>Critiques</div>
                         </div>
-                        
-                        <!-- Statistiques principales -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-                            <div style="text-align: center; padding: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                                <div style="font-size: 2rem; font-weight: 800; color: #1e40af; margin-bottom: 6px;">{{ risques|length }}</div>
-                                <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Risques</div>
-                            </div>
-                            <div style="text-align: center; padding: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                                <div style="font-size: 2rem; font-weight: 800; color: #dc2626; margin-bottom: 6px;">{{ risques|filter(r => r.statut == 'en_cours')|length }}</div>
-                                <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">En Cours</div>
-                            </div>
+                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%); border-radius: 10px; border: 2px solid #ea580c;">
+                            <div style="font-size: 2.5rem; font-weight: 800; color: #ea580c; margin-bottom: 8px;">{{ risques|filter(r => r.niveauRisque == 'élevé')|length }}</div>
+                            <div style="font-size: 14px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation-circle" style="color: #ea580c; margin-right: 6px;"></i>Élevés</div>
                         </div>
-                        
-                        <!-- Détail par niveau de risque -->
-                        <div style="margin-bottom: 16px;">
-                            <h4 style="font-size: 15px; font-weight: 700; color: #374151; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">Par niveau de risque</h4>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 8px; border-left: 4px solid #dc2626;">
-                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation-triangle" style="color: #dc2626; margin-right: 6px;"></i>Critiques</span>
-                                    <span style="font-weight: 800; color: #dc2626; font-size: 16px;">{{ risques|filter(r => r.niveauRisque == 'critique')|length }}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%); border-radius: 8px; border-left: 4px solid #ea580c;">
-                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation-circle" style="color: #ea580c; margin-right: 6px;"></i>Élevés</span>
-                                    <span style="font-weight: 800; color: #ea580c; font-size: 16px;">{{ risques|filter(r => r.niveauRisque == 'élevé')|length }}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #fefce8 0%, #fde68a 100%); border-radius: 8px; border-left: 4px solid #ca8a04;">
-                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation" style="color: #ca8a04; margin-right: 6px;"></i>Moyens</span>
-                                    <span style="font-weight: 800; color: #ca8a04; font-size: 16px;">{{ risques|filter(r => r.niveauRisque == 'moyen')|length }}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); border-radius: 8px; border-left: 4px solid #16a34a;">
-                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-check-circle" style="color: #16a34a; margin-right: 6px;"></i>Faibles</span>
-                                    <span style="font-weight: 800; color: #16a34a; font-size: 16px;">{{ risques|filter(r => r.niveauRisque == 'faible')|length }}</span>
-                                </div>
-                            </div>
+                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 10px; border: 2px solid #2563eb;">
+                            <div style="font-size: 2.5rem; font-weight: 800; color: #2563eb; margin-bottom: 8px;">{{ risques|filter(r => r.statut == 'en_cours')|length }}</div>
+                            <div style="font-size: 14px; color: #374151; font-weight: 600;"><i class="fas fa-clock" style="color: #2563eb; margin-right: 6px;"></i>En cours</div>
                         </div>
-                        
-                        <!-- Détail par statut -->
-                        <div>
-                            <h4 style="font-size: 15px; font-weight: 700; color: #374151; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">Par statut</h4>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 8px; border-left: 4px solid #2563eb;">
-                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-clock" style="color: #2563eb; margin-right: 6px;"></i>En cours</span>
-                                    <span style="font-weight: 800; color: #2563eb; font-size: 16px;">{{ risques|filter(r => r.statut == 'en_cours')|length }}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); border-radius: 8px; border-left: 4px solid #16a34a;">
-                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-check" style="color: #16a34a; margin-right: 6px;"></i>Traités</span>
-                                    <span style="font-weight: 800; color: #16a34a; font-size: 16px;">{{ risques|filter(r => r.statut == 'traité')|length }}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #fefce8 0%, #fde68a 100%); border-radius: 8px; border-left: 4px solid #ca8a04;">
-                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-eye" style="color: #ca8a04; margin-right: 6px;"></i>Surveillés</span>
-                                    <span style="font-weight: 800; color: #ca8a04; font-size: 16px;">{{ risques|filter(r => r.statut == 'surveillé')|length }}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 8px; border-left: 4px solid #64748b;">
-                                    <span style="font-size: 13px; color: #374151; font-weight: 600;"><i class="fas fa-archive" style="color: #64748b; margin-right: 6px;"></i>Archivés</span>
-                                    <span style="font-weight: 800; color: #64748b; font-size: 16px;">{{ risques|filter(r => r.statut == 'archivé')|length }}</span>
-                                </div>
-                            </div>
+                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); border-radius: 10px; border: 2px solid #16a34a;">
+                            <div style="font-size: 2.5rem; font-weight: 800; color: #16a34a; margin-bottom: 8px;">{{ risques|filter(r => r.statut == 'traité')|length }}</div>
+                            <div style="font-size: 14px; color: #374151; font-weight: 600;"><i class="fas fa-check" style="color: #16a34a; margin-right: 6px;"></i>Traités</div>
                         </div>
                     </div>
-
+                </div>
+                
+                <!-- Actions rapides, Dashboard et Administration - sur une ligne -->
+                <div style="display: grid; grid-template-columns: {% if 'ROLE_ADMIN' in app.user.roles %}repeat(3, 1fr){% else %}repeat(2, 1fr){% endif %}; gap: 20px;">
+                    
                     <!-- Actions rapides -->
-                    <div style="background-color: #dcfce7; border: 1px solid #22c55e; border-radius: 10px; padding: 20px;">
-                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                            <div style="background-color: #bbf7d0; border-radius: 50%; padding: 10px; margin-right: 15px;">
-                                <i class="fas fa-bolt" style="color: #22c55e; font-size: 16px;"></i>
+                    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);">
+                        <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                            <div style="background-color: #22c55e; border-radius: 50%; padding: 12px; margin-right: 12px;">
+                                <i class="fas fa-bolt" style="color: white; font-size: 18px;"></i>
                             </div>
-                            <h3 style="font-size: 1.2rem; font-weight: 600; color: #000000; margin: 0;">Actions Rapides</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 600; color: #000000; margin: 0;">Actions rapides</h3>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="{{ path('app_demandes') }}" style="display: block; width: 100%; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
-                                <i class="fas fa-file-alt"></i> Vos Démarches
+                            <a href="{{ path('app_demandes') }}" style="display: block; width: 100%; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
+                                <i class="fas fa-file-alt"></i> Démarches
                             </a>
-                            <a href="{{ path('aide_contact') }}" style="display: block; width: 100%; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
-                                <i class="fas fa-question-circle"></i> Aide & Contact
+                            <a href="{{ path('aide_contact') }}" style="display: block; width: 100%; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
+                                <i class="fas fa-question-circle"></i> Aide & contact
                             </a>
                         </div>
                     </div>
 
                     <!-- Dashboard global -->
-                    <div style="background-color: #f3e8ff; border: 1px solid #a855f7; border-radius: 10px; padding: 20px;">
-                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                            <div style="background-color: #e9d5ff; border-radius: 50%; padding: 10px; margin-right: 15px;">
-                                <i class="fas fa-tachometer-alt" style="color: #a855f7; font-size: 16px;"></i>
+                    <div style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: 2px solid #6b7280; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(107, 114, 128, 0.2);">
+                        <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                            <div style="background-color: #6b7280; border-radius: 50%; padding: 12px; margin-right: 12px;">
+                                <i class="fas fa-tachometer-alt" style="color: white; font-size: 18px;"></i>
                             </div>
-                            <h3 style="font-size: 1.2rem; font-weight: 600; color: #000000; margin: 0;">Dashboard Global</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 600; color: #000000; margin: 0;">Dashboard</h3>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="/goudurix-dashboard" style="display: block; width: 100%; background-color: #a855f7; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
-                                <i class="fas fa-chart-line"></i> Vue d'Ensemble
+                            <a href="/goudurix-dashboard" style="display: block; width: 100%; background-color: #6b7280; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
+                                <i class="fas fa-chart-line"></i> Vue d'ensemble
                             </a>
-                            <a href="/services" style="display: block; width: 100%; background-color: #a855f7; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
-                                <i class="fas fa-th-large"></i> Cartes Services
+                            <a href="/services" style="display: block; width: 100%; background-color: #6b7280; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
+                                <i class="fas fa-th-large"></i> Cartes services
                             </a>
                         </div>
                     </div>
 
                     <!-- Administration (si admin) -->
                     {% if 'ROLE_ADMIN' in app.user.roles %}
-                    <div style="background-color: #fef2f2; border: 1px solid #ef4444; border-radius: 10px; padding: 20px;">
-                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                            <div style="background-color: #fecaca; border-radius: 50%; padding: 10px; margin-right: 15px;">
-                                <i class="fas fa-cogs" style="color: #ef4444; font-size: 16px;"></i>
+                    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);">
+                        <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                            <div style="background-color: #3b82f6; border-radius: 50%; padding: 12px; margin-right: 12px;">
+                                <i class="fas fa-cogs" style="color: white; font-size: 18px;"></i>
                             </div>
-                            <h3 style="font-size: 1.2rem; font-weight: 600; color: #000000; margin: 0;">Administration</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 600; color: #000000; margin: 0;">Administration</h3>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="/admin" style="display: block; width: 100%; background-color: #ef4444; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
-                                <i class="fas fa-tools"></i> Interface Admin
+                            <a href="/admin" style="display: block; width: 100%; background-color: #3b82f6; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
+                                <i class="fas fa-tools"></i> Interface admin
                             </a>
-                            <a href="/admin/retours-action" style="display: block; width: 100%; background-color: #ef4444; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px; font-weight: bold;">
-                                <i class="fas fa-comments"></i> Retours d'Action
+                            <a href="/admin/retours-action" style="display: block; width: 100%; background-color: #3b82f6; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
+                                <i class="fas fa-comments"></i> Retours d'action
                             </a>
                         </div>
                     </div>
@@ -196,7 +156,7 @@
                             {% elseif risque.niveauRisque == 'élevé' %}background-color: #fff7ed; color: #ea580c;
                             {% elseif risque.niveauRisque == 'moyen' %}background-color: #fefce8; color: #ca8a04;
                             {% else %}background-color: #f0fdf4; color: #16a34a;{% endif %}">
-                            ⚠️ {{ risque.niveauRisque|capitalize }}
+                            <i class="fas fa-exclamation-triangle"></i> {{ risque.niveauRisque }}
                         </span>
                         
                         <!-- Badge statut -->
@@ -208,7 +168,7 @@
                             {% if risque.statut == 'en_cours' %}<i class="fas fa-clock"></i>
                             {% elseif risque.statut == 'traité' %}<i class="fas fa-check"></i>
                             {% elseif risque.statut == 'surveillé' %}<i class="fas fa-eye"></i>
-                            {% else %}<i class="fas fa-archive"></i>{% endif %} {{ risque.statut|replace({'_': ' '})|capitalize }}
+                            {% else %}<i class="fas fa-archive"></i>{% endif %} {{ risque.statut|replace({'_': ' '}) }}
                         </span>
                     </div>
                 </div>
@@ -248,11 +208,11 @@
 
                 <!-- Actions -->
                 <div style="display: flex; gap: 8px;">
-                    <a href="/risque/{{ risque.id }}" style="flex: 1; background-color: #2563eb; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px;">
+                    <a href="/risque-detail/{{ risque.id }}" style="flex: 1; background-color: #2563eb; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px;">
                         <i class="fas fa-eye"></i> Consulter
                     </a>
                     {% if 'ROLE_CHEF' in app.user.roles %}
-                    <a href="/risque/{{ risque.id }}#retour-action" style="flex: 1; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px;">
+                    <a href="/risque-detail/{{ risque.id }}#retour-action" style="flex: 1; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px;">
                         <i class="fas fa-comment"></i> Retour
                     </a>
                     {% endif %}

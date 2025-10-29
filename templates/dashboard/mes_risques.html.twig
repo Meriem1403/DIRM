@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes Risques{% endblock %}
+{% block title %}Mes risques{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -101,10 +101,10 @@
                             </div>
                             
                             <a href="{{ path('app_demandes') }}" class="block w-full bg-green-600 px-3 py-2 rounded-md hover:bg-green-700 transition-colors duration-300 text-center text-sm font-bold" style="color: #ffffff !important;">
-                                <i class="fas fa-file-alt mr-1"></i>Vos Démarches
+                                <i class="fas fa-file-alt mr-1"></i>Vos démarches
                             </a>
                             <a href="{{ path('aide_contact') }}" class="block w-full bg-green-600 px-3 py-2 rounded-md hover:bg-green-700 transition-colors duration-300 text-center text-sm font-bold" style="color: #ffffff !important;">
-                                <i class="fas fa-question-circle mr-1"></i>Aide & Contact
+                                <i class="fas fa-question-circle mr-1"></i>Aide & contact
                             </a>
                         </div>
                     </div>
@@ -257,7 +257,7 @@
 
                 <!-- Actions -->
                 <div class="flex space-x-2">
-                    <a href="/risque/{{ risque.id }}" 
+                    <a href="/risque-detail/{{ risque.id }}" 
                        class="flex-1 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 text-center text-sm">
                         <i class="fas fa-eye mr-1"></i>Consulter
                     </a>

@@ -1,35 +1,47 @@
 {# templates/home/partials/_header.html.twig #}
-<header class="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-md shadow-md fixed w-full z-50">
+<header class="flex items-center justify-between px-4 sm:px-6 py-4 bg-white/80 backdrop-blur-md shadow-md fixed w-full z-50">
     <!-- Logo + Navigation -->
-    <div class="flex items-center space-x-6">
+    <div class="flex items-center space-x-4 sm:space-x-6 flex-1">
         <a href="{{ path('homepage') }}">
-            <img src="{{ asset('uploads/logo/logo.png') }}" alt="DIRM Logo" class="h-16">
+            <img src="{{ asset('uploads/logo/logo.png') }}" alt="DIRM Logo" class="h-12 sm:h-16">
         </a>
-        <nav class="hidden md:flex space-x-8 text-gray-800 font-medium text-lg">
-            <a href="{{ path('homepage') }}" class="hover:text-blue-600">Accueil</a>
-            <a href="{{ path('app_demandes') }}" class="hover:text-blue-600">Vos démarches</a>
-            <a href="{{ path('aide_contact') }}" class="hover:text-blue-600">Aide & Contact</a>
+        
+        <!-- Navigation Desktop -->
+        <nav class="hidden lg:flex space-x-6 xl:space-x-8 text-gray-800 font-medium text-base xl:text-lg">
+            <a href="{{ path('homepage') }}" class="hover:text-blue-600 transition-colors">Accueil</a>
+            <a href="{{ path('app_demandes') }}" class="hover:text-blue-600 transition-colors">Démarches</a>
             {% if app.user %}
-                <a href="{{ path('mes_risques') }}" class="hover:text-blue-600">Mes Risques</a>
+                <a href="{{ path('mes_risques') }}" class="hover:text-blue-600 transition-colors">Risques</a>
                 {% if 'ROLE_ADMIN' in app.user.roles %}
-                    <a href="/admin" class="hover:text-blue-600">Administration</a>
+                    <a href="/admin" class="hover:text-blue-600 transition-colors">Administration</a>
                 {% endif %}
             {% endif %}
+            <a href="{{ path('aide_contact') }}" class="hover:text-blue-600 transition-colors">Aide & contact</a>
         </nav>
     </div>
 
+    <!-- Menu Mobile Toggle -->
+    <button
+        type="button"
+        id="mobile-menu-toggle"
+        class="lg:hidden flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+        aria-label="Menu"
+    >
+        <i class="fas fa-bars text-xl"></i>
+    </button>
+
     <!-- Compte utilisateur -->
-    <div data-controller="account-dropdown" class="relative">
+    <div data-controller="account-dropdown" class="relative hidden sm:block ml-4">
         <button
             type="button"
             data-action="account-dropdown#toggle"
-            class="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+            class="flex items-center space-x-2 px-3 xl:px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
         >
             <i class="fas fa-user text-gray-700"></i>
             {% if app.user %}
-                <span class="font-semibold text-gray-800">{{ app.user.fullName }}</span>
+                <span class="hidden md:inline font-semibold text-gray-800 text-sm xl:text-base">{{ app.user.fullName }}</span>
             {% else %}
-                <span class="font-semibold text-gray-800">Mon compte</span>
+                <span class="hidden md:inline font-semibold text-gray-800 text-sm xl:text-base">Mon compte</span>
             {% endif %}
             <i class="fas fa-chevron-down text-sm text-gray-500"></i>
         </button>
@@ -43,7 +55,7 @@
                     <i class="fas fa-home mr-2"></i>Accueil
                 </a>
                 <a href="{{ path('mes_risques') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>Mes Risques
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Risques
                 </a>
                 <a href="{{ path('notifications') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                     <i class="fas fa-bell mr-2"></i>Notifications
@@ -71,4 +83,141 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Menu Mobile Compte (visible seulement sur très petits écrans) -->
+    <div data-controller="account-dropdown" class="relative sm:hidden ml-2">
+        <button
+            type="button"
+            data-action="account-dropdown#toggle"
+            class="flex items-center justify-center p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+        >
+            <i class="fas fa-user text-gray-700"></i>
+        </button>
+        <div
+            data-account-dropdown-target="menu"
+            class="hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md z-50 py-2"
+        >
+            {% if app.user %}
+                <a href="{{ path('homepage') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-home mr-2"></i>Accueil
+                </a>
+                <a href="{{ path('mes_risques') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Risques
+                </a>
+                <a href="{{ path('notifications') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-bell mr-2"></i>Notifications
+                </a>
+                {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <a href="/admin" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-cogs mr-2"></i>Administration
+                    </a>
+                {% endif %}
+                <hr class="my-2">
+                <form method="post" action="{{ path('app_logout') }}">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                    <button type="submit"
+                            class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                    </button>
+                </form>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Connexion
+                </a>
+                <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Créer un compte
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Menu Mobile Navigation -->
+    <div
+        id="mobile-menu"
+        class="hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-40 lg:hidden"
+    >
+        <div class="absolute top-0 left-0 w-3/4 sm:w-1/2 h-full bg-white shadow-xl overflow-y-auto">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h2 class="text-lg font-semibold text-gray-800">Menu</h2>
+                <button
+                    id="mobile-menu-close"
+                    type="button"
+                    class="p-2 rounded-md text-gray-700 hover:bg-gray-100"
+                    aria-label="Fermer"
+                >
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <nav class="flex flex-col p-4 space-y-2">
+                <a href="{{ path('homepage') }}" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                    <i class="fas fa-home mr-2"></i>Accueil
+                </a>
+                <a href="{{ path('app_demandes') }}" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                    <i class="fas fa-file-alt mr-2"></i>Démarches
+                </a>
+                {% if app.user %}
+                    <a href="{{ path('mes_risques') }}" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Risques
+                    </a>
+                    <a href="{{ path('notifications') }}" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                        <i class="fas fa-bell mr-2"></i>Notifications
+                    </a>
+                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <a href="/admin" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                            <i class="fas fa-cogs mr-2"></i>Administration
+                        </a>
+                    {% endif %}
+                {% endif %}
+                <a href="{{ path('aide_contact') }}" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                    <i class="fas fa-question-circle mr-2"></i>Aide & contact
+                </a>
+                {% if app.user %}
+                    <hr class="my-2">
+                    <div class="px-4 py-2">
+                        <p class="text-sm font-semibold text-gray-800">{{ app.user.fullName }}</p>
+                        <p class="text-xs text-gray-600">{{ app.user.email }}</p>
+                    </div>
+                    <form method="post" action="{{ path('app_logout') }}">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                        <button type="submit"
+                                class="w-full text-left px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                        </button>
+                    </form>
+                {% else %}
+                    <hr class="my-2">
+                    <a href="{{ path('app_login') }}" class="block px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                        Connexion
+                    </a>
+                    <a href="{{ path('app_register') }}" class="block px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                        Créer un compte
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
 </header>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+        if (mobileMenuToggle && mobileMenu && mobileMenuClose) {
+            mobileMenuToggle.addEventListener('click', function() {
+                mobileMenu.classList.remove('hidden');
+            });
+
+            mobileMenuClose.addEventListener('click', function() {
+                mobileMenu.classList.add('hidden');
+            });
+
+            mobileMenu.addEventListener('click', function(e) {
+                if (e.target === mobileMenu) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        }
+    });
+</script>

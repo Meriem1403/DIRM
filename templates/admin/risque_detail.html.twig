@@ -11,6 +11,16 @@
             <span class="block sm:inline">{{ message }}</span>
         </div>
         {% endfor %}
+        {% for message in app.flashes('error') %}
+        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+        {% endfor %}
+        {% for message in app.flashes('warning') %}
+        <div class="mb-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+        {% endfor %}
 
         <!-- Header -->
         <div class="mb-8">
@@ -34,11 +44,16 @@
                         {% else %}bg-gray-100 text-gray-800{% endif %}">
                         {{ risque.statut|replace({'_': ' '})|capitalize }}
                     </span>
-                    {% if 'ROLE_CHEF' in app.user.roles and risque.mesureEnCours %}
-                    <button onclick="toggleRetourForm()" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300">
-                        <i class="fas fa-comment mr-2"></i>Retour d'Action
+                    
+                    {% if 'ROLE_ADMIN' in app.user.roles and not risque.mesureEnCours %}
+                    <button onclick="toggleMesureForm()" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300">
+                        <i class="fas fa-plus mr-2"></i>Ajouter une mesure
                     </button>
                     {% endif %}
+                    <a href="{{ path('mes_risques') }}" style="background-color: #4b5563 !important; color: #ffffff !important; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center;"
+                       onmouseover="this.style.backgroundColor='#374151'" onmouseout="this.style.backgroundColor='#4b5563'">
+                        <i class="fas fa-arrow-left mr-2"></i>Retour
+                    </a>
                 </div>
             </div>
         </div>
@@ -47,7 +62,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Description -->
             <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">Description du Risque</h2>
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Description</h2>
                 <p class="text-gray-700 leading-relaxed">{{ risque.description }}</p>
             </div>
 
@@ -79,77 +94,41 @@
             </div>
         </div>
 
-        <!-- Mesures et Retours d'Action -->
+        <!-- Mesures -->
         <div class="mt-8">
             <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-6">Mesures et Suivi</h2>
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Mesure</h2>
                 
-                <!-- Mesure en cours -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-3">Mesure en Cours</h3>
-                    
-                    {% if risque.mesureEnCours %}
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                        <p class="text-blue-900 mb-3">{{ risque.mesureEnCours }}</p>
-                        <div class="flex items-center justify-between">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                                {% if risque.mesureMiseEnPlace %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                                {% if risque.mesureMiseEnPlace %}✓ Mise en place{% else %}⏳ En cours{% endif %}
-                            </span>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Formulaire pour ajouter/modifier une mesure -->
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 class="text-md font-medium text-gray-900 mb-3">Ajouter/Modifier une Mesure</h4>
-                        <form action="{{ path('risque_add_mesure', {'id': risque.id}) }}" method="POST" class="space-y-4">
-                            <div>
-                                <label for="mesure_en_cours" class="block text-sm font-medium text-gray-700 mb-2">Description de la mesure</label>
-                                <textarea id="mesure_en_cours" name="mesure_en_cours" rows="3" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Décrivez la mesure préventive ou corrective...">{{ risque.mesureEnCours ?? '' }}</textarea>
-                            </div>
-                            <div class="flex items-center">
-                                <input type="checkbox" id="mesure_mise_en_place" name="mesure_mise_en_place" 
-                                    {% if risque.mesureMiseEnPlace %}checked{% endif %}
-                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                <label for="mesure_mise_en_place" class="ml-2 block text-sm text-gray-700">
-                                    Mesure effectivement mise en place
-                                </label>
-                            </div>
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
-                                <i class="fas fa-save mr-2"></i>Sauvegarder la Mesure
-                            </button>
-                        </form>
+                {% if risque.mesureEnCours %}
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <p class="text-blue-900 mb-3">{{ risque.mesureEnCours }}</p>
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                            {% if risque.mesureMiseEnPlace %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                            {% if risque.mesureMiseEnPlace %}✓ Mise en place{% else %}⏳ En cours{% endif %}
+                        </span>
                     </div>
                 </div>
+                {% else %}
+                <p class="text-gray-500">Aucune mesure définie pour ce risque.</p>
+                {% endif %}
 
                 <!-- Retours d'action -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-3">Retours d'Action</h3>
-                    
-                    <!-- Liste des retours d'action existants -->
-                    {% if risque.retoursAction|length > 0 %}
-                    <div class="mb-6 space-y-4">
+                {% if risque.retoursAction|length > 0 %}
+                <div class="bg-white rounded-lg shadow p-6 mt-8">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-comments mr-2"></i>Retours d'action
+                    </h2>
+                    <div class="space-y-4">
                         {% for retour in risque.retoursAction %}
-                        <div class="border rounded-lg p-4
-                            {% if retour.statut == 'validé' %}bg-green-50 border-green-200
-                            {% elseif retour.statut == 'refusé' %}bg-red-50 border-red-200
-                            {% else %}bg-yellow-50 border-yellow-200{% endif %}">
-                            <div class="flex items-start justify-between mb-2">
-                                <div class="flex-1">
-                                    <p class="text-gray-900 mb-2">{{ retour.description }}</p>
-                                    <div class="flex items-center space-x-4 text-sm text-gray-600">
-                                        <span>
-                                            <i class="fas fa-user mr-1"></i>
-                                            {{ retour.auteur.nom }} {{ retour.auteur.prenom }}
-                                        </span>
-                                        <span>
-                                            <i class="fas fa-calendar mr-1"></i>
-                                            {{ retour.dateCreation|date('d/m/Y à H:i') }}
-                                        </span>
-                                    </div>
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <p class="font-medium text-gray-900">{{ retour.auteur.prenom }} {{ retour.auteur.nom }}</p>
+                                    <p class="text-sm text-gray-500">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        {{ retour.dateCreation|date('d/m/Y à H:i') }}
+                                    </p>
                                 </div>
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
                                     {% if retour.statut == 'validé' %}bg-green-100 text-green-800
@@ -161,114 +140,122 @@
                                 </span>
                             </div>
                             
+                            <p class="text-gray-700 mb-3">{{ retour.description }}</p>
+                            
                             {% if retour.commentaireValidation %}
-                            <div class="mt-2 p-2 bg-gray-100 rounded text-sm">
+                            <div class="mt-3 p-3 bg-gray-50 rounded text-sm">
                                 <strong>Commentaire :</strong> {{ retour.commentaireValidation }}
+                            </div>
+                            {% endif %}
+                            
+                            {% if 'ROLE_ADMIN' in app.user.roles and retour.statut == 'en_attente' %}
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <form action="{{ path('admin_valider_retour', {'id': retour.id}) }}" method="POST" class="space-y-4">
+                                    <div>
+                                        <textarea name="commentaire" rows="3" 
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Commentaire (optionnel)"></textarea>
+                                    </div>
+                                    <div class="flex flex-wrap justify-end gap-3">
+                                        <button type="submit" name="action" value="remplacer" 
+                                            style="background-color: #2563eb !important; color: #ffffff !important; padding: 10px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; margin-left: 8px;"
+                                            onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
+                                            <i class="fas fa-exchange-alt mr-1"></i>Remplacer la mesure
+                                        </button>
+                                        <button type="submit" name="action" value="completer" 
+                                            style="background-color: #16a34a !important; color: #ffffff !important; padding: 10px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; margin-left: 8px;"
+                                            onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">
+                                            <i class="fas fa-plus-circle mr-1"></i>Compléter la mesure
+                                        </button>
+                                        <button type="submit" name="action" value="refuser" 
+                                            style="background-color: #dc2626 !important; color: #ffffff !important; padding: 10px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; margin-left: 8px;"
+                                            onmouseover="this.style.backgroundColor='#b91c1c'" onmouseout="this.style.backgroundColor='#dc2626'">
+                                            <i class="fas fa-times mr-1"></i>Refuser
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                             {% endif %}
                         </div>
                         {% endfor %}
                     </div>
-                    {% endif %}
-
-                    <!-- Formulaire pour ajouter un retour d'action -->
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 class="text-md font-medium text-gray-900 mb-3">Ajouter un Retour d'Action</h4>
-                        <form action="{{ path('risque_add_retour_action', {'id': risque.id}) }}" method="POST" class="space-y-4">
-                            <div>
-                                <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description des actions mises en place</label>
-                                <textarea id="description" name="description" rows="4" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                                    placeholder="Décrivez en détail les actions que vous avez mises en place pour traiter ce risque..."
-                                    required></textarea>
-                            </div>
-                            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-300">
-                                <i class="fas fa-paper-plane mr-2"></i>Envoyer le Retour d'Action
-                            </button>
-                        </form>
-                    </div>
                 </div>
-
-                <!-- Mise à jour du statut -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-3">Mise à Jour du Statut</h3>
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 class="text-md font-medium text-gray-900 mb-3">Modifier le Statut</h4>
-                        <form action="{{ path('risque_update_statut', {'id': risque.id}) }}" method="POST" class="space-y-4">
-                            <div>
-                                <label for="statut" class="block text-sm font-medium text-gray-700 mb-2">Nouveau statut</label>
-                                <select id="statut" name="statut" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                    <option value="en_cours" {% if risque.statut == 'en_cours' %}selected{% endif %}>En Cours</option>
-                                    <option value="traité" {% if risque.statut == 'traité' %}selected{% endif %}>Traité</option>
-                                    <option value="surveillé" {% if risque.statut == 'surveillé' %}selected{% endif %}>Surveillé</option>
-                                    <option value="archivé" {% if risque.statut == 'archivé' %}selected{% endif %}>Archivé</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="date_resolution" class="block text-sm font-medium text-gray-700 mb-2">Date de résolution (si traité)</label>
-                                <input type="date" id="date_resolution" name="date_resolution" 
-                                    value="{% if risque.dateResolution %}{{ risque.dateResolution|date('Y-m-d') }}{% endif %}"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            </div>
-                            <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors duration-300">
-                                <i class="fas fa-check mr-2"></i>Mettre à Jour le Statut
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex space-x-4">
-                    <a href="/admin/goudurix/{{ risque.id }}/edit" 
-                       class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
-                        <i class="fas fa-edit mr-2"></i>Modifier le Risque
-                    </a>
-                    <a href="/goudurix-dashboard" 
-                       class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
-                        <i class="fas fa-arrow-left mr-2"></i>Retour au Dashboard
-                    </a>
-                </div>
+                {% endif %}
             </div>
         </div>
 
-        <!-- Formulaire de retour d'action (masqué par défaut) -->
-        {% if 'ROLE_CHEF' in app.user.roles and risque.mesureEnCours %}
-        <div id="retourForm" class="mt-8 bg-white rounded-lg shadow p-6" style="display: none;">
+        <!-- Formulaire pour ajouter une mesure (admin seulement) -->
+        {% if 'ROLE_ADMIN' in app.user.roles and not risque.mesureEnCours %}
+        <div id="mesureForm" class="mt-8 bg-white rounded-lg shadow p-6" style="display: none;">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                <i class="fas fa-comment mr-2"></i>Ajouter un Retour d'Action
+                <i class="fas fa-plus mr-2"></i>Ajouter une mesure
             </h2>
-            <form action="{{ path('risque_add_retour_action', {'id': risque.id}) }}" method="POST" class="space-y-4">
+            <form action="{{ path('risque_add_mesure', {'id': risque.id}) }}" method="POST" class="space-y-4">
                 <div>
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                        Description des actions mises en place
+                    <label for="mesure_en_cours" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description de la mesure
                     </label>
-                    <textarea id="description" name="description" rows="4" 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="Décrivez en détail les actions que vous avez mises en place pour traiter ce risque..."
+                    <textarea id="mesure_en_cours" name="mesure_en_cours" rows="4" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Décrivez la mesure préventive ou corrective à mettre en place..."
                         required></textarea>
                 </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="mesure_mise_en_place" name="mesure_mise_en_place" 
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="mesure_mise_en_place" class="ml-2 block text-sm text-gray-700">
+                        Mesure déjà mise en place
+                    </label>
+                </div>
                 <div class="flex space-x-4">
-                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-300">
-                        <i class="fas fa-paper-plane mr-2"></i>Envoyer le Retour d'Action
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                        <i class="fas fa-save mr-2"></i>Enregistrer
                     </button>
-                    <button type="button" onclick="toggleRetourForm()" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
+                    <button type="button" onclick="toggleMesureForm()" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
                         <i class="fas fa-times mr-2"></i>Annuler
                     </button>
                 </div>
             </form>
         </div>
         {% endif %}
+
+        <!-- Formulaire de retour d'action pour les chefs -->
+        {% if 'ROLE_CHEF' in app.user.roles %}
+        <div class="mt-8 bg-green-50 border border-green-300 rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-comment mr-2"></i>Retour d'action
+            </h2>
+            {% if not risque.mesureEnCours %}
+            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                Aucune mesure n'est actuellement en cours pour ce risque. Contactez un administrateur pour ajouter une mesure.
+            </div>
+            {% else %}
+            <form action="{{ path('risque_add_retour_action', {'id': risque.id}) }}" method="POST" class="space-y-4">
+                <div>
+                    <textarea id="description_securite" name="description" rows="6" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Décrivez en détail les actions que vous avez mises en place pour traiter ce risque..."
+                        required></textarea>
+                </div>
+                <div class="mt-6">
+                    <button type="submit" style="width: 100%; background-color: #16a34a !important; color: #ffffff !important; padding: 16px 32px; border-radius: 8px; font-weight: bold; font-size: 18px; border: none; cursor: pointer;" onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">
+                        <i class="fas fa-paper-plane mr-2"></i>Envoyer
+                    </button>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
-function toggleRetourForm() {
-    const form = document.getElementById('retourForm');
-    if (form.style.display === 'none') {
+function toggleMesureForm() {
+    const form = document.getElementById('mesureForm');
+    if (form && form.style.display === 'none') {
         form.style.display = 'block';
         form.scrollIntoView({ behavior: 'smooth' });
-    } else {
+    } else if (form) {
         form.style.display = 'none';
     }
 }
