@@ -29,8 +29,9 @@
             visibility: visible !important;
             opacity: 1 !important;
         }
-        body {
-            padding-top: 80px !important;
+        /* Espacement entre header et contenu */
+        #main-content {
+            padding-top: 6rem !important; /* 96px - espace raisonnable sous le header */
         }
     </style>
 </head>
@@ -51,7 +52,7 @@
    pb-20 pour laisser de l'espace sous le contenu
    md:pb-24 en grand écran
    —————————————————————————————————————————————— #}
-<main id="main-content" class="pt-20 md:pt-24 pb-20 md:pb-24 min-h-screen">
+<main id="main-content" class="pb-20 min-h-screen">
     <div class="w-full max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         {% block body %}{% endblock %}
     </div>

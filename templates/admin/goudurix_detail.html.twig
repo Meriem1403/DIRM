@@ -1,22 +1,9 @@
 {% extends '@EasyAdmin/crud/detail.html.twig' %}
 
 {% block content_title %}
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Détail du Risque</h1>
-            <p class="text-sm text-gray-600 mt-1">Informations complètes sur le risque sélectionné</p>
-        </div>
-        <div class="flex space-x-2">
-            <a href="{{ ea_url().setAction('edit').setEntityId(entity.instance.id) }}" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-300">
-                <i class="fas fa-edit mr-2"></i>Modifier
-            </a>
-            <a href="/risque-detail/{{ entity.instance.instance.id }}" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors duration-300">
-                <i class="fas fa-external-link-alt mr-2"></i>Vue Détaillée
-            </a>
-            <a href="{{ ea_url().setAction('index') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300">
-                <i class="fas fa-arrow-left mr-2"></i>Retour
-            </a>
-        </div>
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Détail du Risque</h1>
+        <p class="text-sm text-gray-600 mt-1">Informations complètes sur le risque sélectionné</p>
     </div>
 {% endblock %}
 
@@ -28,9 +15,9 @@
             <div class="bg-white rounded-lg shadow p-6 mb-6">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <h2 class="text-3xl font-bold text-gray-900 mb-2">{{ entity.instance.instance.titre }}</h2>
-                        <p class="text-lg text-gray-600 mb-4">{{ entity.instance.instance.service.nom }}</p>
-                        <p class="text-gray-700 leading-relaxed">{{ entity.instance.instance.description }}</p>
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">{{ entity.instance.titre }}</h2>
+                        <p class="text-lg text-gray-600 mb-4">{{ entity.instance.service.nom }}</p>
+                        <p class="text-gray-700 leading-relaxed">{{ entity.instance.description }}</p>
                     </div>
                     <div class="flex flex-col space-y-3">
                         <!-- Badge niveau de risque -->
@@ -40,7 +27,7 @@
                             {% elseif entity.instance.niveauRisque == 'moyen' %}bg-yellow-100 text-yellow-800
                             {% else %}bg-green-100 text-green-800{% endif %}">
                             <i class="fas fa-exclamation-triangle mr-2"></i>
-                            {{ entity.instance.instance.niveauRisque|capitalize }}
+                            {{ entity.instance.niveauRisque|capitalize }}
                         </span>
                         
                         <!-- Badge statut -->
@@ -53,10 +40,10 @@
                             {% elseif entity.instance.statut == 'traité' %}<i class="fas fa-check mr-2"></i>
                             {% elseif entity.instance.statut == 'surveillé' %}<i class="fas fa-eye mr-2"></i>
                             {% else %}<i class="fas fa-archive mr-2"></i>{% endif %}
-                            {{ entity.instance.instance.statut|replace({'_': ' '})|capitalize }}
+                            {{ entity.instance.statut|replace({'_': ' '})|capitalize }}
                         </span>
 
-                        {% if entity.scoreRisque %}
+                        {% if entity.instance.scoreRisque %}
                         <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
                             <i class="fas fa-chart-line mr-2"></i>
                             Score: {{ entity.instance.scoreRisque }}/25
@@ -84,25 +71,25 @@
                             <dt class="text-sm font-medium text-gray-500">Date de détection</dt>
                             <dd class="text-gray-900">{{ entity.instance.dateDetection|date('d/m/Y') }}</dd>
                         </div>
-                        {% if entity.dateResolution %}
+                        {% if entity.instance.dateResolution %}
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Date de résolution</dt>
                             <dd class="text-gray-900">{{ entity.instance.dateResolution|date('d/m/Y') }}</dd>
                         </div>
                         {% endif %}
-                        {% if entity.lieu %}
+                        {% if entity.instance.lieu %}
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Lieu</dt>
                             <dd class="text-gray-900">{{ entity.instance.lieu.nom }}</dd>
                         </div>
                         {% endif %}
-                        {% if entity.categorie %}
+                        {% if entity.instance.categorie %}
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Catégorie</dt>
                             <dd class="text-gray-900">{{ entity.instance.categorie }}</dd>
                         </div>
                         {% endif %}
-                        {% if entity.source %}
+                        {% if entity.instance.source %}
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Source</dt>
                             <dd class="text-gray-900">{{ entity.instance.source }}</dd>
@@ -115,39 +102,39 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="text-xl font-semibold text-gray-900 mb-4">Évaluation du Risque</h3>
                     <dl class="space-y-4">
-                        {% if entity.probabilite %}
+                        {% if entity.instance.probabilite %}
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Probabilité</dt>
                             <dd class="text-gray-900">
                                 <div class="flex items-center">
                                     <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
-                                        <div class="bg-blue-600 h-2 rounded-full" style="width: {{ (entity.probabilite / 5) * 100 }}%"></div>
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: {{ (entity.instance.probabilite / 5) * 100 }}%"></div>
                                     </div>
                                     <span class="text-sm font-medium">{{ entity.instance.probabilite }}/5</span>
                                 </div>
                             </dd>
                         </div>
                         {% endif %}
-                        {% if entity.gravite %}
+                        {% if entity.instance.gravite %}
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Gravité</dt>
                             <dd class="text-gray-900">
                                 <div class="flex items-center">
                                     <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
-                                        <div class="bg-red-600 h-2 rounded-full" style="width: {{ (entity.gravite / 5) * 100 }}%"></div>
+                                        <div class="bg-red-600 h-2 rounded-full" style="width: {{ (entity.instance.gravite / 5) * 100 }}%"></div>
                                     </div>
                                     <span class="text-sm font-medium">{{ entity.instance.gravite }}/5</span>
                                 </div>
                             </dd>
                         </div>
                         {% endif %}
-                        {% if entity.scoreRisque %}
+                        {% if entity.instance.scoreRisque %}
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Score de risque</dt>
                             <dd class="text-gray-900">
                                 <div class="flex items-center">
                                     <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
-                                        <div class="bg-purple-600 h-2 rounded-full" style="width: {{ (entity.scoreRisque / 25) * 100 }}%"></div>
+                                        <div class="bg-purple-600 h-2 rounded-full" style="width: {{ (entity.instance.scoreRisque / 25) * 100 }}%"></div>
                                     </div>
                                     <span class="text-sm font-medium">{{ entity.instance.scoreRisque }}/25</span>
                                 </div>
@@ -164,29 +151,29 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="text-xl font-semibold text-gray-900 mb-4">Mesures</h3>
                     
-                    {% if entity.mesureEnCours %}
+                    {% if entity.instance.mesureEnCours %}
                     <div class="mb-4">
                         <h4 class="text-sm font-medium text-gray-700 mb-2">Mesure en cours</h4>
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                             <p class="text-blue-900 mb-3">{{ entity.instance.mesureEnCours }}</p>
                             <div class="flex items-center justify-between">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                                    {% if entity.mesureMiseEnPlace %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                                    {% if entity.mesureMiseEnPlace %}✓ Mise en place{% else %}⏳ En cours{% endif %}
+                                    {% if entity.instance.mesureMiseEnPlace %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                    {% if entity.instance.mesureMiseEnPlace %}✓ Mise en place{% else %}⏳ En cours{% endif %}
                                 </span>
                             </div>
                         </div>
                     </div>
                     {% endif %}
 
-                    {% if entity.mesuresPreventives %}
+                    {% if entity.instance.mesuresPreventives %}
                     <div class="mb-4">
                         <h4 class="text-sm font-medium text-gray-700 mb-2">Mesures préventives</h4>
                         <p class="text-gray-700">{{ entity.instance.mesuresPreventives }}</p>
                     </div>
                     {% endif %}
 
-                    {% if entity.mesuresCorrectives %}
+                    {% if entity.instance.mesuresCorrectives %}
                     <div class="mb-4">
                         <h4 class="text-sm font-medium text-gray-700 mb-2">Mesures correctives</h4>
                         <p class="text-gray-700">{{ entity.instance.mesuresCorrectives }}</p>
@@ -198,18 +185,18 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="text-xl font-semibold text-gray-900 mb-4">Retours d'Action</h3>
                     
-                    {% if entity.retourAction %}
+                    {% if entity.instance.retourAction %}
                     <div class="mb-4">
                         <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                             <p class="text-green-900 mb-3">{{ entity.instance.retourAction }}</p>
                             <div class="flex items-center justify-between text-sm text-green-700">
                                 <span>
-                                    {% if entity.auteurRetour %}
+                                    {% if entity.instance.auteurRetour %}
                                         Par {{ entity.instance.auteurRetour.nom }} {{ entity.instance.auteurRetour.prenom }}
                                     {% endif %}
                                 </span>
                                 <span>
-                                    {% if entity.dateRetour %}
+                                    {% if entity.instance.dateRetour %}
                                         Le {{ entity.instance.dateRetour|date('d/m/Y à H:i') }}
                                     {% endif %}
                                 </span>
@@ -218,7 +205,7 @@
                     </div>
                     {% endif %}
 
-                    {% if entity.commentaires %}
+                    {% if entity.instance.commentaires %}
                     <div class="mb-4">
                         <h4 class="text-sm font-medium text-gray-700 mb-2">Commentaires</h4>
                         <p class="text-gray-700">{{ entity.instance.commentaires }}</p>
@@ -228,11 +215,11 @@
             </div>
 
             <!-- Observateurs -->
-            {% if entity.observateurs|length > 0 %}
+            {% if entity.instance.observateurs|length > 0 %}
             <div class="bg-white rounded-lg shadow p-6 mb-6">
                 <h3 class="text-xl font-semibold text-gray-900 mb-4">Observateurs</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {% for observateur in entity.observateurs %}
+                    {% for observateur in entity.instance.observateurs %}
                     <div class="flex items-center space-x-3">
                         <div class="bg-blue-100 rounded-full p-2">
                             <i class="fas fa-user text-blue-600"></i>
@@ -255,7 +242,7 @@
                         <dt class="text-sm font-medium text-gray-500">Créé le</dt>
                         <dd class="text-gray-900">{{ entity.instance.createdAt|date('d/m/Y à H:i') }}</dd>
                     </div>
-                    {% if entity.updatedAt %}
+                    {% if entity.instance.updatedAt %}
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Modifié le</dt>
                         <dd class="text-gray-900">{{ entity.instance.updatedAt|date('d/m/Y à H:i') }}</dd>

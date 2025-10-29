@@ -139,8 +139,8 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Déclarations chantier', 'fas fa-anchor', DeclarationChantier::class);
 
             yield MenuItem::section('Gestion des Risques');
+            yield MenuItem::linkToCrud('Tableau des Risques', 'fas fa-table', Goudurix::class);
             yield MenuItem::linkToUrl('Dashboard Risques', 'fas fa-tachometer-alt', '/goudurix-dashboard')->setLinkTarget('_blank');
-            yield MenuItem::linkToCrud('Risques Goudurix', 'fas fa-exclamation-triangle', Goudurix::class);
             yield MenuItem::linkToUrl('Retours d\'Action', 'fas fa-comments', '/admin/retours-action')->setLinkTarget('_blank');
             yield MenuItem::linkToUrl('Cartes des Services', 'fas fa-th-large', '/services')->setLinkTarget('_blank');
 

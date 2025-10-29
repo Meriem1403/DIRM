@@ -1,233 +1,848 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Risques{% endblock %}
+{% block title %}Mes Risques{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .risks-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 20px 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid;
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .stat-card.critique { border-left-color: #dc2626; }
+        .stat-card.eleve { border-left-color: #ea580c; }
+        .stat-card.en-cours { border-left-color: #2563eb; }
+        .stat-card.traite { border-left-color: #16a34a; }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card.critique .stat-number { color: #dc2626; }
+        .stat-card.eleve .stat-number { color: #ea580c; }
+        .stat-card.en-cours .stat-number { color: #2563eb; }
+        .stat-card.traite .stat-number { color: #16a34a; }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #374151;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 8px 0;
+        }
+        
+        .page-subtitle {
+            color: #6b7280;
+            margin: 0;
+        }
+        
+        .filters-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .filters-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filters-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            align-items: end;
+        }
+        
+        @media (max-width: 768px) {
+            .filters-form {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-group.buttons-group {
+            flex-direction: row;
+            gap: 10px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        
+        .filter-select {
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #111827;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .filter-select:hover {
+            border-color: #3b82f6;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            white-space: nowrap;
+            text-decoration: none;
+            min-width: 120px;
+        }
+        
+        .filter-btn:hover {
+            background: #2563eb;
+        }
+        
+        .filter-btn-reset {
+            background: #6b7280;
+        }
+        
+        .filter-btn-reset:hover {
+            background: #4b5563;
+        }
+        
+        .risks-list-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .service-section {
+            margin-bottom: 32px;
+        }
+        
+        .service-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .service-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            background: #3b82f6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .service-info {
+            flex: 1;
+        }
+        
+        .service-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+        }
+        
+        .service-meta {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        
+        .lieu-section {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .lieu-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .lieu-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #111827;
+        }
+        
+        .lieu-count {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .risks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        
+        .risk-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 18px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .risk-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .risk-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .risk-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            margin: 0 0 4px 0;
+            line-height: 1.4;
+        }
+        
+        .badges-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-end;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .badge-critique {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .badge-eleve {
+            background-color: #fff7ed;
+            color: #ea580c;
+        }
+        
+        .badge-moyen {
+            background-color: #fefce8;
+            color: #ca8a04;
+        }
+        
+        .badge-faible {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+        
+        .badge-en-cours {
+            background-color: #eff6ff;
+            color: #2563eb;
+        }
+        
+        .badge-traite {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+        
+        .risk-description {
+            font-size: 13px;
+            color: #374151;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .risk-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .risk-meta-label {
+            color: #6b7280;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+        
+        .risk-meta-value {
+            color: #111827;
+            font-weight: 500;
+            font-size: 12px;
+        }
+        
+        .risk-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        
+        .btn-success {
+            background-color: #22c55e;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #16a34a;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state-text {
+            color: #6b7280;
+        }
+        
+        .admin-actions {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .admin-actions-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+        
+        .admin-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .admin-action-btn {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .admin-action-btn:hover {
+            background: #f3f4f6;
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-<div style="min-height: 100vh; background-color: #f0f0f0; padding: 20px;">
-    <div style="max-width: 1200px; margin: 0 auto;">
-        
-        <!-- Header -->
-        <div style="margin-bottom: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h1 style="font-size: 2rem; font-weight: bold; color: #000000; margin: 0;">Bonjour {{ app.user.prenom }} {{ app.user.nom }}</h1>
-                    <p style="color: #666666; margin: 10px 0 0 0;">{{ app.user.poste }} - {{ userService.nom }}</p>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <a href="{{ path('notifications') }}" style="background-color: #2563eb; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; position: relative;">
-                        <i class="fas fa-bell"></i> Notifications
-                        {% if app.user.notifications|filter(n => not n.lu)|length > 0 %}
-                        <span style="position: absolute; top: -5px; right: -5px; background-color: #dc2626; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center;">
-                            {{ app.user.notifications|filter(n => not n.lu)|length }}
-                        </span>
-                        {% endif %}
-                    </a>
-                    <a href="{{ path('app_logout') }}" style="background-color: #6b7280; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-                        <i class="fas fa-sign-out-alt"></i> Déconnexion
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Messages flash -->
-        {% for message in app.flashes('success') %}
-        <div style="margin-bottom: 20px; background-color: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 15px; border-radius: 5px;">
-            <span>{{ message }}</span>
-        </div>
-        {% endfor %}
-
-        <!-- Navigation principale -->
-        <div style="margin-bottom: 30px;">
-            <div style="background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 30px;">
-                
-                <!-- Statistiques du service - sur une ligne -->
-                <div style="margin-bottom: 30px;">
-                    <h3 style="font-size: 1.3rem; font-weight: 600; color: #1e293b; margin: 0 0 20px 0;">Statistiques de votre service</h3>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 10px; border: 2px solid #dc2626;">
-                            <div style="font-size: 2.5rem; font-weight: 800; color: #dc2626; margin-bottom: 8px;">{{ risques|filter(r => r.niveauRisque == 'critique')|length }}</div>
-                            <div style="font-size: 14px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation-triangle" style="color: #dc2626; margin-right: 6px;"></i>Critiques</div>
-                        </div>
-                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%); border-radius: 10px; border: 2px solid #ea580c;">
-                            <div style="font-size: 2.5rem; font-weight: 800; color: #ea580c; margin-bottom: 8px;">{{ risques|filter(r => r.niveauRisque == 'élevé')|length }}</div>
-                            <div style="font-size: 14px; color: #374151; font-weight: 600;"><i class="fas fa-exclamation-circle" style="color: #ea580c; margin-right: 6px;"></i>Élevés</div>
-                        </div>
-                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 10px; border: 2px solid #2563eb;">
-                            <div style="font-size: 2.5rem; font-weight: 800; color: #2563eb; margin-bottom: 8px;">{{ risques|filter(r => r.statut == 'en_cours')|length }}</div>
-                            <div style="font-size: 14px; color: #374151; font-weight: 600;"><i class="fas fa-clock" style="color: #2563eb; margin-right: 6px;"></i>En cours</div>
-                        </div>
-                        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); border-radius: 10px; border: 2px solid #16a34a;">
-                            <div style="font-size: 2.5rem; font-weight: 800; color: #16a34a; margin-bottom: 8px;">{{ risques|filter(r => r.statut == 'traité')|length }}</div>
-                            <div style="font-size: 14px; color: #374151; font-weight: 600;"><i class="fas fa-check" style="color: #16a34a; margin-right: 6px;"></i>Traités</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Actions rapides, Dashboard et Administration - sur une ligne -->
-                <div style="display: grid; grid-template-columns: {% if 'ROLE_ADMIN' in app.user.roles %}repeat(3, 1fr){% else %}repeat(2, 1fr){% endif %}; gap: 20px;">
-                    
-                    <!-- Actions rapides -->
-                    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);">
-                        <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                            <div style="background-color: #22c55e; border-radius: 50%; padding: 12px; margin-right: 12px;">
-                                <i class="fas fa-bolt" style="color: white; font-size: 18px;"></i>
-                            </div>
-                            <h3 style="font-size: 1.1rem; font-weight: 600; color: #000000; margin: 0;">Actions rapides</h3>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="{{ path('app_demandes') }}" style="display: block; width: 100%; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
-                                <i class="fas fa-file-alt"></i> Démarches
-                            </a>
-                            <a href="{{ path('aide_contact') }}" style="display: block; width: 100%; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
-                                <i class="fas fa-question-circle"></i> Aide & contact
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Dashboard global -->
-                    <div style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: 2px solid #6b7280; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(107, 114, 128, 0.2);">
-                        <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                            <div style="background-color: #6b7280; border-radius: 50%; padding: 12px; margin-right: 12px;">
-                                <i class="fas fa-tachometer-alt" style="color: white; font-size: 18px;"></i>
-                            </div>
-                            <h3 style="font-size: 1.1rem; font-weight: 600; color: #000000; margin: 0;">Dashboard</h3>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="/goudurix-dashboard" style="display: block; width: 100%; background-color: #6b7280; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
-                                <i class="fas fa-chart-line"></i> Vue d'ensemble
-                            </a>
-                            <a href="/services" style="display: block; width: 100%; background-color: #6b7280; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
-                                <i class="fas fa-th-large"></i> Cartes services
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Administration (si admin) -->
-                    {% if 'ROLE_ADMIN' in app.user.roles %}
-                    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);">
-                        <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                            <div style="background-color: #3b82f6; border-radius: 50%; padding: 12px; margin-right: 12px;">
-                                <i class="fas fa-cogs" style="color: white; font-size: 18px;"></i>
-                            </div>
-                            <h3 style="font-size: 1.1rem; font-weight: 600; color: #000000; margin: 0;">Administration</h3>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="/admin" style="display: block; width: 100%; background-color: #3b82f6; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
-                                <i class="fas fa-tools"></i> Interface admin
-                            </a>
-                            <a href="/admin/retours-action" style="display: block; width: 100%; background-color: #3b82f6; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 500;">
-                                <i class="fas fa-comments"></i> Retours d'action
-                            </a>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Liste des risques -->
-        <div style="margin-bottom: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="font-size: 1.5rem; font-weight: 600; color: #000000; margin: 0;">Risques de votre service</h2>
-                <span style="background-color: #dbeafe; color: #1e40af; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500;">
-                    {{ risques|length }} risque(s)
-                </span>
-            </div>
-            
-            {% if risques|length > 0 %}
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            {% for risque in risques %}
-            <div style="background-color: #ffffff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; padding: 24px;">
-                <!-- Header de la carte -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
-                    <div style="flex: 1;">
-                        <h3 style="font-size: 1.2rem; font-weight: 600; color: #000000; margin: 0 0 8px 0;">{{ risque.titre }}</h3>
-                        <p style="font-size: 14px; color: #6b7280; margin: 0;">{{ risque.service.nom }}</p>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <!-- Badge niveau de risque -->
-                        <span style="display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
-                            {% if risque.niveauRisque == 'critique' %}background-color: #fef2f2; color: #dc2626;
-                            {% elseif risque.niveauRisque == 'élevé' %}background-color: #fff7ed; color: #ea580c;
-                            {% elseif risque.niveauRisque == 'moyen' %}background-color: #fefce8; color: #ca8a04;
-                            {% else %}background-color: #f0fdf4; color: #16a34a;{% endif %}">
-                            <i class="fas fa-exclamation-triangle"></i> {{ risque.niveauRisque }}
-                        </span>
-                        
-                        <!-- Badge statut -->
-                        <span style="display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
-                            {% if risque.statut == 'en_cours' %}background-color: #eff6ff; color: #2563eb;
-                            {% elseif risque.statut == 'traité' %}background-color: #f0fdf4; color: #16a34a;
-                            {% elseif risque.statut == 'surveillé' %}background-color: #fefce8; color: #ca8a04;
-                            {% else %}background-color: #f9fafb; color: #374151;{% endif %}">
-                            {% if risque.statut == 'en_cours' %}<i class="fas fa-clock"></i>
-                            {% elseif risque.statut == 'traité' %}<i class="fas fa-check"></i>
-                            {% elseif risque.statut == 'surveillé' %}<i class="fas fa-eye"></i>
-                            {% else %}<i class="fas fa-archive"></i>{% endif %} {{ risque.statut|replace({'_': ' '}) }}
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- Description -->
-                <p style="font-size: 14px; color: #374151; margin-bottom: 16px;">{{ risque.description|slice(0, 120) }}{% if risque.description|length > 120 %}...{% endif %}</p>
-
-                <!-- Informations -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px; margin-bottom: 16px;">
-                    <div>
-                        <span style="color: #6b7280;">Responsable:</span>
-                        <p style="font-weight: 500; color: #000000; margin: 4px 0 0 0;">{{ risque.responsable.nom }} {{ risque.responsable.prenom }}</p>
-                    </div>
-                    <div>
-                        <span style="color: #6b7280;">Date détection:</span>
-                        <p style="font-weight: 500; color: #000000; margin: 4px 0 0 0;">{{ risque.dateDetection|date('d/m/Y') }}</p>
-                    </div>
-                    {% if risque.scoreRisque %}
-                    <div>
-                        <span style="color: #6b7280;">Score:</span>
-                        <p style="font-weight: 500; color: #000000; margin: 4px 0 0 0;">{{ risque.scoreRisque }}/25</p>
-                    </div>
-                    {% endif %}
-                    {% if risque.mesureEnCours %}
-                    <div>
-                        <span style="color: #6b7280;">Mesure:</span>
-                        <p style="font-weight: 500; margin: 4px 0 0 0;">
-                            {% if risque.mesureMiseEnPlace %}
-                                <span style="color: #16a34a;"><i class="fas fa-check"></i> En place</span>
-                            {% else %}
-                                <span style="color: #ca8a04;"><i class="fas fa-clock"></i> En cours</span>
-                            {% endif %}
-                        </p>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- Actions -->
-                <div style="display: flex; gap: 8px;">
-                    <a href="/risque-detail/{{ risque.id }}" style="flex: 1; background-color: #2563eb; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px;">
-                        <i class="fas fa-eye"></i> Consulter
-                    </a>
-                    {% if 'ROLE_CHEF' in app.user.roles %}
-                    <a href="/risque-detail/{{ risque.id }}#retour-action" style="flex: 1; background-color: #22c55e; color: #ffffff; padding: 12px; text-decoration: none; border-radius: 5px; text-align: center; font-size: 14px;">
-                        <i class="fas fa-comment"></i> Retour
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-            </div>
+<div class="risks-container">
+    <!-- En-tête de la page -->
+    <div class="page-header">
+        <h1 class="page-title">Gestion des Risques</h1>
+        <p class="page-subtitle">
+            {% if serviceSelectionne %}
+                Service : {{ serviceSelectionne.nom }}{% if lieuSelectionne %} • Lieu : {{ lieuSelectionne.nom }}{% endif %}
+            {% elseif userService %}
+                Service : {{ userService.nom }}
             {% else %}
-            <div style="text-align: center; padding: 48px;">
-                <div style="font-size: 4rem; color: #9ca3af; margin-bottom: 16px;"><i class="fas fa-shield-alt"></i></div>
-                <h3 style="font-size: 1.25rem; font-weight: 600; color: #000000; margin-bottom: 8px;">Aucun risque dans votre service</h3>
-                <p style="color: #6b7280;">Votre service n'a pas encore de risques enregistrés.</p>
-            </div>
+                Aucun service assigné
             {% endif %}
+        </p>
+    </div>
+
+    <!-- Messages flash -->
+    {% for message in app.flashes('success') %}
+        <div style="margin-bottom: 20px; background-color: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 15px; border-radius: 8px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    {% for message in app.flashes('error') %}
+        <div style="margin-bottom: 20px; background-color: #fee2e2; border: 1px solid #ef4444; color: #991b1b; padding: 15px; border-radius: 8px;">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <!-- Actions administrateur -->
+    {% if isAdmin %}
+    <div class="admin-actions">
+        <div class="admin-actions-title">Actions administrateur</div>
+        <div class="admin-actions-grid">
+            <a href="/admin?crudAction=index&crudControllerFqcn=App%5CController%5CAdmin%5CGoudurixCrudController&menuIndex=0&referrer=&submenuIndex=-1" class="admin-action-btn">
+                <i class="fas fa-exclamation-triangle"></i>
+                Gérer les risques
+            </a>
+            <a href="/goudurix-dashboard" class="admin-action-btn">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard global
+            </a>
+            <a href="/admin/retours-action" class="admin-action-btn">
+                <i class="fas fa-comments"></i>
+                Retours d'action
+            </a>
+            <a href="/admin" class="admin-action-btn">
+                <i class="fas fa-cogs"></i>
+                Administration
+            </a>
+            <a href="{{ path('app_services') }}" class="admin-action-btn">
+                <i class="fas fa-building"></i>
+                Cartes des Services
+            </a>
         </div>
     </div>
+    {% endif %}
+
+    <!-- Filtres de sélection -->
+    <div class="filters-section">
+        <h2 class="filters-title">
+            <i class="fas fa-filter"></i>
+            Filtrer par service et lieu
+        </h2>
+        <form method="get" action="{{ path('mes_risques') }}" class="filters-form" id="filters-form">
+            {% if isAdmin %}
+            <div class="filter-group">
+                <label class="filter-label" for="service-filter">Service</label>
+                <select name="service" id="service-filter" class="filter-select">
+                    <option value="">-- Tous les services --</option>
+                    {% for service in servicesDisponibles %}
+                        <option value="{{ service.id }}" {% if serviceSelectionne and serviceSelectionne.id == service.id %}selected{% endif %}>
+                            {{ service.nom }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            
+            <div class="filter-group">
+                <label class="filter-label" for="lieu-filter">Lieu</label>
+                <select name="lieu" id="lieu-filter" class="filter-select" {% if not serviceSelectionne and isAdmin %}disabled{% endif %}>
+                    <option value="">-- Tous les lieux --</option>
+                    {% for lieu in lieuxDisponibles %}
+                        <option value="{{ lieu.id }}" {% if lieuSelectionne and lieuSelectionne.id == lieu.id %}selected{% endif %}>
+                            {{ lieu.nom }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group buttons-group">
+                <button type="submit" class="filter-btn">
+                    <i class="fas fa-search"></i>
+                    Filtrer
+                </button>
+                <a href="{{ path('mes_risques') }}" class="filter-btn filter-btn-reset">
+                    <i class="fas fa-times"></i>
+                    Réinitialiser
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card critique">
+            <div class="stat-number">{{ risques|filter(r => r.niveauRisque == 'critique')|length }}</div>
+            <div class="stat-label">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Risques critiques</span>
+            </div>
+        </div>
+        
+        <div class="stat-card eleve">
+            <div class="stat-number">{{ risques|filter(r => r.niveauRisque == 'élevé')|length }}</div>
+            <div class="stat-label">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Risques élevés</span>
+            </div>
+        </div>
+        
+        <div class="stat-card en-cours">
+            <div class="stat-number">{{ risques|filter(r => r.statut == 'en_cours')|length }}</div>
+            <div class="stat-label">
+                <i class="fas fa-clock"></i>
+                <span>En cours de traitement</span>
+            </div>
+        </div>
+        
+        <div class="stat-card traite">
+            <div class="stat-number">{{ risques|filter(r => r.statut == 'traité')|length }}</div>
+            <div class="stat-label">
+                <i class="fas fa-check-circle"></i>
+                <span>Risques traités</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des risques organisés par service et lieu -->
+    <div class="risks-list-section">
+        {% if risquesParServiceLieu|length > 0 %}
+            {% for serviceKey, serviceData in risquesParServiceLieu %}
+            <div class="service-section">
+                <!-- En-tête du service -->
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="service-info">
+                        <h2 class="service-name">{{ serviceData.service.nom }}</h2>
+                        <div class="service-meta">
+                            {% set totalService = 0 %}
+                            {% for lieuKey, lieuData in serviceData.lieux %}
+                                {% set totalService = totalService + lieuData.risques|length %}
+                            {% endfor %}
+                            {{ totalService }} risque(s) au total
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lieux du service -->
+                {% for lieuKey, lieuData in serviceData.lieux %}
+                <div class="lieu-section">
+                    <div class="lieu-header">
+                        <div class="lieu-title">
+                            <i class="fas fa-map-marker-alt" style="color: #6b7280;"></i>
+                            <span>{{ lieuData.lieuNom }}</span>
+                        </div>
+                        <span class="lieu-count">{{ lieuData.risques|length }} risque(s)</span>
+                    </div>
+                    
+                    <div class="risks-grid">
+                        {% for risque in lieuData.risques %}
+                        <div class="risk-card">
+                            <div class="risk-card-header">
+                                <div style="flex: 1;">
+                                    <h3 class="risk-title">{{ risque.titre }}</h3>
+                                </div>
+                                <div class="badges-container">
+                                    <span class="badge badge-{{ risque.niveauRisque|replace({'élevé': 'eleve', ' ': '-'}) }}">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {{ risque.niveauRisque }}
+                                    </span>
+                                    <span class="badge badge-{{ risque.statut|replace({'_': '-'}) }}">
+                                        {% if risque.statut == 'en_cours' %}<i class="fas fa-clock"></i>
+                                        {% elseif risque.statut == 'traité' %}<i class="fas fa-check"></i>
+                                        {% elseif risque.statut == 'surveillé' %}<i class="fas fa-eye"></i>
+                                        {% else %}<i class="fas fa-archive"></i>{% endif %}
+                                        {{ risque.statut|replace({'_': ' '}) }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <p class="risk-description">{{ risque.description }}</p>
+                            
+                            <div class="risk-meta">
+                                <div>
+                                    <div class="risk-meta-label">Responsable</div>
+                                    <div class="risk-meta-value">{{ risque.responsable.prenom }} {{ risque.responsable.nom }}</div>
+                                </div>
+                                <div>
+                                    <div class="risk-meta-label">Date</div>
+                                    <div class="risk-meta-value">{{ risque.dateDetection|date('d/m/Y') }}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Indicateur de retour d'action -->
+                            {% if risque.retoursAction|length > 0 %}
+                            <div style="margin-bottom: 12px; padding: 8px 12px; background: #fef3c7; border-left: 3px solid #f59e0b; border-radius: 6px;">
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #92400e;">
+                                    <i class="fas fa-comment-dots" style="color: #f59e0b;"></i>
+                                    <strong>{{ risque.retoursAction|length }} retour(s) d'action</strong>
+                                    {% set retoursEnAttente = risque.retoursAction|filter(r => r.statut == 'en_attente')|length %}
+                                    {% if retoursEnAttente > 0 %}
+                                        <span style="margin-left: 8px; padding: 2px 6px; background: #dc2626; color: white; border-radius: 10px; font-size: 10px;">
+                                            {{ retoursEnAttente }} en attente
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="risk-actions">
+                                <a href="{{ path('risque_detail', {id: risque.id}) }}" class="btn btn-primary" title="Voir les détails">
+                                    <i class="fas fa-eye"></i>
+                                    Voir
+                                </a>
+                                {% if 'ROLE_ADMIN' in app.user.roles %}
+                                <a href="/admin?crudAction=edit&crudControllerFqcn=App%5CController%5CAdmin%5CGoudurixCrudController&entityId={{ risque.id }}" class="btn" style="background-color: #f59e0b; color: white;" title="Modifier le risque">
+                                    <i class="fas fa-edit"></i>
+                                    Modifier
+                                </a>
+                                <a href="/admin?crudAction=delete&crudControllerFqcn=App%5CController%5CAdmin%5CGoudurixCrudController&entityId={{ risque.id }}" class="btn" style="background-color: #dc2626; color: white;" title="Supprimer le risque" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce risque ? Cette action est irréversible.');">
+                                    <i class="fas fa-trash"></i>
+                                    Supprimer
+                                </a>
+                                {% elseif 'ROLE_CHEF' in app.user.roles and not risque.mesureEnCours %}
+                                <a href="{{ path('risque_detail', {id: risque.id}) }}#retour-action" class="btn btn-success" title="Faire un retour d'action">
+                                    <i class="fas fa-comment-dots"></i>
+                                    Retour
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="empty-state-title">Aucun risque trouvé</h3>
+                <p class="empty-state-text">
+                    {% if serviceSelectionne or lieuSelectionne %}
+                        Aucun risque ne correspond aux critères de filtrage sélectionnés.
+                    {% else %}
+                        Aucun risque enregistré pour le moment.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const serviceSelect = document.getElementById('service-filter');
+        const lieuSelect = document.getElementById('lieu-filter');
+        
+        if (!serviceSelect || !lieuSelect) {
+            return;
+        }
+        
+        function updateLieux(serviceId) {
+            // Réinitialiser le lieu
+            lieuSelect.innerHTML = '<option value="">-- Tous les lieux --</option>';
+            lieuSelect.disabled = true;
+            
+            if (!serviceId || serviceId === '') {
+                lieuSelect.disabled = false;
+                {% if isAdmin %}
+                // Si admin sans service, charger tous les lieux
+                const tousLieux = {{ lieuxDisponibles|map(l => {'id': l.id, 'nom': l.nom})|json_encode|raw }};
+                {% if not serviceSelectionne %}
+                tousLieux.forEach(lieu => {
+                    const option = document.createElement('option');
+                    option.value = lieu.id;
+                    option.textContent = lieu.nom;
+                    lieuSelect.appendChild(option);
+                });
+                {% endif %}
+                {% endif %}
+                return;
+            }
+        
+            // Charger les lieux du service sélectionné via AJAX
+            fetch('{{ path('api_service_lieux', {serviceId: '__SERVICE_ID__'}) }}'.replace('__SERVICE_ID__', serviceId))
+                .then(response => response.json())
+                .then(data => {
+                    lieuSelect.innerHTML = '<option value="">-- Tous les lieux --</option>';
+                    
+                    if (data.lieux && data.lieux.length > 0) {
+                        data.lieux.forEach(lieu => {
+                            const option = document.createElement('option');
+                            option.value = lieu.id;
+                            option.textContent = lieu.nom;
+                            lieuSelect.appendChild(option);
+                        });
+                    }
+                    
+                    lieuSelect.disabled = false;
+                    
+                    // Restaurer la sélection précédente si elle existe
+                    {% if lieuSelectionne %}
+                    const selectedLieuId = {{ lieuSelectionne.id }};
+                    if (selectedLieuId) {
+                        lieuSelect.value = selectedLieuId;
+                    }
+                    {% endif %}
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des lieux:', error);
+                    lieuSelect.disabled = false;
+                });
+        }
+        
+        // Écouter les changements sur le select service
+        serviceSelect.addEventListener('change', function() {
+            updateLieux(this.value);
+        });
+        
+        // Si un service est déjà sélectionné au chargement, charger ses lieux
+        {% if serviceSelectionne %}
+        updateLieux({{ serviceSelectionne.id }});
+        {% endif %}
+    });
+</script>
 {% endblock %}

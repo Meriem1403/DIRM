@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retours d'Action - Administration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen p-6">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Retours d'Action</h1>
+                        <p class="text-gray-600 mt-1">Gestion et validation des retours d'action des chefs de service</p>
+                    </div>
+                    <a href="{{ path('admin') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Retour à l'administration
+                    </a>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <a href="{{ path('admin_retours_action_index', {'statut': 'tous'}) }}" 
+                   class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow {{ statut_filtre == 'tous' ? 'ring-2 ring-blue-500' : '' }}">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Total</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ stats.tous }}</p>
+                        </div>
+                        <div class="bg-blue-100 rounded-full p-3">
+                            <i class="fas fa-list text-blue-600"></i>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ path('admin_retours_action_index', {'statut': 'en_attente'}) }}" 
+                   class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow {{ statut_filtre == 'en_attente' ? 'ring-2 ring-yellow-500' : '' }}">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">En attente</p>
+                            <p class="text-2xl font-bold text-yellow-600">{{ stats.en_attente }}</p>
+                        </div>
+                        <div class="bg-yellow-100 rounded-full p-3">
+                            <i class="fas fa-clock text-yellow-600"></i>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ path('admin_retours_action_index', {'statut': 'validé'}) }}" 
+                   class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow {{ statut_filtre == 'validé' ? 'ring-2 ring-green-500' : '' }}">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Validés</p>
+                            <p class="text-2xl font-bold text-green-600">{{ stats.validé }}</p>
+                        </div>
+                        <div class="bg-green-100 rounded-full p-3">
+                            <i class="fas fa-check text-green-600"></i>
+                        </div>
+                    </div>
+                </a>
+                <a href="{{ path('admin_retours_action_index', {'statut': 'refusé'}) }}" 
+                   class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow {{ statut_filtre == 'refusé' ? 'ring-2 ring-red-500' : '' }}">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Refusés</p>
+                            <p class="text-2xl font-bold text-red-600">{{ stats.refusé }}</p>
+                        </div>
+                        <div class="bg-red-100 rounded-full p-3">
+                            <i class="fas fa-times text-red-600"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Liste des retours -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        Retours d'action 
+                        {% if statut_filtre and statut_filtre != 'tous' %}
+                            - {{ statut_filtre|capitalize }}
+                        {% endif %}
+                    </h2>
+
+                    {% if retours|length > 0 %}
+                        <div class="space-y-4">
+                            {% for retour in retours %}
+                            <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-3 mb-2">
+                                            <h3 class="text-lg font-semibold text-gray-900">
+                                                Risque : {{ retour.risque.titre }}
+                                            </h3>
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                                {% if retour.statut == 'validé' %}bg-green-100 text-green-800
+                                                {% elseif retour.statut == 'refusé' %}bg-red-100 text-red-800
+                                                {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                                {% if retour.statut == 'validé' %}<i class="fas fa-check mr-1"></i>
+                                                {% elseif retour.statut == 'refusé' %}<i class="fas fa-times mr-1"></i>
+                                                {% else %}<i class="fas fa-clock mr-1"></i>{% endif %}
+                                                {{ retour.statut|capitalize }}
+                                            </span>
+                                        </div>
+                                        <div class="text-sm text-gray-600">
+                                            <p><i class="fas fa-user mr-1"></i>{{ retour.auteur.prenom }} {{ retour.auteur.nom }}</p>
+                                            <p><i class="fas fa-calendar mr-1"></i>{{ retour.dateCreation|date('d/m/Y à H:i') }}</p>
+                                            <p><i class="fas fa-building mr-1"></i>{{ retour.risque.service.nom }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <p class="text-gray-700">{{ retour.description }}</p>
+                                </div>
+
+                                {% if retour.commentaireValidation %}
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                                    <p class="text-sm font-medium text-blue-900 mb-1">Commentaire de validation :</p>
+                                    <p class="text-blue-800">{{ retour.commentaireValidation }}</p>
+                                    {% if retour.validateur %}
+                                    <p class="text-xs text-blue-600 mt-2">
+                                        Validé par {{ retour.validateur.prenom }} {{ retour.validateur.nom }}
+                                        {% if retour.dateValidation %}
+                                            le {{ retour.dateValidation|date('d/m/Y à H:i') }}
+                                        {% endif %}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+
+                                <div class="flex items-center space-x-3">
+                                    <a href="/risque-detail/{{ retour.risque.id }}" 
+                                       class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition-colors text-sm">
+                                        <i class="fas fa-eye mr-1"></i>Voir le risque
+                                    </a>
+                                    
+                                    {% if retour.statut == 'en_attente' %}
+                                    <form action="{{ path('admin_retours_action_valider', {'id': retour.id}) }}" method="POST" class="inline">
+                                        <input type="hidden" name="commentaire" value="">
+                                        <button type="submit" name="action" value="remplacer" 
+                                                class="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors text-sm">
+                                            <i class="fas fa-exchange-alt mr-1"></i>Remplacer la mesure
+                                        </button>
+                                    </form>
+                                    <form action="{{ path('admin_retours_action_refuser', {'id': retour.id}) }}" method="POST" class="inline">
+                                        <input type="hidden" name="commentaire" value="">
+                                        <button type="submit" 
+                                                class="bg-rose-500 text-white px-4 py-2 rounded-md hover:bg-rose-600 transition-colors text-sm"
+                                                onclick="return confirm('Êtes-vous sûr de vouloir refuser ce retour d\'action ?');">
+                                            <i class="fas fa-times mr-1"></i>Refuser
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-12">
+                            <i class="fas fa-inbox text-gray-400 text-5xl mb-4"></i>
+                            <p class="text-gray-500 text-lg">Aucun retour d'action trouvé</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

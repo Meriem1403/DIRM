@@ -6,7 +6,13 @@ use App\Entity\Goudurix;
 use App\Entity\User;
 use App\Entity\Service;
 use App\Entity\Lieu;
+use App\Repository\GoudurixRepository;
+use App\Repository\ServiceRepository;
+use App\Repository\UserRepository;
+use App\Repository\LieuRepository;
+use EasyCorp\Bundle\EasyAdminBundle\Factory\EntityFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
@@ -26,9 +32,20 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class GoudurixCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly GoudurixRepository $repository,
+        private readonly EntityFactory $entityFactory,
+        private readonly AdminUrlGenerator $adminUrlGenerator,
+        private readonly ServiceRepository $serviceRepository,
+        private readonly UserRepository $userRepository,
+        private readonly LieuRepository $lieuRepository
+    ) {
+    }
+
     public static function getEntityFqcn(): string
     {
         return Goudurix::class;
@@ -261,4 +278,112 @@ class GoudurixCrudController extends AbstractCrudController
             ->addCssFile('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css')
             ->addCssFile('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
     }
+
+    public function index(AdminContext $context): Response
+    {
+        // Le template parent @EasyAdmin/crud/index.html.twig appelle getEntity() quelque part
+        // On doit contourner en utilisant directement le template sans passer par le parent
+        $request = $context->getRequest();
+        $crudAction = $request->query->get('crudAction');
+        $entityId = $request->query->get('entityId');
+        
+        // Détecter si on est sur l'index : pas d'entityId ET (action est 'index' ou null/vide)
+        $isIndex = empty($entityId) && ($crudAction === 'index' || $crudAction === null || $crudAction === '');
+        
+        // Si on est sur la page index, on ne peut pas utiliser getEntity() - gérer nous-mêmes
+        if ($isIndex) {
+            // Récupérer les paramètres de filtres depuis la requête
+            $filters = $request->query->all()['filters'] ?? [];
+            
+            // Construire les critères de recherche
+            $criteria = [];
+            
+            if (!empty($filters['niveauRisque'])) {
+                $criteria['niveauRisque'] = $filters['niveauRisque'];
+            }
+            
+            if (!empty($filters['statut'])) {
+                $criteria['statut'] = $filters['statut'];
+            }
+            
+            if (!empty($filters['service'])) {
+                $serviceId = is_array($filters['service']) ? $filters['service'][0] : $filters['service'];
+                $service = $this->serviceRepository->find($serviceId);
+                if ($service) {
+                    $criteria['service'] = $service;
+                }
+            }
+            
+            if (!empty($filters['responsable'])) {
+                $responsableId = is_array($filters['responsable']) ? $filters['responsable'][0] : $filters['responsable'];
+                $responsable = $this->userRepository->find($responsableId);
+                if ($responsable) {
+                    $criteria['responsable'] = $responsable;
+                }
+            }
+            
+            if (!empty($filters['lieu'])) {
+                $lieuId = is_array($filters['lieu']) ? $filters['lieu'][0] : $filters['lieu'];
+                $lieu = $this->lieuRepository->find($lieuId);
+                if ($lieu) {
+                    $criteria['lieu'] = $lieu;
+                }
+            }
+            
+            // Récupérer les entités avec les filtres appliqués
+            $goudurixEntities = $this->repository->findBy($criteria, ['createdAt' => 'DESC']);
+            
+            // Créer des objets compatibles avec le template (qui attend entity.instance)
+            $entities = [];
+            foreach ($goudurixEntities as $entityInstance) {
+                // Créer un objet simple avec une propriété instance
+                $entityDto = new \stdClass();
+                $entityDto->instance = $entityInstance;
+                $entities[] = $entityDto;
+            }
+            
+            $crud = $context->getCrud();
+            
+            // Générer les URLs pour chaque entité
+            foreach ($entities as $entity) {
+                $entity->detailUrl = $this->adminUrlGenerator
+                    ->setController(self::class)
+                    ->setAction('detail')
+                    ->setEntityId($entity->instance->getId())
+                    ->generateUrl();
+                
+                $entity->editUrl = $this->adminUrlGenerator
+                    ->setController(self::class)
+                    ->setAction('edit')
+                    ->setEntityId($entity->instance->getId())
+                    ->generateUrl();
+                
+                $entity->deleteUrl = $this->adminUrlGenerator
+                    ->setController(self::class)
+                    ->setAction('delete')
+                    ->setEntityId($entity->instance->getId())
+                    ->generateUrl();
+            }
+            
+            // Récupérer les données pour les filtres
+            $services = $this->serviceRepository->findBy(['actif' => true], ['nom' => 'ASC']);
+            $responsables = $this->userRepository->findAll();
+            $lieux = $this->lieuRepository->findAll();
+            
+            return $this->render('admin/goudurix_cards.html.twig', [
+                'entities' => $entities,
+                'crud' => $crud,
+                'filters' => $filters ?? [],
+                'services' => $services,
+                'responsables' => $responsables,
+                'lieux' => $lieux,
+            ]);
+        }
+        
+        // Si ce n'est pas l'index, laisser EasyAdmin gérer normalement
+        // (cela ne devrait normalement pas arriver car detail/edit ont leurs propres méthodes)
+        return parent::index($context);
+    }
+
+    // Pas besoin de surcharger new(), detail() et edit() - EasyAdmin les gère automatiquement
 }

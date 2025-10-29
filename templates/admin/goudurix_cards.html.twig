@@ -1,22 +1,155 @@
-{% extends '@EasyAdmin/crud/index.html.twig' %}
-
-{% block content_title %}
-    <div class="flex items-start justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Gestion des Risques - DUERP</h1>
-            <p class="text-sm text-gray-600 mt-1">Gestion des risques professionnels et DUERP (Document Unique d'Évaluation des Risques Professionnels)</p>
-        </div>
-        <div class="flex items-start space-x-2" style="margin-top: 4px;">
-            <a href="/goudurix-dashboard" class="btn btn-primary">
-                <i class="fa fa-th-large"></i> Dashboard
-            </a>
-        </div>
-    </div>
-{% endblock %}
-
-{% block main %}
-    <div class="min-h-screen bg-gray-50 py-6">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Risques - DUERP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 mb-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="{{ path('admin') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-home mr-1"></i>Administration
+                    </a>
+                    <a href="{{ path('admin') }}?crudAction=index&crudControllerFqcn=App%5CController%5CAdmin%5CGoudurixCrudController" 
+                       class="bg-blue-50 text-blue-700 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>Risques
+                    </a>
+                    <a href="/goudurix-dashboard" 
+                       class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-th-large mr-1"></i>Dashboard
+                    </a>
+                    <a href="/admin/retours-action" 
+                       class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-comments mr-1"></i>Retours d'Action
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ path('admin') }}?crudAction=new&crudControllerFqcn=App%5CController%5CAdmin%5CGoudurixCrudController" 
+                       class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition-colors text-sm font-medium">
+                        <i class="fas fa-plus mr-1"></i>Nouveau Risque
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper" style="padding: 20px;">
+        <!-- Header -->
+        <div class="content-header" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1 style="font-size: 1.875rem; font-weight: 700; color: #111827; margin: 0 0 8px 0;">
+                        Gestion des Risques - DUERP
+                    </h1>
+                    <p style="font-size: 0.875rem; color: #4b5563; margin: 0;">
+                        Gestion des risques professionnels et DUERP (Document Unique d'Évaluation des Risques Professionnels)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div style="min-height: 80vh; background: #f9fafb; padding: 24px; border-radius: 8px;">
+            <div style="max-width: 1280px; margin: 0 auto;">
+            
+            <!-- Filtres -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4" style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-filter"></i>
+                    Filtrer les risques
+                </h2>
+                <form id="filters-form" method="get" action="{{ path('admin') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; align-items: end;">
+                    <input type="hidden" name="crudAction" value="index">
+                    <input type="hidden" name="crudControllerFqcn" value="App\Controller\Admin\GoudurixCrudController">
+                    <input type="hidden" name="menuIndex" value="0">
+                    <input type="hidden" name="submenuIndex" value="-1">
+                    
+                    <div>
+                        <label for="filter-niveauRisque" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            Niveau de Risque
+                        </label>
+                        <select name="filters[niveauRisque]" id="filter-niveauRisque" style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem;">
+                            <option value="">Tous</option>
+                            <option value="faible" {% if filters.niveauRisque is defined and filters.niveauRisque == 'faible' %}selected{% endif %}>Faible</option>
+                            <option value="moyen" {% if filters.niveauRisque is defined and filters.niveauRisque == 'moyen' %}selected{% endif %}>Moyen</option>
+                            <option value="élevé" {% if filters.niveauRisque is defined and filters.niveauRisque == 'élevé' %}selected{% endif %}>Élevé</option>
+                            <option value="critique" {% if filters.niveauRisque is defined and filters.niveauRisque == 'critique' %}selected{% endif %}>Critique</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="filter-statut" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            Statut
+                        </label>
+                        <select name="filters[statut]" id="filter-statut" style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem;">
+                            <option value="">Tous</option>
+                            <option value="en_cours" {% if filters.statut is defined and filters.statut == 'en_cours' %}selected{% endif %}>En cours</option>
+                            <option value="traité" {% if filters.statut is defined and filters.statut == 'traité' %}selected{% endif %}>Traité</option>
+                            <option value="surveillé" {% if filters.statut is defined and filters.statut == 'surveillé' %}selected{% endif %}>Surveillé</option>
+                            <option value="archivé" {% if filters.statut is defined and filters.statut == 'archivé' %}selected{% endif %}>Archivé</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="filter-service" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            Service
+                        </label>
+                        <select name="filters[service]" id="filter-service" style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem;">
+                            <option value="">Tous</option>
+                            {% for service in services %}
+                                <option value="{{ service.id }}" {% if filters.service is defined and (filters.service == service.id or (filters.service is iterable and service.id in filters.service)) %}selected{% endif %}>
+                                    {{ service.nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="filter-responsable" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            Responsable
+                        </label>
+                        <select name="filters[responsable]" id="filter-responsable" style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem;">
+                            <option value="">Tous</option>
+                            {% for responsable in responsables %}
+                                <option value="{{ responsable.id }}" {% if filters.responsable is defined and (filters.responsable == responsable.id or (filters.responsable is iterable and responsable.id in filters.responsable)) %}selected{% endif %}>
+                                    {{ responsable.prenom }} {{ responsable.nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="filter-lieu" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            Lieu
+                        </label>
+                        <select name="filters[lieu]" id="filter-lieu" style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem;">
+                            <option value="">Tous</option>
+                            {% for lieu in lieux %}
+                                <option value="{{ lieu.id }}" {% if filters.lieu is defined and (filters.lieu == lieu.id or (filters.lieu is iterable and lieu.id in filters.lieu)) %}selected{% endif %}>
+                                    {{ lieu.nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+                
+                <!-- Boutons de filtrage séparés -->
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+                    <button type="submit" form="filters-form" style="padding: 0.625rem 1.25rem; background-color: #3b82f6; color: white; border: none; border-radius: 0.375rem; font-weight: 500; font-size: 0.875rem; cursor: pointer; min-width: 120px; transition: background-color 0.2s;">
+                        <i class="fas fa-search mr-1"></i>Filtrer
+                    </button>
+                    <a href="{{ path('admin') }}?crudAction=index&crudControllerFqcn=App%5CController%5CAdmin%5CGoudurixCrudController&menuIndex=0&submenuIndex=-1" 
+                       style="padding: 0.625rem 1.25rem; background-color: #6b7280; color: white; border: none; border-radius: 0.375rem; font-weight: 500; font-size: 0.875rem; cursor: pointer; text-decoration: none; display: inline-block; min-width: 120px; text-align: center; transition: background-color 0.2s;">
+                        <i class="fas fa-times mr-1"></i>Réinitialiser
+                    </a>
+                </div>
+            </div>
             
             <!-- Statistiques globales -->
             <div class="grid grid-cols-4 gap-4 mb-8">
@@ -28,7 +161,13 @@
                             </div>
                             <div>
                                 <p class="text-xs font-medium text-gray-600">Critiques</p>
-                                <p class="text-lg font-bold text-red-600">{{ entities|filter(e => e.instance.niveauRisque == 'critique')|length }}</p>
+                                <p class="text-lg font-bold text-red-600">
+                                    {% if entities is defined %}
+                                        {{ entities|filter(e => e.instance.niveauRisque == 'critique')|length }}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -42,7 +181,13 @@
                             </div>
                             <div>
                                 <p class="text-xs font-medium text-gray-600">Élevés</p>
-                                <p class="text-lg font-bold text-orange-600">{{ entities|filter(e => e.instance.niveauRisque == 'élevé')|length }}</p>
+                                <p class="text-lg font-bold text-orange-600">
+                                    {% if entities is defined %}
+                                        {{ entities|filter(e => e.instance.niveauRisque == 'élevé')|length }}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -56,7 +201,13 @@
                             </div>
                             <div>
                                 <p class="text-xs font-medium text-gray-600">En Cours</p>
-                                <p class="text-lg font-bold text-blue-600">{{ entities|filter(e => e.instance.statut == 'en_cours')|length }}</p>
+                                <p class="text-lg font-bold text-blue-600">
+                                    {% if entities is defined %}
+                                        {{ entities|filter(e => e.instance.statut == 'en_cours')|length }}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -70,7 +221,13 @@
                             </div>
                             <div>
                                 <p class="text-xs font-medium text-gray-600">Traités</p>
-                                <p class="text-lg font-bold text-green-600">{{ entities|filter(e => e.instance.statut == 'traité')|length }}</p>
+                                <p class="text-lg font-bold text-green-600">
+                                    {% if entities is defined %}
+                                        {{ entities|filter(e => e.instance.statut == 'traité')|length }}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -79,16 +236,17 @@
 
             <!-- Grille des cartes -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for entity in entities %}
-                    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+                {% if entities is defined and entities|length > 0 %}
+                    {% for entity in entities %}
+                    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col h-full">
                         <!-- Header de la carte -->
-                        <div class="p-6 border-b border-gray-200">
+                        <div class="p-6 border-b border-gray-200 flex-shrink-0">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex-1">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ entity.instance.titre }}</h3>
                                     <p class="text-sm text-gray-600">{{ entity.instance.service.nom }}</p>
                                 </div>
-                                <div class="flex flex-col space-y-2">
+                                <div class="flex flex-col space-y-2 flex-shrink-0 ml-2">
                                     <!-- Badge niveau de risque -->
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
                                         {% if entity.instance.niveauRisque == 'critique' %}bg-red-100 text-red-800
@@ -96,7 +254,7 @@
                                         {% elseif entity.instance.niveauRisque == 'moyen' %}bg-yellow-100 text-yellow-800
                                         {% else %}bg-green-100 text-green-800{% endif %}">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>
-                                        {{ entity.instance.niveauRisque|capitalize }}
+                                        <span class="whitespace-nowrap">{{ entity.instance.niveauRisque|capitalize }}</span>
                                     </span>
                                     
                                     <!-- Badge statut -->
@@ -109,35 +267,35 @@
                                         {% elseif entity.instance.statut == 'traité' %}<i class="fas fa-check mr-1"></i>
                                         {% elseif entity.instance.statut == 'surveillé' %}<i class="fas fa-eye mr-1"></i>
                                         {% else %}<i class="fas fa-archive mr-1"></i>{% endif %}
-                                        {{ entity.instance.statut|replace({'_': ' '})|capitalize }}
+                                        <span class="whitespace-nowrap">{{ entity.instance.statut|replace({'_': ' '})|capitalize }}</span>
                                     </span>
                                 </div>
                             </div>
                             
                             <!-- Description -->
-                            <p class="text-sm text-gray-700 line-clamp-3">{{ entity.instance.description|slice(0, 120) }}{% if entity.instance.description|length > 120 %}...{% endif %}</p>
+                            <p class="text-sm text-gray-700 line-clamp-3 min-h-[3.75rem]">{{ entity.instance.description|slice(0, 120) }}{% if entity.instance.description|length > 120 %}...{% endif %}</p>
                         </div>
 
                         <!-- Informations -->
-                        <div class="p-6">
-                            <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="grid grid-cols-2 gap-4 text-sm mb-4 flex-grow">
                                 <div>
-                                    <span class="text-gray-500">Responsable:</span>
-                                    <p class="font-medium text-gray-900">{{ entity.instance.responsable.nom }} {{ entity.instance.responsable.prenom }}</p>
+                                    <span class="text-gray-500 block mb-1">Responsable:</span>
+                                    <p class="font-medium text-gray-900 truncate">{{ entity.instance.responsable.nom }} {{ entity.instance.responsable.prenom }}</p>
                                 </div>
                                 <div>
-                                    <span class="text-gray-500">Date détection:</span>
+                                    <span class="text-gray-500 block mb-1">Date détection:</span>
                                     <p class="font-medium text-gray-900">{{ entity.instance.dateDetection|date('d/m/Y') }}</p>
                                 </div>
                                 {% if entity.instance.scoreRisque %}
                                 <div>
-                                    <span class="text-gray-500">Score:</span>
+                                    <span class="text-gray-500 block mb-1">Score:</span>
                                     <p class="font-medium text-gray-900">{{ entity.instance.scoreRisque }}/25</p>
                                 </div>
                                 {% endif %}
                                 {% if entity.instance.mesureEnCours %}
                                 <div>
-                                    <span class="text-gray-500">Mesure:</span>
+                                    <span class="text-gray-500 block mb-1">Mesure:</span>
                                     <p class="font-medium text-gray-900">
                                         {% if entity.instance.mesureMiseEnPlace %}
                                             <span class="text-green-600"><i class="fas fa-check mr-1"></i>En place</span>
@@ -146,29 +304,39 @@
                                         {% endif %}
                                     </p>
                                 </div>
+                                {% else %}
+                                <div></div>
                                 {% endif %}
                             </div>
 
-                            <!-- Actions -->
-                            <div class="flex space-x-2">
-                                <a href="{{ ea_url().setAction('detail').setEntityId(entity.instance.id) }}" 
-                                   class="flex-1 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 text-center text-sm">
-                                    <i class="fas fa-eye mr-1"></i>Voir
+                            <!-- Actions - Toujours alignées en bas -->
+                            <div class="flex flex-col sm:flex-row gap-2 mt-auto">
+                                <a href="{{ entity.detailUrl }}" 
+                                   class="flex-1 bg-indigo-500 text-white px-3 py-2 rounded-md hover:bg-indigo-600 transition-colors duration-300 text-center text-sm flex items-center justify-center shadow-sm">
+                                    <i class="fas fa-info-circle mr-1"></i><span class="whitespace-nowrap">Détail</span>
                                 </a>
-                                <a href="{{ ea_url().setAction('edit').setEntityId(entity.instance.id) }}" 
-                                   class="flex-1 bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 transition-colors duration-300 text-center text-sm">
-                                    <i class="fas fa-edit mr-1"></i>Modifier
+                                <a href="{{ entity.editUrl }}" 
+                                   class="flex-1 bg-teal-500 text-white px-3 py-2 rounded-md hover:bg-teal-600 transition-colors duration-300 text-center text-sm flex items-center justify-center shadow-sm">
+                                    <i class="fas fa-edit mr-1"></i><span class="whitespace-nowrap">Modifier</span>
                                 </a>
-                                <a href="/risque-detail/{{ entity.instance.id }}"
-                                   class="flex-1 bg-purple-600 text-white px-3 py-2 rounded-md hover:bg-purple-700 transition-colors duration-300 text-center text-sm">
-                                    <i class="fas fa-external-link-alt mr-1"></i>Détail
+                                <a href="{{ entity.deleteUrl }}" 
+                                   class="flex-1 bg-rose-500 text-white px-3 py-2 rounded-md hover:bg-rose-600 transition-colors duration-300 text-center text-sm flex items-center justify-center shadow-sm"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce risque ?');">
+                                    <i class="fas fa-trash mr-1"></i><span class="whitespace-nowrap">Supprimer</span>
                                 </a>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-gray-500 text-lg">Aucun risque trouvé</p>
+                    </div>
+                {% endif %}
             </div>
 
+            </div>
         </div>
     </div>
-{% endblock %}
+</body>
+</html>

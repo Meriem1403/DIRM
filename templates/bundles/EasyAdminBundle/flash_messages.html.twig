@@ -1,4 +1,18 @@
 {# templates/bundles/EasyAdminBundle/flash_messages.html.twig #}
+<style>
+    /* Force la couleur des boutons submit dans EasyAdmin */
+    .ea-content-footer button[type="submit"],
+    .ea-content-footer button[type="submit"]:not(:hover),
+    form button[type="submit"],
+    form button[type="submit"]:not(:hover),
+    button.ea-btn-primary:not(:hover),
+    .ea-action-save:not(:hover) {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+        border-color: #3b82f6 !important;
+        background: #3b82f6 !important;
+    }
+</style>
 
 {% set flash_messages = ea.context %}
 
