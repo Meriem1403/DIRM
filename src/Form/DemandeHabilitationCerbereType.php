@@ -21,22 +21,33 @@ class DemandeHabilitationCerbereType extends AbstractType
             // Règle de portée
             ->add('reglePortee', TextType::class, [
                 'label' => 'Règle de portée',
-                'attr'  => ['class' => 'form-input'],
+                'help'  => 'Définissez les règles de portée pour cet accès (ex: accès limité à certains départements)',
+                'attr'  => [
+                    'class' => 'form-input',
+                    'placeholder' => 'Ex: Accès limité à certains départements',
+                    'maxlength' => 100
+                ],
             ])
 
             // Restrictions éventuelles
             ->add('restrictions', TextareaType::class, [
                 'label'    => 'Restrictions éventuelles',
                 'required' => false,
-                'attr'     => ['class' => 'form-input h-32'],
+                'help'     => 'Indiquez d\'éventuelles restrictions ou conditions particulières d\'accès',
+                'attr'     => [
+                    'class' => 'form-input h-32',
+                    'placeholder' => 'Indiquez d\'éventuelles restrictions d\'accès',
+                    'rows' => 4
+                ],
             ])
 
             // Agent concerné
             ->add('agent', EntityType::class, [
                 'class'         => User::class,
                 'choice_label'  => fn(User $u) => $u->getPrenom() . ' ' . $u->getNom(),
-                'placeholder'   => 'Sélectionnez l’agent',
-                'label'         => '👤 Agent concerné',
+                'placeholder'   => 'Sélectionnez l\'agent',
+                'label'         => 'Agent concerné',
+                'help'          => 'Sélectionnez l\'utilisateur pour lequel la demande est faite',
                 'attr'          => ['class' => 'form-select'],
             ])
 
@@ -45,7 +56,8 @@ class DemandeHabilitationCerbereType extends AbstractType
                 'class'         => User::class,
                 'choice_label'  => fn(User $u) => $u->getPrenom() . ' ' . $u->getNom(),
                 'placeholder'   => 'Sélectionnez le demandeur',
-                'label'         => '👤 Demandeur',
+                'label'         => 'Demandeur',
+                'help'          => 'Personne à l\'origine de la demande',
                 'attr'          => ['class' => 'form-select'],
             ])
 
@@ -57,10 +69,11 @@ class DemandeHabilitationCerbereType extends AbstractType
                 'multiple'      => true,
                 'expanded'      => false,
                 'by_reference'  => false,
-                'label'         => '📦 Applications',
-                'attr'          => ['class' => 'form-select', 'size' => 5],
+                'label'         => 'Applications',
+                'help'          => 'Vous pouvez sélectionner plusieurs applications. Survolez les options pour voir leur description.',
+                'attr'          => ['class' => 'form-select', 'size' => 5, 'data-toggle' => 'tooltip'],
                 'choice_attr'   => function(ApplicationCerbere $a) {
-                    return ['title' => $a->getDescription() ?: ''];
+                    return ['title' => $a->getDescription() ?: '', 'data-description' => $a->getDescription() ?: ''];
                 },
             ])
 
@@ -72,10 +85,11 @@ class DemandeHabilitationCerbereType extends AbstractType
                 'multiple'      => true,
                 'expanded'      => false,
                 'by_reference'  => false,
-                'label'         => '🔐 Profils',
-                'attr'          => ['class' => 'form-select', 'size' => 5],
+                'label'         => 'Profils',
+                'help'          => 'Vous pouvez sélectionner plusieurs profils. Survolez les options pour voir leur description.',
+                'attr'          => ['class' => 'form-select', 'size' => 5, 'data-toggle' => 'tooltip'],
                 'choice_attr'   => function(ProfilCerbere $p) {
-                    return ['title' => $p->getDescription() ?: ''];
+                    return ['title' => $p->getDescription() ?: '', 'data-description' => $p->getDescription() ?: ''];
                 },
             ]);
     }

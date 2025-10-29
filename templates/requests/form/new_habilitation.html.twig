@@ -1,66 +1,555 @@
 {# templates/requests/form/new_habilitation.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Nouvelle demande d’habilitation Cerbère{% endblock %}
+{% block title %}Nouvelle demande d'habilitation Cerbère{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Styles professionnels pour formulaire moderne */
+        .form-section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .form-field-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label-enhanced {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label-enhanced .required-indicator {
+            color: #ef4444;
+            margin-left: 0.25rem;
+        }
+
+        .form-help-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.375rem;
+            line-height: 1.4;
+        }
+
+        /* Auto-complétion et recherche pour les selects */
+        .select-search-wrapper {
+            position: relative;
+        }
+
+        .select-search-input {
+            width: 100%;
+            padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .select-search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .select-search-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            pointer-events: none;
+            font-size: 0.875rem;
+        }
+
+        /* Amélioration des selects multiples avec tags */
+        .select-multiple-enhanced {
+            min-height: 140px;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background: white;
+            font-size: 0.875rem;
+        }
+
+        .select-multiple-enhanced:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .select-multiple-enhanced option {
+            padding: 0.5rem 0.75rem;
+            margin: 0.125rem 0;
+            border-radius: 0.25rem;
+        }
+
+        .select-multiple-enhanced option:hover {
+            background-color: #eff6ff;
+        }
+
+        .selected-items-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            min-height: 2rem;
+        }
+
+        .selected-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            color: #1e40af;
+            font-weight: 500;
+        }
+
+        .selected-tag .remove-tag {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            color: #3b82f6;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .selected-tag .remove-tag:hover {
+            color: #ef4444;
+        }
+
+        /* Champs texte améliorés */
+        .form-input-enhanced {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-input-enhanced:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea-enhanced {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            resize: vertical;
+            min-height: 100px;
+            transition: all 0.2s;
+        }
+
+        .form-textarea-enhanced:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Compteur de caractères */
+        .char-counter {
+            text-align: right;
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .char-counter.warning {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .char-counter.danger {
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        /* Erreurs */
+        .form-error {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 0.375rem;
+        }
+
+        /* Info box */
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: #1e40af;
+            line-height: 1.5;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <main class="min-h-screen bg-[var(--color-bg)] py-16 px-4">
-        <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
-            <h1 class="text-2xl font-bold mb-4">Nouvelle demande d’habilitation Cerbère</h1>
-
-            {# INFO BANNER #}
-            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded">
-                ℹ️ Passez la souris sur les listes « Applications » et « Profils » pour voir leur description.
+    <div class="min-h-screen bg-gray-50 py-8 md:py-12 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Nouvelle demande d'habilitation Cerbère</h1>
+                <p class="text-gray-600">Complétez tous les champs requis pour soumettre votre demande</p>
             </div>
 
-            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                {{ form_start(form, { attr: { novalidate: 'novalidate', class: 'p-6 md:p-8' } }) }}
             {{ form_errors(form) }}
 
-            {# Agent & Demandeur #}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                <div>
-                    {{ form_label(form.agent, null, { label_attr: { class: 'form-label' } }) }}
-                    {{ form_widget(form.agent, { attr: { class: 'form-select' } }) }}
+                {# Section 1: Personnes concernées #}
+                <div class="form-section">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Personnes concernées</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-field-group">
+                            <label class="form-label-enhanced">
+                                Agent concerné
+                                <span class="required-indicator">*</span>
+                            </label>
+                            <div class="select-search-wrapper">
+                                {{ form_widget(form.agent, { attr: { 
+                                    class: 'form-input-enhanced select-search-enhanced',
+                                    'data-search': 'true'
+                                } }) }}
+                                <i class="fas fa-search select-search-icon"></i>
+                            </div>
+                            {% if form.agent.vars.help %}
+                                <p class="form-help-text">{{ form.agent.vars.help }}</p>
+                            {% endif %}
                     {{ form_errors(form.agent) }}
                 </div>
-                <div>
-                    {{ form_label(form.demandeur, null, { label_attr: { class: 'form-label' } }) }}
-                    {{ form_widget(form.demandeur, { attr: { class: 'form-select' } }) }}
+
+                        <div class="form-field-group">
+                            <label class="form-label-enhanced">
+                                Demandeur
+                                <span class="required-indicator">*</span>
+                            </label>
+                            <div class="select-search-wrapper">
+                                {{ form_widget(form.demandeur, { attr: { 
+                                    class: 'form-input-enhanced select-search-enhanced',
+                                    'data-search': 'true'
+                                } }) }}
+                                <i class="fas fa-search select-search-icon"></i>
+                            </div>
+                            {% if form.demandeur.vars.help %}
+                                <p class="form-help-text">{{ form.demandeur.vars.help }}</p>
+                            {% endif %}
                     {{ form_errors(form.demandeur) }}
+                        </div>
+                    </div>
                 </div>
+
+                {# Section 2: Applications #}
+                <div class="form-section">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Applications</h2>
+                    
+                    <div class="info-box">
+                        <p><strong>Conseil :</strong> Utilisez la recherche ci-dessous pour filtrer les applications. Vous pouvez sélectionner plusieurs applications en maintenant la touche Ctrl (Cmd sur Mac) et en cliquant.</p>
             </div>
 
-            {# Applications #}
-            <div class="mb-6">
-                {{ form_label(form.applications, null, { label_attr: { class: 'form-label' } }) }}
-                {{ form_widget(form.applications, { attr: { class: 'form-select', title_attr: 'title' } }) }}
+                    <div class="form-field-group">
+                        <label class="form-label-enhanced">
+                            Sélectionnez les applications
+                            <span class="required-indicator">*</span>
+                        </label>
+                        <input type="text" 
+                               id="applications-search" 
+                               class="select-search-input" 
+                               placeholder="Rechercher une application..."
+                               autocomplete="off">
+                        {{ form_widget(form.applications, { attr: { 
+                            class: 'select-multiple-enhanced',
+                            'data-field': 'applications',
+                            'size': 6
+                        } }) }}
+                        <div id="applications-tags" class="selected-items-display"></div>
+                        {% if form.applications.vars.help %}
+                            <p class="form-help-text">{{ form.applications.vars.help }}</p>
+                        {% endif %}
                 {{ form_errors(form.applications) }}
             </div>
+                </div>
 
-            {# Profils #}
-            <div class="mb-6">
-                {{ form_label(form.profils, null, { label_attr: { class: 'form-label' } }) }}
-                {{ form_widget(form.profils, { attr: { class: 'form-select', title_attr: 'title' } }) }}
+                {# Section 3: Profils #}
+                <div class="form-section">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Profils</h2>
+                    
+                    <div class="info-box">
+                        <p><strong>Conseil :</strong> Les profils sont organisés par application. Utilisez la recherche pour trouver rapidement un profil spécifique.</p>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label class="form-label-enhanced">
+                            Sélectionnez les profils
+                            <span class="required-indicator">*</span>
+                        </label>
+                        <input type="text" 
+                               id="profils-search" 
+                               class="select-search-input" 
+                               placeholder="Rechercher un profil..."
+                               autocomplete="off">
+                        {{ form_widget(form.profils, { attr: { 
+                            class: 'select-multiple-enhanced',
+                            'data-field': 'profils',
+                            'size': 6
+                        } }) }}
+                        <div id="profils-tags" class="selected-items-display"></div>
+                        {% if form.profils.vars.help %}
+                            <p class="form-help-text">{{ form.profils.vars.help }}</p>
+                        {% endif %}
                 {{ form_errors(form.profils) }}
             </div>
+                </div>
 
-            {# Règle de portée & Restrictions #}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                <div>
-                    {{ form_label(form.reglePortee, null, { label_attr: { class: 'form-label' } }) }}
-                    {{ form_widget(form.reglePortee, { attr: { class: 'form-input' } }) }}
+                {# Section 4: Règles et restrictions #}
+                <div class="form-section">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Règles et restrictions</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-field-group">
+                            <label class="form-label-enhanced">
+                                Règle de portée
+                            </label>
+                            {{ form_widget(form.reglePortee, { attr: { 
+                                class: 'form-input-enhanced',
+                                maxlength: 100
+                            } }) }}
+                            <div class="char-counter" id="reglePortee-counter">0 / 100 caractères</div>
+                            {% if form.reglePortee.vars.help %}
+                                <p class="form-help-text">{{ form.reglePortee.vars.help }}</p>
+                            {% endif %}
                     {{ form_errors(form.reglePortee) }}
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="form-label-enhanced">
+                                Restrictions éventuelles
+                                <span class="text-xs text-gray-500 font-normal ml-2">(optionnel)</span>
+                            </label>
+                            {{ form_widget(form.restrictions, { attr: { 
+                                class: 'form-textarea-enhanced'
+                            } }) }}
+                            {% if form.restrictions.vars.help %}
+                                <p class="form-help-text">{{ form.restrictions.vars.help }}</p>
+                            {% endif %}
+                            {{ form_errors(form.restrictions) }}
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    {{ form_label(form.restrictions, null, { label_attr: { class: 'form-label' } }) }}
-                    {{ form_widget(form.restrictions, { attr: { class: 'form-input h-32' } }) }}
-                    {{ form_errors(form.restrictions) }}
+
+                {# Boutons d'action #}
+                <div class="flex flex-col sm:flex-row gap-4 justify-end pt-6 border-t border-gray-200">
+                    <a href="{{ path('app_demandes') }}" class="btn-secondary px-6 py-3 rounded-lg text-center font-medium">
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn-primary px-8 py-3 rounded-lg font-medium">
+                        Envoyer la demande
+                    </button>
                 </div>
+
+                {{ form_end(form) }}
             </div>
-
-            <button type="submit" class="btn-primary w-full py-3">Envoyer la demande</button>
-
-            {{ form_end(form) }}
         </div>
-    </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Compteur de caractères pour Règle de portée
+            const reglePorteeInput = document.querySelector('#{{ form.reglePortee.vars.id }}');
+            const reglePorteeCounter = document.getElementById('reglePortee-counter');
+            
+            if (reglePorteeInput && reglePorteeCounter) {
+                function updateCounter() {
+                    const length = reglePorteeInput.value.length;
+                    const maxLength = 100;
+                    reglePorteeCounter.textContent = `${length} / ${maxLength} caractères`;
+                    
+                    reglePorteeCounter.className = 'char-counter';
+                    if (length > maxLength * 0.9) {
+                        reglePorteeCounter.classList.add('danger');
+                    } else if (length > maxLength * 0.75) {
+                        reglePorteeCounter.classList.add('warning');
+                    }
+                }
+                
+                updateCounter();
+                reglePorteeInput.addEventListener('input', updateCounter);
+            }
+
+            // Fonction pour mettre à jour l'affichage des tags sélectionnés
+            function updateSelectedTags(selectId, tagsContainerId) {
+                const select = document.getElementById(selectId);
+                const tagsContainer = document.getElementById(tagsContainerId);
+                
+                if (!select || !tagsContainer) return;
+                
+                const selected = Array.from(select.selectedOptions);
+                tagsContainer.innerHTML = '';
+                
+                if (selected.length === 0) {
+                    tagsContainer.style.display = 'none';
+                    return;
+                }
+                
+                tagsContainer.style.display = 'flex';
+                selected.forEach(option => {
+                    if (option.value) {
+                        const tag = document.createElement('div');
+                        tag.className = 'selected-tag';
+                        tag.innerHTML = `
+                            <span>${option.textContent}</span>
+                            <span class="remove-tag" data-value="${option.value}">×</span>
+                        `;
+                        tag.querySelector('.remove-tag').addEventListener('click', function() {
+                            option.selected = false;
+                            updateSelectedTags(selectId, tagsContainerId);
+                        });
+                        tagsContainer.appendChild(tag);
+                    }
+                });
+            }
+
+            // Recherche pour Applications
+            const applicationsSearch = document.getElementById('applications-search');
+            const applicationsSelect = document.getElementById('{{ form.applications.vars.id }}');
+            
+            if (applicationsSearch && applicationsSelect) {
+                applicationsSearch.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    Array.from(applicationsSelect.options).forEach(option => {
+                        if (option.value) {
+                            const text = option.textContent.toLowerCase();
+                            option.style.display = text.includes(searchTerm) ? '' : 'none';
+                        }
+                    });
+                });
+                
+                applicationsSelect.addEventListener('change', function() {
+                    updateSelectedTags('{{ form.applications.vars.id }}', 'applications-tags');
+                });
+                
+                updateSelectedTags('{{ form.applications.vars.id }}', 'applications-tags');
+            }
+
+            // Recherche pour Profils
+            const profilsSearch = document.getElementById('profils-search');
+            const profilsSelect = document.getElementById('{{ form.profils.vars.id }}');
+            
+            if (profilsSearch && profilsSelect) {
+                profilsSearch.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    Array.from(profilsSelect.options).forEach(option => {
+                        if (option.value) {
+                            const text = option.textContent.toLowerCase();
+                            option.style.display = text.includes(searchTerm) ? '' : 'none';
+                        }
+                    });
+                });
+                
+                profilsSelect.addEventListener('change', function() {
+                    updateSelectedTags('{{ form.profils.vars.id }}', 'profils-tags');
+                });
+                
+                updateSelectedTags('{{ form.profils.vars.id }}', 'profils-tags');
+            }
+
+            // Auto-complétion pour selects simples (Agent, Demandeur)
+            document.querySelectorAll('.select-search-enhanced').forEach(select => {
+                const wrapper = select.closest('.select-search-wrapper');
+                if (wrapper) {
+                    const searchInput = document.createElement('input');
+                    searchInput.type = 'text';
+                    searchInput.className = 'select-search-input';
+                    searchInput.placeholder = 'Rechercher...';
+                    searchInput.autocomplete = 'off';
+                    searchInput.style.marginBottom = '0.5rem';
+                    
+                    // Masquer le select original et le remplacer par un input
+                    select.style.display = 'none';
+                    wrapper.insertBefore(searchInput, select);
+                    
+                    // Créer une liste déroulante custom
+                    const dropdown = document.createElement('div');
+                    dropdown.className = 'absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto';
+                    dropdown.style.display = 'none';
+                    wrapper.style.position = 'relative';
+                    wrapper.appendChild(dropdown);
+                    
+                    function populateDropdown(filter = '') {
+                        dropdown.innerHTML = '';
+                        const options = Array.from(select.options).filter(opt => {
+                            if (!opt.value) return false;
+                            return opt.textContent.toLowerCase().includes(filter.toLowerCase());
+                        });
+                        
+                        if (options.length === 0) {
+                            dropdown.innerHTML = '<div class="px-4 py-2 text-gray-500 text-sm">Aucun résultat</div>';
+                            return;
+                        }
+                        
+                        options.forEach(option => {
+                            const item = document.createElement('div');
+                            item.className = 'px-4 py-2 cursor-pointer hover:bg-blue-50 text-sm';
+                            item.textContent = option.textContent;
+                            item.addEventListener('click', function() {
+                                select.value = option.value;
+                                searchInput.value = option.textContent;
+                                dropdown.style.display = 'none';
+                                select.dispatchEvent(new Event('change', { bubbles: true }));
+                            });
+                            dropdown.appendChild(item);
+                        });
+                    }
+                    
+                    searchInput.addEventListener('input', function(e) {
+                        populateDropdown(e.target.value);
+                        dropdown.style.display = e.target.value ? 'block' : 'none';
+                    });
+                    
+                    searchInput.addEventListener('focus', function() {
+                        if (searchInput.value) {
+                            populateDropdown(searchInput.value);
+                            dropdown.style.display = 'block';
+                        }
+                    });
+                    
+                    document.addEventListener('click', function(e) {
+                        if (!wrapper.contains(e.target)) {
+                            dropdown.style.display = 'none';
+                        }
+                    });
+                    
+                    // Initialiser avec la valeur sélectionnée
+                    if (select.value) {
+                        const selectedOption = select.options[select.selectedIndex];
+                        if (selectedOption) {
+                            searchInput.value = selectedOption.textContent;
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}

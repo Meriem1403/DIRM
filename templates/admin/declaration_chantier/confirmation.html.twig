@@ -3,6 +3,13 @@
 {% block title %}Confirmation{% endblock %}
 
 {% block body %}
-    <h1>✅ Déclaration enregistrée</h1>
-    <p>Votre demande a bien été envoyée. Un récépissé vous sera transmis une fois la validation effectuée par le CSN.</p>
+    <div class="min-h-screen bg-gray-50 py-12 px-4">
+        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8 text-center">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-4">
+                <i class="fas fa-check-circle text-4xl text-green-600"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Déclaration enregistrée</h1>
+            <p class="text-gray-600">Votre demande a bien été envoyée. Un récépissé vous sera transmis une fois la validation effectuée par le CSN.</p>
+        </div>
+    </div>
 {% endblock %}

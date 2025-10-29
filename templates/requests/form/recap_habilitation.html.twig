@@ -1,85 +1,745 @@
 {# templates/requests/form/recap_habilitation.html.twig #}
 {% extends 'base.html.twig' %}
-{% set hide_header = true %}
-{% set hide_footer = true %}
 
-{% block title %}Récapitulatif — Demande d’habilitation Cerbère{% endblock %}
+{% if pdfMode is defined and pdfMode %}
+    {% set hide_header = true %}
+    {% set hide_footer = true %}
+{% endif %}
+
+{% block title %}Récapitulatif — Demande d'habilitation Cerbère #{{ demande.id }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Design document officiel pour PDF */
+        @page {
+            margin: 20mm 15mm;
+            size: A4;
+        }
+        /* Mode PDF et impression */
+        @media print {
+            * {
+                box-shadow: none !important;
+            }
+            
+            .no-print { 
+                display: none !important; 
+            }
+            
+            body { 
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 12pt;
+            }
+            
+            .min-h-screen {
+                min-height: auto !important;
+                padding: 15mm !important;
+                background: white !important;
+            }
+            
+            .bg-gray-50 {
+                background: white !important;
+            }
+            
+            .shadow-sm, .shadow-md {
+                box-shadow: none !important;
+            }
+            
+            .border {
+                border: 1px solid #ccc !important;
+            }
+            
+            .rounded-xl, .rounded-lg, .rounded {
+                border-radius: 0 !important;
+            }
+            
+            .section-divider {
+                page-break-inside: avoid;
+                margin: 10mm 0 !important;
+                height: 1px;
+                background: #ddd !important;
+                border: none !important;
+            }
+            
+            .info-card, .list-item-card {
+                page-break-inside: avoid;
+                border: 1px solid #ddd !important;
+                margin-bottom: 8mm !important;
+                padding: 5mm !important;
+            }
+            
+            .info-card {
+                background: #f9f9f9 !important;
+            }
+            
+            .list-item-card {
+                background: white !important;
+            }
+            
+            .bg-blue-100, .bg-green-100, .bg-purple-100, .bg-orange-100 {
+                background: #f5f5f5 !important;
+            }
+            
+            .text-blue-600, .text-green-600, .text-purple-600, .text-orange-600 {
+                color: #000 !important;
+            }
+            
+            header, footer, nav, .header, .footer {
+                display: none !important;
+            }
+            
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+        
+        /* Design document officiel pour PDF */
+        .pdf-mode {
+            padding: 0 !important;
+            margin: 0 !important;
+            background: white !important;
+            font-family: 'Times New Roman', serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #000 !important;
+        }
+        
+        .pdf-mode * {
+            box-shadow: none !important;
+        }
+        
+        /* En-tête officiel */
+        .pdf-official-header {
+            border-top: 8mm solid #003366;
+            padding-top: 8mm;
+            margin-bottom: 12mm;
+            text-align: center;
+        }
+        
+        .pdf-official-header .ministry-logo {
+            margin-bottom: 5mm;
+            text-align: center;
+        }
+        
+        .pdf-official-header .ministry-logo img {
+            height: 25mm;
+            max-width: 80mm;
+        }
+        
+        .pdf-official-header .ministry-name {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 2mm;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .pdf-official-header .document-title {
+            font-size: 18pt;
+            font-weight: bold;
+            margin: 8mm 0 4mm 0;
+            color: #000;
+        }
+        
+        .pdf-official-header .document-ref {
+            font-size: 10pt;
+            color: #666;
+            margin-bottom: 8mm;
+        }
+        
+        /* Corps du document */
+        .pdf-official-body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .pdf-section {
+            margin-bottom: 10mm;
+            page-break-inside: avoid;
+        }
+        
+        .pdf-section-title {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 5mm;
+            padding-bottom: 2mm;
+            border-bottom: 1px solid #003366;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .pdf-field-group {
+            margin-bottom: 6mm;
+        }
+        
+        .pdf-field-label {
+            font-weight: bold;
+            font-size: 10pt;
+            color: #333;
+            margin-bottom: 2mm;
+            display: block;
+        }
+        
+        .pdf-field-value {
+            font-size: 11pt;
+            color: #000;
+            padding-left: 5mm;
+            margin-bottom: 4mm;
+        }
+        
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8mm;
+            font-size: 10pt;
+        }
+        
+        .pdf-table th {
+            background-color: #f5f5f5;
+            border: 1px solid #000;
+            padding: 3mm;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .pdf-table td {
+            border: 1px solid #ccc;
+            padding: 2mm 3mm;
+        }
+        
+        .pdf-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        /* Footer officiel */
+        .pdf-official-footer {
+            margin-top: 15mm;
+            padding-top: 5mm;
+            border-top: 1px solid #000;
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+        }
+        
+        /* Masquer les éléments non nécessaires */
+        .pdf-mode header,
+        .pdf-mode footer,
+        .pdf-mode nav,
+        .pdf-mode .header,
+        .pdf-mode .footer,
+        .pdf-mode .no-print,
+        .pdf-mode .statut-badge,
+        .pdf-mode .shadow-sm,
+        .pdf-mode .shadow-md {
+            display: none !important;
+        }
+        
+        .pdf-mode .bg-gray-50,
+        .pdf-mode .bg-blue-100,
+        .pdf-mode .bg-green-100,
+        .pdf-mode .bg-purple-100,
+        .pdf-mode .bg-orange-100 {
+            background: white !important;
+        }
+        
+        .pdf-mode .border {
+            border: 1px solid #ccc !important;
+        }
+        
+        .pdf-mode .rounded-xl,
+        .pdf-mode .rounded-lg,
+        .pdf-mode .rounded {
+            border-radius: 0 !important;
+        }
+        
+        .pdf-mode h1,
+        .pdf-mode h2,
+        .pdf-mode h3 {
+            page-break-after: avoid;
+        }
+        
+        .pdf-mode img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .statut-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .statut-en_attente {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .statut-validee {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .statut-refusee {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .info-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+        
+        .info-card-content {
+            font-size: 1rem;
+            color: #111827;
+            font-weight: 500;
+        }
+        
+        .list-item-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .list-item-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+            margin: 2rem 0;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <main class="min-h-screen bg-[var(--color-bg)] py-16 px-4 print:bg-white print:py-2">
-        <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md space-y-6">
-
-            {# — En‑tête pro avec logo DIRM — #}
-            <div class="flex items-center justify-between mb-6">
-                <img src="{{ asset('uploads/logo/logo.png') }}" alt="DIRM" class="h-12">
-                <h1 class="text-3xl font-bold text-gray-900">
-                    Récapitulatif de la demande d’habilitation
-                </h1>
+    {% if pdfMode is defined and pdfMode %}
+        {# Version PDF - Document officiel #}
+        <div class="pdf-mode">
+            {# En-tête officiel #}
+            <div class="pdf-official-header">
+                <div class="ministry-logo">
+                    <img src="{{ asset('uploads/logo/logo.png') }}" alt="DIRM">
+                </div>
+                <div class="ministry-name">Direction Interrégionale de la Mer</div>
+                <div class="document-title">RÉCAPITULATIF DE DEMANDE D'HABILITATION CERBÈRE</div>
+                <div class="document-ref">Référence : DIRM-HAB-{{ demande.id }}-{{ demande.dateSoumission|date('Y') }}</div>
             </div>
 
-            {# — Agents — #}
-            <section>
-                <h2 class="text-xl font-semibold mb-2">Agents</h2>
-                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
-                    <dt class="font-medium">Agent concerné</dt>
-                    <dd>{{ demande.agent.prenom }} {{ demande.agent.nom }}</dd>
-                    <dt class="font-medium">Demandeur</dt>
-                    <dd>{{ demande.demandeur.prenom }} {{ demande.demandeur.nom }}</dd>
-                </dl>
-            </section>
-
-            {# — Applications & Profils — #}
-            <section>
-                <h2 class="text-xl font-semibold mb-2">Applications & Profils</h2>
-                <div class="grid grid-cols-2 gap-x-6 gap-y-4">
-                    <div>
-                        <h3 class="font-medium mb-1">Applications</h3>
-                        <ul class="list-disc list-inside text-gray-900">
-                            {# on renomme la variable de boucle pour éviter le conflit #}
-                            {% for application in demande.applications %}
-                                <li>{{ application.nom }} ({{ application.code }})</li>
-                            {% endfor %}
-                        </ul>
+            {# Corps du document #}
+            <div class="pdf-official-body">
+                {# Section 1: Identification des personnes #}
+                <div class="pdf-section">
+                    <div class="pdf-section-title">I. Identification des personnes</div>
+                    
+                    <div class="pdf-field-group">
+                        <span class="pdf-field-label">Agent concerné :</span>
+                        <div class="pdf-field-value">
+                            {{ demande.agent.prenom }} {{ demande.agent.nom }}
+                            {% if demande.agent.email %} — {{ demande.agent.email }}{% endif %}
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-medium mb-1">Profils</h3>
-                        <ul class="list-disc list-inside text-gray-900">
-                            {% for profil in demande.profils %}
-                                <li>{{ profil.application.nom }} / {{ profil.nom }}</li>
-                            {% endfor %}
-                        </ul>
+                    
+                    <div class="pdf-field-group">
+                        <span class="pdf-field-label">Demandeur :</span>
+                        <div class="pdf-field-value">
+                            {{ demande.demandeur.prenom }} {{ demande.demandeur.nom }}
+                            {% if demande.demandeur.email %} — {{ demande.demandeur.email }}{% endif %}
+                        </div>
                     </div>
                 </div>
-            </section>
 
-            {# — Portée & Restrictions — #}
-            <section>
-                <h2 class="text-xl font-semibold mb-2">Portée & Restrictions</h2>
-                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
-                    <dt class="font-medium">Règle de portée</dt>
-                    <dd>{{ demande.reglePortee }}</dd>
-                    <dt class="font-medium">Restrictions éventuelles</dt>
-                    <dd>{{ demande.restrictions ?: '—' }}</dd>
-                </dl>
-            </section>
+                {# Section 2: Applications #}
+                <div class="pdf-section">
+                    <div class="pdf-section-title">II. Applications sélectionnées</div>
+                    {% if demande.applications|length > 0 %}
+                        <table class="pdf-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40%;">Application</th>
+                                    <th style="width: 20%;">Code</th>
+                                    <th style="width: 40%;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for application in demande.applications %}
+                                    <tr>
+                                        <td>{{ application.nom }}</td>
+                                        <td>{{ application.code }}</td>
+                                        <td>{{ application.description|default('—') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="pdf-field-value">Aucune application sélectionnée</div>
+                    {% endif %}
+                </div>
 
-            {# — Métadonnées — #}
-            <section>
-                <h2 class="text-xl font-semibold mb-2">Métadonnées</h2>
-                <dl class="grid grid-cols-2 gap-x-6 gap-y-2">
-                    <dt class="font-medium">Date de soumission</dt>
-                    <dd>{{ demande.dateSoumission|date('Y‑m‑d H:i') }}</dd>
-                    <dt class="font-medium">Statut</dt>
-                    <dd>{{ demande.statut|replace({'_':' '})|title }}</dd>
-                </dl>
-            </section>
+                {# Section 3: Profils #}
+                <div class="pdf-section">
+                    <div class="pdf-section-title">III. Profils sélectionnés</div>
+                    {% if demande.profils|length > 0 %}
+                        <table class="pdf-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%;">Profil</th>
+                                    <th style="width: 30%;">Application</th>
+                                    <th style="width: 40%;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for profil in demande.profils %}
+                                    <tr>
+                                        <td>{{ profil.nom }}</td>
+                                        <td>{{ profil.application.nom }}</td>
+                                        <td>{{ profil.description|default('—') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="pdf-field-value">Aucun profil sélectionné</div>
+                    {% endif %}
+                </div>
 
-            {# — Actions — #}
-            <div class="pt-6 border-t flex justify-end space-x-4">
-                <a href="{{ path('demande_habilitation_pdf', { id: demande.id }) }}"
-                   class="btn-primary">📥 Télécharger PDF</a>
-                <a href="{{ path('app_demandes') }}" class="btn-secondary">← Retour</a>
+                {# Section 4: Règles et restrictions #}
+                <div class="pdf-section">
+                    <div class="pdf-section-title">IV. Règles et restrictions</div>
+                    
+                    <div class="pdf-field-group">
+                        <span class="pdf-field-label">Règle de portée :</span>
+                        <div class="pdf-field-value">
+                            {{ demande.reglePortee ?: 'Non renseignée' }}
+                        </div>
+                    </div>
+                    
+                    <div class="pdf-field-group">
+                        <span class="pdf-field-label">Restrictions éventuelles :</span>
+                        <div class="pdf-field-value">
+                            {{ demande.restrictions ?: 'Aucune restriction' }}
+                        </div>
+                    </div>
+                </div>
+
+                {# Section 5: Métadonnées #}
+                <div class="pdf-section">
+                    <div class="pdf-section-title">V. Informations administratives</div>
+                    
+                    <table class="pdf-table" style="width: 100%;">
+                        <tbody>
+                            <tr>
+                                <td style="width: 50%; font-weight: bold;">Date de soumission</td>
+                                <td style="width: 50%;">{{ demande.dateSoumission|date('d/m/Y à H:i') }}</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Statut</td>
+                                <td>{{ demande.statut|replace({'_': ' '})|title }}</td>
+                            </tr>
+                            {% if demande.dateValidation %}
+                                <tr>
+                                    <td style="font-weight: bold;">Date de validation</td>
+                                    <td>{{ demande.dateValidation|date('d/m/Y à H:i') }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if demande.validePar %}
+                                <tr>
+                                    <td style="font-weight: bold;">Validée par</td>
+                                    <td>{{ demande.validePar.prenom }} {{ demande.validePar.nom }}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {# Footer officiel #}
+            <div class="pdf-official-footer">
+                <div>Direction Interrégionale de la Mer</div>
+                <div style="margin-top: 2mm;">Document généré le {{ "now"|date('d/m/Y à H:i') }}</div>
+                <div style="margin-top: 2mm; font-size: 8pt;">Ce document est généré automatiquement et a valeur de récépissé</div>
             </div>
         </div>
-    </main>
+    {% else %}
+        {# Version écran - Interface moderne #}
+        <div class="min-h-screen bg-gray-50 py-8 md:py-12 px-4">
+        <div class="max-w-5xl mx-auto">
+            {# En-tête avec actions #}
+            <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 no-print {% if pdfMode is defined and pdfMode %}hidden{% endif %}">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Récapitulatif de la demande</h1>
+                    <p class="text-gray-600">Demande d'habilitation Cerbère #{{ demande.id }}</p>
+                </div>
+                <div class="flex" style="gap: 0.75rem;">
+                    <a href="{{ path('demande_habilitation_pdf', { id: demande.id }) }}"
+                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors no-print">
+                        <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                    </a>
+                    <a href="{{ path('app_demandes') }}" 
+                       class="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition-colors no-print">
+                        <i class="fas fa-arrow-left mr-2"></i>Retour
+                    </a>
+                </div>
+            </div>
+
+            {# Carte principale #}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 md:p-8">
+                    {# En-tête avec logo et statut #}
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-6 border-b border-gray-200">
+                        <div class="flex items-center mb-4 md:mb-0">
+                            <img src="{{ asset('uploads/logo/logo.png') }}" alt="DIRM" class="h-12 mr-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-900">Demande d'habilitation Cerbère</h2>
+                                <p class="text-sm text-gray-500">Référence : #{{ demande.id }}</p>
+                            </div>
+                        </div>
+                        <span class="statut-badge statut-{{ demande.statut }}">
+                            {% if demande.statut == 'en_attente' %}
+                                <i class="fas fa-clock mr-2"></i>En attente
+                            {% elseif demande.statut == 'validee' %}
+                                <i class="fas fa-check-circle mr-2"></i>Validée
+                            {% elseif demande.statut == 'refusee' %}
+                                <i class="fas fa-times-circle mr-2"></i>Refusée
+                            {% else %}
+                                {{ demande.statut|replace({'_':' '})|title }}
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    {# Informations principales en grille #}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        {# Agent concerné #}
+                        <div class="info-card">
+                            <div class="info-card-title">Agent concerné</div>
+                            <div class="info-card-content">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">{{ demande.agent.prenom }} {{ demande.agent.nom }}</div>
+                                        {% if demande.agent.email %}
+                                            <div class="text-sm text-gray-500">{{ demande.agent.email }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Demandeur #}
+                        <div class="info-card">
+                            <div class="info-card-title">Demandeur</div>
+                            <div class="info-card-content">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                        <i class="fas fa-user-tie text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">{{ demande.demandeur.prenom }} {{ demande.demandeur.nom }}</div>
+                                        {% if demande.demandeur.email %}
+                                            <div class="text-sm text-gray-500">{{ demande.demandeur.email }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    {# Applications #}
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-cube text-blue-600 mr-2"></i>
+                            Applications sélectionnées
+                            <span class="ml-2 text-sm font-normal text-gray-500">({{ demande.applications|length }})</span>
+                        </h3>
+                        {% if demande.applications|length > 0 %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {% for application in demande.applications %}
+                                    <div class="list-item-card">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <div class="font-semibold text-gray-900">{{ application.nom }}</div>
+                                                <div class="text-sm text-gray-500 mt-1">
+                                                    <span class="font-mono bg-gray-100 px-2 py-0.5 rounded">{{ application.code }}</span>
+                                                </div>
+                                                {% if application.description %}
+                                                    <div class="text-sm text-gray-600 mt-2 line-clamp-2">{{ application.description }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-gray-500 italic">Aucune application sélectionnée</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    {# Profils #}
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-key text-purple-600 mr-2"></i>
+                            Profils sélectionnés
+                            <span class="ml-2 text-sm font-normal text-gray-500">({{ demande.profils|length }})</span>
+                        </h3>
+                        {% if demande.profils|length > 0 %}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {% for profil in demande.profils %}
+                                    <div class="list-item-card">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <div class="font-semibold text-gray-900">{{ profil.nom }}</div>
+                                                <div class="text-sm text-gray-500 mt-1">
+                                                    <i class="fas fa-cube mr-1"></i>{{ profil.application.nom }}
+                                                </div>
+                                                {% if profil.description %}
+                                                    <div class="text-sm text-gray-600 mt-2 line-clamp-2">{{ profil.description }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-gray-500 italic">Aucun profil sélectionné</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    {# Règles et restrictions #}
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <i class="fas fa-sliders-h text-orange-600 mr-2"></i>
+                            Règles et restrictions
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="info-card">
+                                <div class="info-card-title">Règle de portée</div>
+                                <div class="info-card-content">
+                                    {% if demande.reglePortee %}
+                                        {{ demande.reglePortee }}
+                                    {% else %}
+                                        <span class="text-gray-400 italic">Non renseignée</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-card-title">Restrictions éventuelles</div>
+                                <div class="info-card-content">
+                                    {% if demande.restrictions %}
+                                        {{ demande.restrictions }}
+                                    {% else %}
+                                        <span class="text-gray-400 italic">Aucune restriction</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    {# Métadonnées #}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="info-card">
+                            <div class="info-card-title">Date de soumission</div>
+                            <div class="info-card-content">
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar-alt text-gray-400 mr-2"></i>
+                                    <div>
+                                        <div class="font-semibold">{{ demande.dateSoumission|date('d/m/Y') }}</div>
+                                        <div class="text-sm text-gray-500">{{ demande.dateSoumission|date('H:i') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if demande.dateValidation %}
+                            <div class="info-card">
+                                <div class="info-card-title">Date de validation</div>
+                                <div class="info-card-content">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        <div>
+                                            <div class="font-semibold">{{ demande.dateValidation|date('d/m/Y') }}</div>
+                                            <div class="text-sm text-gray-500">{{ demande.dateValidation|date('H:i') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if demande.validePar %}
+                            <div class="info-card">
+                                <div class="info-card-title">Validée par</div>
+                                <div class="info-card-content">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-user-check text-blue-500 mr-2"></i>
+                                        <div class="font-semibold">{{ demande.validePar.prenom }} {{ demande.validePar.nom }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# Footer avec actions (uniquement en écran) #}
+                <div class="bg-gray-50 border-t border-gray-200 px-6 md:px-8 py-4 no-print">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Cette demande a été enregistrée le {{ demande.dateSoumission|date('d/m/Y à H:i') }}
+                        </p>
+                        <div class="flex flex-wrap" style="gap: 0.75rem;">
+                            <a href="{{ path('demande_habilitation_pdf', { id: demande.id }) }}"
+                               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors no-print"
+                               style="margin-right: 0.75rem; margin-bottom: 0.5rem;">
+                                <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                            </a>
+                            <a href="{{ path('app_demandes') }}" 
+                               class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors no-print"
+                               style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-arrow-left mr-2"></i>Retour aux demandes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}

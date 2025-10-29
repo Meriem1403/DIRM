@@ -1,5 +1,20 @@
 {# templates/home/partials/_header.html.twig #}
-<header class="flex items-center justify-between px-4 sm:px-6 py-4 bg-white/80 backdrop-blur-md shadow-md fixed w-full z-50">
+<style>
+    #main-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        z-index: 99999 !important;
+        background-color: rgba(255, 255, 255, 0.98) !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 1rem !important;
+    }
+</style>
+<header id="main-header" class="flex items-center justify-between px-4 sm:px-6 py-4 bg-white shadow-md fixed top-0 left-0 w-full z-[9999] transition-all duration-300" style="position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; z-index: 99999 !important; background-color: rgba(255, 255, 255, 0.98) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; display: flex !important;">
     <!-- Logo + Navigation -->
     <div class="flex items-center space-x-4 sm:space-x-6 flex-1">
         <a href="{{ path('homepage') }}">
@@ -7,16 +22,29 @@
         </a>
         
         <!-- Navigation Desktop -->
-        <nav class="hidden lg:flex space-x-6 xl:space-x-8 text-gray-800 font-medium text-base xl:text-lg">
-            <a href="{{ path('homepage') }}" class="hover:text-blue-600 transition-colors">Accueil</a>
-            <a href="{{ path('app_demandes') }}" class="hover:text-blue-600 transition-colors">Démarches</a>
+        <nav class="hidden lg:flex items-center space-x-4 xl:space-x-6 text-gray-800 font-medium text-sm xl:text-base">
+            <a href="{{ path('homepage') }}" class="px-3 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if app.request.get('_route') == 'homepage' %}bg-blue-50 text-blue-600 font-semibold{% endif %}">Accueil</a>
             {% if app.user %}
-                <a href="{{ path('mes_risques') }}" class="hover:text-blue-600 transition-colors">Risques</a>
+                <a href="{{ path('app_demandes') }}" class="px-3 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if 'demande' in app.request.get('_route') %}bg-blue-50 text-blue-600 font-semibold{% endif %}">Démarches</a>
+                <a href="{{ path('mes_risques') }}" class="px-3 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors relative {% if app.request.get('_route') == 'mes_risques' %}bg-blue-50 text-blue-600 font-semibold{% endif %}">
+                    Risques
+                    {% if app.user.notifications|filter(n => not n.lu)|length > 0 %}
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">{{ app.user.notifications|filter(n => not n.lu)|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="{{ path('notifications') }}" class="px-3 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors relative {% if app.request.get('_route') == 'notifications' %}bg-blue-50 text-blue-600 font-semibold{% endif %}">
+                    Notifications
+                    {% if app.user.notifications|filter(n => not n.lu)|length > 0 %}
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">{{ app.user.notifications|filter(n => not n.lu)|length }}</span>
+                    {% endif %}
+                </a>
                 {% if 'ROLE_ADMIN' in app.user.roles %}
-                    <a href="/admin" class="hover:text-blue-600 transition-colors">Administration</a>
+                    <div class="h-6 w-px bg-gray-300 mx-2"></div>
+                    <a href="/admin" class="px-3 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if '/admin' in app.request.pathInfo and 'retours-action' not in app.request.pathInfo %}bg-blue-50 text-blue-600 font-semibold{% endif %}">Administration</a>
                 {% endif %}
             {% endif %}
-            <a href="{{ path('aide_contact') }}" class="hover:text-blue-600 transition-colors">Aide & contact</a>
+            <div class="h-6 w-px bg-gray-300 mx-2"></div>
+            <a href="{{ path('aide_contact') }}" class="px-3 py-2 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors {% if app.request.get('_route') == 'aide_contact' %}bg-blue-50 text-blue-600 font-semibold{% endif %}">Aide & contact</a>
         </nav>
     </div>
 
@@ -156,11 +184,17 @@
                     <i class="fas fa-file-alt mr-2"></i>Démarches
                 </a>
                 {% if app.user %}
-                    <a href="{{ path('mes_risques') }}" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                    <a href="{{ path('mes_risques') }}" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors relative">
                         <i class="fas fa-exclamation-triangle mr-2"></i>Risques
+                        {% if app.user.notifications|filter(n => not n.lu)|length > 0 %}
+                            <span class="ml-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">{{ app.user.notifications|filter(n => not n.lu)|length }}</span>
+                        {% endif %}
                     </a>
-                    <a href="{{ path('notifications') }}" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
+                    <a href="{{ path('notifications') }}" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors relative">
                         <i class="fas fa-bell mr-2"></i>Notifications
+                        {% if app.user.notifications|filter(n => not n.lu)|length > 0 %}
+                            <span class="ml-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">{{ app.user.notifications|filter(n => not n.lu)|length }}</span>
+                        {% endif %}
                     </a>
                     {% if 'ROLE_ADMIN' in app.user.roles %}
                         <a href="/admin" class="px-4 py-3 rounded-md text-gray-800 hover:bg-gray-100 font-medium transition-colors">
