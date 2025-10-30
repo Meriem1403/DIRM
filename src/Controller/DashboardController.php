@@ -63,11 +63,13 @@ class DashboardController extends AbstractController
         GoudurixRepository $goudurixRepository,
         ServiceRepository $serviceRepository,
         \App\Repository\LieuRepository $lieuRepository,
+        NotificationRepository $notificationRepository,
         Request $request
     ): Response {
         $user = $this->getUser();
         $userService = $user->getService();
         $isAdmin = in_array('ROLE_ADMIN', $user->getRoles());
+        $notificationsNonLues = $notificationRepository->countNonLuesByDestinataire($user);
         
         // Récupérer les filtres depuis la requête
         $serviceParam = $request->query->get('service', '');
@@ -162,6 +164,7 @@ class DashboardController extends AbstractController
             'lieuxDisponibles' => $lieuxDisponibles,
             'serviceSelectionne' => $serviceSelectionne,
             'lieuSelectionne' => $lieuSelectionne,
+            'notificationsNonLues' => $notificationsNonLues,
         ]);
     }
 
