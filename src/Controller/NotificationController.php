@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/notifications')]
 #[IsGranted('ROLE_USER')]
@@ -86,5 +87,35 @@ class NotificationController extends AbstractController
         }
         
         return $this->redirectToRoute('notifications');
+    }
+
+    #[Route('/api/summary', name: 'notifications_api_summary', methods: ['GET'])]
+    public function apiSummary(NotificationRepository $notificationRepository): JsonResponse
+    {
+        $user = $this->getUser();
+        $count = $notificationRepository->countNonLuesByDestinataire($user);
+        $latest = $notificationRepository->createQueryBuilder('n')
+            ->andWhere('n.destinataire = :dest')
+            ->setParameter('dest', $user)
+            ->orderBy('n.dateCreation', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+
+        $items = array_map(function(\App\Entity\Notification $n) {
+            return [
+                'id' => $n->getId(),
+                'titre' => $n->getTitre(),
+                'message' => $n->getMessage(),
+                'lu' => (bool) $n->isLu(),
+                'date' => $n->getDateCreation() ? $n->getDateCreation()->format('d/m/Y H:i') : null,
+                'url' => $this->generateUrl('notification_ouvrir_risque', ['id' => $n->getId()])
+            ];
+        }, $latest);
+
+        return $this->json([
+            'count' => (int) $count,
+            'latest' => $items,
+        ]);
     }
 }
