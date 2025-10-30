@@ -33,6 +33,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 
 class GoudurixCrudController extends AbstractCrudController
 {
@@ -63,7 +64,6 @@ class GoudurixCrudController extends AbstractCrudController
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->setPaginatorPageSize(12)
             ->setHelp('index', 'Gestion des risques professionnels et DUERP (Document Unique d\'Évaluation des Risques Professionnels)')
-            ->overrideTemplate('crud/index', 'admin/goudurix_cards.html.twig')
             ->overrideTemplate('crud/detail', 'admin/goudurix_detail.html.twig');
     }
 
@@ -211,6 +211,12 @@ class GoudurixCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
+        $indexTableUrl = $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction('index')
+            ->set('view', 'table')
+            ->generateUrl();
+
         return $actions
             ->update(Crud::PAGE_INDEX, Action::NEW, function (Action $action) {
                 return $action->setIcon('fa fa-plus')->setLabel('Nouveau Risque');
@@ -223,6 +229,22 @@ class GoudurixCrudController extends AbstractCrudController
             })
             ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
                 return $action->setIcon('fa fa-eye');
+            })
+            // Forcer "Retour à la liste" à renvoyer vers la vue table
+            ->update(Crud::PAGE_DETAIL, Action::INDEX, function (Action $action) use ($indexTableUrl) {
+                return $action->linkToUrl($indexTableUrl);
+            })
+            // Sur les pages EDIT et NEW, l'action INDEX peut ne pas exister: on l'ajoute puis on la met à jour
+            ->add(Crud::PAGE_EDIT, Action::INDEX)
+            ->update(Crud::PAGE_EDIT, Action::INDEX, function (Action $action) use ($indexTableUrl) {
+                return $action->linkToUrl($indexTableUrl);
+            })
+            ->add(Crud::PAGE_NEW, Action::INDEX)
+            ->update(Crud::PAGE_EDIT, Action::INDEX, function (Action $action) use ($indexTableUrl) {
+                return $action->linkToUrl($indexTableUrl);
+            })
+            ->update(Crud::PAGE_NEW, Action::INDEX, function (Action $action) use ($indexTableUrl) {
+                return $action->linkToUrl($indexTableUrl);
             });
     }
 
@@ -275,11 +297,10 @@ class GoudurixCrudController extends AbstractCrudController
     public function configureAssets(Assets $assets): Assets
     {
         return $assets
-            ->addCssFile('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css')
-            ->addCssFile('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
+            ->addCssFile('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
     }
 
-    public function index(AdminContext $context): Response
+    public function index(AdminContext $context): KeyValueStore
     {
         // Le template parent @EasyAdmin/crud/index.html.twig appelle getEntity() quelque part
         // On doit contourner en utilisant directement le template sans passer par le parent
@@ -289,9 +310,31 @@ class GoudurixCrudController extends AbstractCrudController
         
         // Détecter si on est sur l'index : pas d'entityId ET (action est 'index' ou null/vide)
         $isIndex = empty($entityId) && ($crudAction === 'index' || $crudAction === null || $crudAction === '');
+        $view = $request->query->get('view', 'cards'); // 'cards' (par défaut) ou 'table'
         
         // Si on est sur la page index, on ne peut pas utiliser getEntity() - gérer nous-mêmes
         if ($isIndex) {
+            // Si la vue demandée est la table standard, rendre le template EasyAdmin standard
+            if ($view === 'table') {
+                // Récupérer les données nécessaires pour les filtres
+                $services = $this->serviceRepository->findBy(['actif' => true], ['nom' => 'ASC']);
+                $responsables = $this->userRepository->findAll();
+                $lieux = $this->lieuRepository->findAll();
+                
+                // Déléguer à EasyAdmin mais ajouter nos variables
+                $result = parent::index($context);
+                
+                // Si c'est un KeyValueStore, ajouter nos variables
+                if (method_exists($result, 'get')) {
+                    $templateParameters = $result->get('templateParameters') ?? [];
+                    $templateParameters['services'] = $services;
+                    $templateParameters['responsables'] = $responsables;
+                    $templateParameters['lieux'] = $lieux;
+                    $result->set('templateParameters', $templateParameters);
+                }
+                
+                return $result;
+            }
             // Récupérer les paramètres de filtres depuis la requête
             $filters = $request->query->all()['filters'] ?? [];
             
@@ -370,18 +413,23 @@ class GoudurixCrudController extends AbstractCrudController
             $responsables = $this->userRepository->findAll();
             $lieux = $this->lieuRepository->findAll();
             
-            return $this->render('admin/goudurix_cards.html.twig', [
-                'entities' => $entities,
-                'crud' => $crud,
-                'filters' => $filters ?? [],
-                'services' => $services,
-                'responsables' => $responsables,
-                'lieux' => $lieux,
+            return KeyValueStore::new([
+                'templateName' => 'crud/index',
+                'templatePath' => 'admin/goudurix_cards.html.twig',
+                'templateParameters' => [
+                    'entities' => $entities,
+                    'crud' => $crud,
+                    'filters' => $filters ?? [],
+                    'services' => $services,
+                    'responsables' => $responsables,
+                    'lieux' => $lieux,
+                ],
             ]);
         }
         
         // Si ce n'est pas l'index, laisser EasyAdmin gérer normalement
         // (cela ne devrait normalement pas arriver car detail/edit ont leurs propres méthodes)
+        // Autres pages (detail/edit/new...) : déléguer à EasyAdmin et rendre le template résultant
         return parent::index($context);
     }
 
