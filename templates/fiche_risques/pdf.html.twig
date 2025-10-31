@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fiche de Risque - {{ risque.titre }}</title>
+    <style>
+        @page {
+            margin: 20mm;
+        }
+        
+        body {
+            font-family: 'Helvetica', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .header h1 {
+            font-size: 20pt;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #111;
+        }
+        
+        .header-info {
+            display: table;
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .header-info-item {
+            display: table-cell;
+            text-align: left;
+            font-size: 9pt;
+            color: #555;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .section-content {
+            font-size: 10pt;
+            color: #333;
+            line-height: 1.7;
+            padding-left: 30px;
+        }
+        
+        .section-content p {
+            margin: 8px 0;
+        }
+        
+        .section-content ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        .section-content li {
+            margin-bottom: 5px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 9pt;
+            font-weight: 600;
+            margin: 5px 5px 5px 0;
+        }
+        
+        .badge-critique {
+            background-color: #fee;
+            color: #c00;
+        }
+        
+        .badge-eleve {
+            background-color: #ffe;
+            color: #c60;
+        }
+        
+        .badge-moyen {
+            background-color: #ffe;
+            color: #ca0;
+        }
+        
+        .badge-faible {
+            background-color: #efe;
+            color: #060;
+        }
+        
+        .badge-en-cours {
+            background-color: #eef;
+            color: #036;
+        }
+        
+        .badge-traite {
+            background-color: #efe;
+            color: #060;
+        }
+        
+        .badge-surveille {
+            background-color: #ffe;
+            color: #ca0;
+        }
+        
+        .badge-archive {
+            background-color: #eee;
+            color: #333;
+        }
+        
+        .info-grid {
+            display: table;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .info-item {
+            display: table-cell;
+            width: 33.33%;
+            padding: 8px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        .info-label {
+            font-size: 8pt;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #111;
+        }
+        
+        .empty-field {
+            color: #999;
+            font-style: italic;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .score-display {
+            display: inline-block;
+            padding: 8px 15px;
+            background: #667eea;
+            color: white;
+            border-radius: 6px;
+            font-size: 14pt;
+            font-weight: bold;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 8pt;
+            color: #666;
+            text-align: center;
+        }
+        
+        @media print {
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>FICHE DE RISQUE SIMPLIFIÉE</h1>
+        <div class="header-info">
+            <div class="header-info-item">
+                <strong>Date :</strong> {{ risque.dateDetection|date('d/m/Y') }}
+            </div>
+            <div class="header-info-item">
+                <strong>Rédigée par :</strong> {{ risque.createur ? risque.createur.prenom ~ ' ' ~ risque.createur.nom : (risque.responsable.prenom ~ ' ' ~ risque.responsable.nom) }}
+            </div>
+            <div class="header-info-item">
+                <strong>Service / activité concernée :</strong> {{ risque.service.nom }}
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            Nom du risque
+        </div>
+        <div class="section-content">
+            <p><strong>{{ risque.titre }}</strong></p>
+            {% if risque.categorie %}
+                <p style="color: #666; font-size: 9pt;">Catégorie : {{ risque.categorie }}</p>
+            {% endif %}
+            <p>
+                {% set niveauClass = 'faible' %}
+                {% if risque.niveauRisque == 'critique' %}
+                    {% set niveauClass = 'critique' %}
+                {% elseif risque.niveauRisque == 'élevé' %}
+                    {% set niveauClass = 'eleve' %}
+                {% elseif risque.niveauRisque == 'moyen' %}
+                    {% set niveauClass = 'moyen' %}
+                {% endif %}
+                <span class="badge badge-{{ niveauClass }}">Niveau : {{ risque.niveauRisque|capitalize }}</span>
+                {% set statutClass = 'en-cours' %}
+                {% if risque.statut == 'en_cours' %}
+                    {% set statutClass = 'en-cours' %}
+                {% elseif risque.statut == 'traité' %}
+                    {% set statutClass = 'traite' %}
+                {% elseif risque.statut == 'surveillé' %}
+                    {% set statutClass = 'surveille' %}
+                {% else %}
+                    {% set statutClass = 'archive' %}
+                {% endif %}
+                <span class="badge badge-{{ statutClass }}">Statut : {{ risque.statut|replace({'_': ' '})|capitalize }}</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            Situation à risque
+        </div>
+        <div class="section-content">
+            {% if risque.description %}
+                <p>{{ risque.description }}</p>
+            {% else %}
+                <div class="empty-field">Aucune situation décrite</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            Origine du risque
+        </div>
+        <div class="section-content">
+            {% if risque.source %}
+                <p>{{ risque.source }}</p>
+            {% else %}
+                <div class="empty-field">Origine non spécifiée</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            Personnes exposées
+        </div>
+        <div class="section-content">
+            {% if risque.observateurs|length > 0 %}
+                <p>Personnes concernées :</p>
+                <ul>
+                    {% for observateur in risque.observateurs %}
+                        <li>{{ observateur.prenom }} {{ observateur.nom }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <p><strong>Responsable du risque :</strong> {{ risque.responsable.prenom }} {{ risque.responsable.nom }}</p>
+            {% if risque.observateurs|length == 0 %}
+                <div class="empty-field" style="margin-top: 10px;">Aucune personne spécifique identifiée</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            Conséquences possibles
+        </div>
+        <div class="section-content">
+            {% if risque.gravite or risque.scoreRisque %}
+                <div class="info-grid">
+                    {% if risque.probabilite %}
+                        <div class="info-item">
+                            <div class="info-label">Probabilité</div>
+                            <div class="info-value">{{ risque.probabilite }}/5</div>
+                        </div>
+                    {% endif %}
+                    {% if risque.gravite %}
+                        <div class="info-item">
+                            <div class="info-label">Gravité</div>
+                            <div class="info-value">{{ risque.gravite }}/5</div>
+                        </div>
+                    {% endif %}
+                    {% if risque.scoreRisque %}
+                        <div class="info-item">
+                            <div class="info-label">Score de risque</div>
+                            <div class="info-value">
+                                <span class="score-display">{{ risque.scoreRisque }}/25</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="empty-field">Conséquences non spécifiées</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            Mesures de prévention / précautions à prendre
+        </div>
+        <div class="section-content">
+            {% if risque.mesuresPreventives %}
+                <p><strong>Mesures préventives :</strong></p>
+                <p>{{ risque.mesuresPreventives }}</p>
+            {% endif %}
+            {% if risque.mesuresCorrectives %}
+                <p><strong>Mesures correctives :</strong></p>
+                <p>{{ risque.mesuresCorrectives }}</p>
+            {% endif %}
+            {% if risque.mesureEnCours %}
+                <p><strong>Mesure en cours :</strong></p>
+                <p>{{ risque.mesureEnCours }}</p>
+                {% if risque.mesureMiseEnPlace %}
+                    <p style="margin-top: 10px; padding: 8px; background: #f0fdf4; border-left: 3px solid #16a34a;">
+                        <strong style="color: #16a34a;">✓ Mesure mise en place</strong>
+                    </p>
+                {% endif %}
+            {% endif %}
+            {% if not risque.mesuresPreventives and not risque.mesuresCorrectives and not risque.mesureEnCours %}
+                <div class="empty-field">Aucune mesure de prévention spécifiée</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            Remarques / suivi
+        </div>
+        <div class="section-content">
+            {% if risque.commentaires %}
+                <p>{{ risque.commentaires }}</p>
+            {% endif %}
+            {% if risque.retourAction %}
+                <p><strong>Retour d'action :</strong></p>
+                <p>{{ risque.retourAction }}</p>
+                {% if risque.auteurRetour %}
+                    <p style="margin-top: 10px; font-size: 9pt; color: #666;">
+                        Par {{ risque.auteurRetour.prenom }} {{ risque.auteurRetour.nom }}
+                        {% if risque.dateRetour %}
+                            le {{ risque.dateRetour|date('d/m/Y à H:i') }}
+                        {% endif %}
+                    </p>
+                {% endif %}
+            {% endif %}
+            {% if risque.lieu %}
+                <p><strong>Lieu :</strong> {{ risque.lieu.nom }}</p>
+            {% endif %}
+            {% if not risque.commentaires and not risque.retourAction %}
+                <div class="empty-field">Aucune remarque ou suivi enregistré</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Fiche générée le {{ 'now'|date('d/m/Y à H:i') }} - Document confidentiel</p>
+    </div>
+</body>
+</html>

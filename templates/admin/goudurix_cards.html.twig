@@ -112,11 +112,13 @@
                         <div style="position: relative;">
                             <select name="filters[service]" id="filter-service" style="width: 100%; padding: 0.625rem 2.5rem 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; appearance: none; background-color: white;">
                                 <option value="">Tous</option>
-                                {% for service in services %}
-                                    <option value="{{ service.id }}" {% if filters.service is defined and (filters.service == service.id or (filters.service is iterable and service.id in filters.service)) %}selected{% endif %}>
-                                        {{ service.nom }}
-                                    </option>
-                                {% endfor %}
+                                {% if services is defined %}
+                                    {% for service in services %}
+                                        <option value="{{ service.id }}" {% if filters.service is defined and (filters.service == service.id or (filters.service is iterable and service.id in filters.service)) %}selected{% endif %}>
+                                            {{ service.nom }}
+                                        </option>
+                                    {% endfor %}
+                                {% endif %}
                             </select>
                             <i class="fas fa-chevron-down" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #6b7280; pointer-events: none;"></i>
                         </div>
@@ -129,11 +131,13 @@
                         <div style="position: relative;">
                             <select name="filters[responsable]" id="filter-responsable" style="width: 100%; padding: 0.625rem 2.5rem 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; appearance: none; background-color: white;">
                                 <option value="">Tous</option>
-                                {% for responsable in responsables %}
-                                    <option value="{{ responsable.id }}" {% if filters.responsable is defined and (filters.responsable == responsable.id or (filters.responsable is iterable and responsable.id in filters.responsable)) %}selected{% endif %}>
-                                        {{ responsable.prenom }} {{ responsable.nom }}
-                                    </option>
-                                {% endfor %}
+                                {% if responsables is defined %}
+                                    {% for responsable in responsables %}
+                                        <option value="{{ responsable.id }}" {% if filters.responsable is defined and (filters.responsable == responsable.id or (filters.responsable is iterable and responsable.id in filters.responsable)) %}selected{% endif %}>
+                                            {{ responsable.prenom }} {{ responsable.nom }}
+                                        </option>
+                                    {% endfor %}
+                                {% endif %}
                             </select>
                             <i class="fas fa-chevron-down" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #6b7280; pointer-events: none;"></i>
                         </div>
@@ -146,11 +150,13 @@
                         <div style="position: relative;">
                             <select name="filters[lieu]" id="filter-lieu" style="width: 100%; padding: 0.625rem 2.5rem 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; appearance: none; background-color: white;">
                                 <option value="">Tous</option>
-                                {% for lieu in lieux %}
-                                    <option value="{{ lieu.id }}" {% if filters.lieu is defined and (filters.lieu == lieu.id or (filters.lieu is iterable and lieu.id in filters.lieu)) %}selected{% endif %}>
-                                        {{ lieu.nom }}
-                                    </option>
-                                {% endfor %}
+                                {% if lieux is defined %}
+                                    {% for lieu in lieux %}
+                                        <option value="{{ lieu.id }}" {% if filters.lieu is defined and (filters.lieu == lieu.id or (filters.lieu is iterable and lieu.id in filters.lieu)) %}selected{% endif %}>
+                                            {{ lieu.nom }}
+                                        </option>
+                                    {% endfor %}
+                                {% endif %}
                             </select>
                             <i class="fas fa-chevron-down" style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: #6b7280; pointer-events: none;"></i>
                         </div>

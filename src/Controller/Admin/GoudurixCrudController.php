@@ -71,14 +71,10 @@ class GoudurixCrudController extends AbstractCrudController
     {
         yield IdField::new('id')->onlyOnDetail();
         
-        yield TextField::new('titre', 'Titre du Risque')
+        // === INFORMATIONS GÉNÉRALES ===
+        yield TextField::new('titre', 'Nom du risque')
             ->setRequired(true)
-            ->setHelp('Titre descriptif du risque identifié');
-        
-        yield TextareaField::new('description', 'Description')
-            ->setRequired(true)
-            ->setHelp('Description détaillée du risque')
-            ->setNumOfRows(4);
+            ->setHelp('Titre descriptif du risque identifié (ex: Risque électrique, Risque de chute, etc.)');
         
         yield ChoiceField::new('niveauRisque', 'Niveau de Risque')
             ->setRequired(true)
@@ -96,6 +92,10 @@ class GoudurixCrudController extends AbstractCrudController
             ])
             ->setHelp('Niveau de criticité du risque');
         
+        yield TextField::new('categorie', 'Catégorie')
+            ->setHelp('Catégorie du risque (ex: Sécurité, Santé, Environnement, Ergonomie)')
+            ->hideOnIndex();
+        
         yield ChoiceField::new('statut', 'Statut')
             ->setRequired(true)
             ->setChoices([
@@ -112,62 +112,7 @@ class GoudurixCrudController extends AbstractCrudController
             ])
             ->setHelp('État actuel du traitement du risque');
         
-        yield TextField::new('categorie', 'Catégorie')
-            ->setHelp('Catégorie du risque (ex: Sécurité, Santé, Environnement)')
-            ->hideOnIndex();
-        
-        yield TextField::new('source', 'Source')
-            ->setHelp('Source de détection du risque')
-            ->hideOnIndex();
-        
-        yield IntegerField::new('probabilite', 'Probabilité (1-5)')
-            ->setHelp('Probabilité d\'occurrence du risque (1=très faible, 5=très élevée)')
-            ->setFormTypeOption('attr', ['min' => 1, 'max' => 5])
-            ->hideOnIndex();
-        
-        yield IntegerField::new('gravite', 'Gravité (1-5)')
-            ->setHelp('Gravité des conséquences (1=très faible, 5=très élevée)')
-            ->setFormTypeOption('attr', ['min' => 1, 'max' => 5])
-            ->hideOnIndex();
-        
-        yield IntegerField::new('scoreRisque', 'Score de Risque')
-            ->setHelp('Score calculé automatiquement (Probabilité × Gravité)')
-            ->onlyOnDetail();
-        
-        yield DateField::new('dateDetection', 'Date de Détection')
-            ->setRequired(true)
-            ->setHelp('Date à laquelle le risque a été identifié');
-        
-        yield DateField::new('dateResolution', 'Date de Résolution')
-            ->setHelp('Date de résolution du risque (si applicable)')
-            ->hideOnIndex();
-        
-        yield TextareaField::new('mesuresPreventives', 'Mesures Préventives')
-            ->setHelp('Actions préventives mises en place')
-            ->setNumOfRows(3)
-            ->hideOnIndex();
-        
-        yield TextareaField::new('mesuresCorrectives', 'Mesures Correctives')
-            ->setHelp('Actions correctives mises en place')
-            ->setNumOfRows(3)
-            ->hideOnIndex();
-        
-        yield TextareaField::new('commentaires', 'Commentaires')
-            ->setHelp('Commentaires supplémentaires')
-            ->setNumOfRows(2)
-            ->hideOnIndex();
-        
-        yield AssociationField::new('responsable', 'Responsable')
-            ->setRequired(true)
-            ->setHelp('Personne responsable du suivi du risque')
-            ->autocomplete();
-        
-        yield AssociationField::new('createur', 'Créateur')
-            ->setHelp('Personne ayant créé l\'enregistrement')
-            ->autocomplete()
-            ->hideOnIndex();
-        
-        yield AssociationField::new('service', 'Service')
+        yield AssociationField::new('service', 'Service / activité concernée')
             ->setRequired(true)
             ->setHelp('Service concerné par le risque')
             ->autocomplete();
@@ -177,28 +122,82 @@ class GoudurixCrudController extends AbstractCrudController
             ->autocomplete()
             ->hideOnIndex();
         
-        yield AssociationField::new('observateurs', 'Observateurs')
-            ->setHelp('Personnes chargées de surveiller le risque')
+        yield DateField::new('dateDetection', 'Date')
+            ->setRequired(true)
+            ->setHelp('Date à laquelle le risque a été identifié');
+        
+        yield AssociationField::new('createur', 'Rédigée par')
+            ->setHelp('Personne ayant créé cette fiche de risque')
             ->autocomplete()
             ->hideOnIndex();
         
-        yield DateTimeField::new('createdAt', 'Créé le')
+        // === SITUATION À RISQUE ===
+        yield TextareaField::new('description', 'Situation à risque')
+            ->setRequired(true)
+            ->setHelp('Décris simplement dans quel contexte le risque apparaît. Exemples : Lors de la manipulation du robot branché au secteur, Lors de la maintenance du bras motorisé, En présence d\'enfants pendant les tests.')
+            ->setNumOfRows(4);
+        
+        // === ORIGINE DU RISQUE ===
+        yield TextareaField::new('source', 'Origine du risque')
+            ->setHelp('Qu\'est-ce qui cause le danger ? Exemples : câble dénudé, surface glissante, moteur chaud, petites pièces détachables…')
+            ->setNumOfRows(3)
+            ->hideOnIndex();
+        
+        // === PERSONNES EXPOSÉES ===
+        yield AssociationField::new('responsable', 'Responsable du risque')
+            ->setRequired(true)
+            ->setHelp('Personne responsable du suivi du risque')
+            ->autocomplete();
+        
+        yield AssociationField::new('observateurs', 'Personnes exposées')
+            ->setHelp('Qui pourrait être touché ? Enfants, enseignants, techniciens, visiteurs, etc.')
+            ->autocomplete()
+            ->hideOnIndex();
+        
+        // === CONSÉQUENCES POSSIBLES ===
+        yield IntegerField::new('probabilite', 'Probabilité (1-5)')
+            ->setHelp('Probabilité d\'occurrence du risque (1=très faible, 5=très élevée)')
+            ->setFormTypeOption('attr', ['min' => 1, 'max' => 5])
+            ->hideOnIndex();
+        
+        yield IntegerField::new('gravite', 'Gravité / Conséquences possibles (1-5)')
+            ->setHelp('Gravité des conséquences (1=très faible, 5=très élevée). Que peut-il arriver si rien n\'est fait ? Exemples : choc électrique, brûlure, chute, coupure, stress, panne, blessure légère/grave…')
+            ->setFormTypeOption('attr', ['min' => 1, 'max' => 5])
+            ->hideOnIndex();
+        
+        yield IntegerField::new('scoreRisque', 'Score de Risque')
+            ->setHelp('Score calculé automatiquement (Probabilité × Gravité)')
             ->onlyOnDetail();
         
-        yield DateTimeField::new('updatedAt', 'Modifié le')
-            ->onlyOnDetail();
-
-        // Section Mesures et Retours d'Action
-        yield TextareaField::new('mesureEnCours', 'Mesure en Cours')
+        // === MESURES DE PRÉVENTION ===
+        yield TextareaField::new('mesuresPreventives', 'Mesures préventives')
+            ->setHelp('Comment réduire ou éviter ce risque ? Exemples : Débrancher avant manipulation, Mettre un carter de protection, Porter des gants / lunettes, Éloigner les enfants pendant la phase de test, Vérifier les branchements avant allumage')
+            ->setNumOfRows(4)
+            ->hideOnIndex();
+        
+        yield TextareaField::new('mesuresCorrectives', 'Mesures correctives')
+            ->setHelp('Actions correctives mises en place')
+            ->setNumOfRows(3)
+            ->hideOnIndex();
+        
+        yield TextareaField::new('mesureEnCours', 'Mesure en cours')
             ->setHelp('Décrivez la mesure préventive ou corrective mise en place ou proposée')
+            ->setNumOfRows(3)
             ->hideOnIndex();
 
-        yield BooleanField::new('mesureMiseEnPlace', 'Mesure Mise en Place')
+        yield BooleanField::new('mesureMiseEnPlace', 'Mesure mise en place')
             ->setHelp('Cochez si la mesure est effectivement mise en place')
             ->hideOnIndex();
-
+        
+        // === REMARQUES / SUIVI ===
+        yield TextareaField::new('commentaires', 'Remarques / suivi')
+            ->setHelp('Notes complémentaires, observations, améliorations possibles.')
+            ->setNumOfRows(3)
+            ->hideOnIndex();
+        
         yield TextareaField::new('retourAction', 'Retour d\'Action')
             ->setHelp('Retour du chef de service sur les actions mises en place')
+            ->setNumOfRows(3)
             ->hideOnIndex();
 
         yield AssociationField::new('auteurRetour', 'Auteur du Retour')
@@ -207,6 +206,17 @@ class GoudurixCrudController extends AbstractCrudController
 
         yield DateTimeField::new('dateRetour', 'Date du Retour')
             ->hideOnIndex();
+        
+        yield DateField::new('dateResolution', 'Date de Résolution')
+            ->setHelp('Date de résolution du risque (si applicable)')
+            ->hideOnIndex();
+        
+        // === INFORMATIONS SYSTÈME ===
+        yield DateTimeField::new('createdAt', 'Créé le')
+            ->onlyOnDetail();
+        
+        yield DateTimeField::new('updatedAt', 'Modifié le')
+            ->onlyOnDetail();
     }
 
     public function configureActions(Actions $actions): Actions

@@ -638,6 +638,7 @@
         .variant-risques .admin-action-icon { background:#fff7ed; color:#c2410c; }
         .variant-retours .admin-action-icon { background:#fef3c7; color:#b45309; }
         .variant-plan .admin-action-icon { background:#e0f2fe; color:#075985; }
+        .variant-comprendre .admin-action-icon { background:#f3e8ff; color:#7c3aed; }
     </style>
 {% endblock %}
 
@@ -714,6 +715,20 @@
         </div>
     {% endfor %}
 
+    <!-- Bouton Fiche des risques (visible pour tous) -->
+    <div class="admin-actions" style="margin-bottom: 24px;">
+        <div class="admin-actions-title">Documentation</div>
+        <div class="admin-actions-grid">
+            <a href="{{ path('fiche_risques') }}" class="admin-action-btn variant-comprendre">
+                <div class="admin-action-icon"><i class="fas fa-file-alt"></i></div>
+                <div class="admin-action-text">
+                    <span class="admin-action-title">Fiche des risques</span>
+                    <span class="admin-action-sub">Consulter toutes les fiches</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
     <!-- Actions administrateur -->
     {% if isAdmin %}
     <div class="admin-actions">
@@ -759,8 +774,17 @@
             <a href="/plan-action" class="admin-action-btn variant-plan">
                 <div class="admin-action-icon"><i class="fas fa-clipboard-check"></i></div>
                 <div class="admin-action-text">
-                    <span class="admin-action-title">Plan d’action</span>
+                    <span class="admin-action-title">Plan d'action</span>
                     <span class="admin-action-sub">Bientôt disponible</span>
+                </div>
+            </a>
+
+            <!-- 7) Comprendre les risques -->
+            <a href="/comprendre-risques" class="admin-action-btn variant-comprendre">
+                <div class="admin-action-icon"><i class="fas fa-book-reader"></i></div>
+                <div class="admin-action-text">
+                    <span class="admin-action-title">Comprendre les risques</span>
+                    <span class="admin-action-sub">Guide et documentation</span>
                 </div>
             </a>
         </div>

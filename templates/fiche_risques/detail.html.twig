@@ -1,0 +1,502 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fiche de risque - {{ risque.titre }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fiche-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.2s;
+            margin-bottom: 24px;
+        }
+
+        .back-button:hover {
+            background: #5568d3;
+            color: white;
+        }
+
+        .fiche-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .fiche-header {
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+
+        .fiche-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .fiche-header h1 i {
+            color: #667eea;
+            font-size: 2rem;
+        }
+
+        .fiche-header-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .header-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .header-info-item i {
+            color: #667eea;
+            width: 20px;
+        }
+
+        .fiche-section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .section-header i {
+            font-size: 1.5rem;
+            color: #667eea;
+            width: 28px;
+            text-align: center;
+        }
+
+        .section-content {
+            font-size: 15px;
+            color: #374151;
+            line-height: 1.8;
+            padding-left: 44px;
+        }
+
+        .section-content p {
+            margin: 0 0 12px 0;
+        }
+
+        .section-content ul {
+            margin: 12px 0;
+            padding-left: 24px;
+        }
+
+        .section-content li {
+            margin-bottom: 8px;
+        }
+
+        .section-content strong {
+            color: #111827;
+        }
+
+        .empty-field {
+            color: #9ca3af;
+            font-style: italic;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .document-section {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px solid #f3f4f6;
+        }
+
+        .document-upload {
+            padding: 24px;
+            background: #f9fafb;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .document-upload.dragover {
+            border-color: #667eea;
+            background: #f3e8ff;
+        }
+
+        .upload-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 12px;
+        }
+
+        .upload-button:hover {
+            background: #5568d3;
+        }
+
+        .document-list {
+            margin-top: 20px;
+        }
+
+        .document-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .document-item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .document-item-info i {
+            color: #667eea;
+            font-size: 20px;
+        }
+
+        .document-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .document-link {
+            padding: 6px 12px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .document-link:hover {
+            background: #5568d3;
+        }
+
+        .delete-link {
+            padding: 6px 12px;
+            background: #ef4444;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .delete-link:hover {
+            background: #dc2626;
+        }
+
+        /* Pas besoin de contenu CSS pour les icônes, elles sont gérées directement dans le HTML */
+
+        @media (max-width: 768px) {
+            .fiche-card {
+                padding: 24px;
+            }
+
+            .section-content {
+                padding-left: 0;
+            }
+
+            .fiche-header-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="fiche-container">
+    <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+        <a href="{{ path('fiche_risques') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Retour à la liste
+        </a>
+        <a href="{{ path('fiche_risques_pdf', {id: risque.id}) }}" class="back-button" style="background: #16a34a;">
+            <i class="fas fa-file-pdf"></i>
+            Exporter en PDF
+        </a>
+    </div>
+
+    <div class="fiche-card">
+        <div class="fiche-header">
+            <h1><i class="fas fa-file-alt"></i> FICHE DE RISQUE SIMPLIFIÉE</h1>
+            <div class="fiche-header-info">
+                <div class="header-info-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span><strong>Date :</strong> {{ risque.dateDetection|date('d/m/Y') }}</span>
+                </div>
+                <div class="header-info-item">
+                    <i class="fas fa-user"></i>
+                    <span><strong>Rédigée par :</strong> {{ risque.createur ? risque.createur.prenom ~ ' ' ~ risque.createur.nom : (risque.responsable.prenom ~ ' ' ~ risque.responsable.nom) }}</span>
+                </div>
+                <div class="header-info-item">
+                    <i class="fas fa-building"></i>
+                    <span><strong>Service / activité concernée :</strong> {{ risque.service.nom }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="fiche-section">
+            <h2 class="section-header"><i class="fas fa-exclamation-triangle"></i> Nom du risque</h2>
+            <div class="section-content">
+                <p><strong>{{ risque.titre }}</strong></p>
+                {% if risque.categorie %}
+                    <p style="color: #6b7280; font-size: 14px;">Catégorie : {{ risque.categorie }}</p>
+                {% endif %}
+                <p>
+                    <span style="display: inline-block; padding: 4px 12px; background: {% if risque.niveauRisque == 'critique' %}#fee2e2{% elseif risque.niveauRisque == 'élevé' %}#fff7ed{% elseif risque.niveauRisque == 'moyen' %}#fefce8{% else %}#f0fdf4{% endif %}; color: {% if risque.niveauRisque == 'critique' %}#dc2626{% elseif risque.niveauRisque == 'élevé' %}#ea580c{% elseif risque.niveauRisque == 'moyen' %}#ca8a04{% else %}#16a34a{% endif %}; border-radius: 12px; font-weight: 600; font-size: 13px;">
+                        Niveau : {{ risque.niveauRisque|capitalize }}
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <div class="fiche-section">
+            <h2 class="section-header"><i class="fas fa-map-marker-alt"></i> Situation à risque</h2>
+            <div class="section-content">
+                {% if risque.description %}
+                    <p>{{ risque.description }}</p>
+                {% else %}
+                    <div class="empty-field">Aucune situation décrite</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="fiche-section">
+            <h2 class="section-header"><i class="fas fa-question-circle"></i> Origine du risque</h2>
+            <div class="section-content">
+                {% if risque.source %}
+                    <p>{{ risque.source }}</p>
+                {% else %}
+                    <div class="empty-field">Origine non spécifiée</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="fiche-section">
+            <h2 class="section-header"><i class="fas fa-users"></i> Personnes exposées</h2>
+            <div class="section-content">
+                {% if risque.observateurs|length > 0 %}
+                    <p>Personnes concernées :</p>
+                    <ul>
+                        {% for observateur in risque.observateurs %}
+                            <li>{{ observateur.prenom }} {{ observateur.nom }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <p><strong>Responsable du risque :</strong> {{ risque.responsable.prenom }} {{ risque.responsable.nom }}</p>
+                {% if risque.observateurs|length == 0 %}
+                    <div class="empty-field" style="margin-top: 12px;">Aucune personne spécifique identifiée</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="fiche-section">
+            <h2 class="section-header"><i class="fas fa-exclamation-circle"></i> Conséquences possibles</h2>
+            <div class="section-content">
+                {% if risque.gravite %}
+                    <p>Gravité estimée : <strong>{{ risque.gravite }}/5</strong></p>
+                {% endif %}
+                {% if risque.scoreRisque %}
+                    <p>Score de risque : <strong>{{ risque.scoreRisque }}/25</strong></p>
+                {% endif %}
+                {% if not risque.gravite and not risque.scoreRisque %}
+                    <div class="empty-field">Conséquences non spécifiées</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="fiche-section">
+            <h2 class="section-header"><i class="fas fa-shield-alt"></i> Mesures de prévention / précautions à prendre</h2>
+            <div class="section-content">
+                {% if risque.mesuresPreventives %}
+                    <p><strong>Mesures préventives :</strong></p>
+                    <p>{{ risque.mesuresPreventives }}</p>
+                {% endif %}
+                {% if risque.mesuresCorrectives %}
+                    <p><strong>Mesures correctives :</strong></p>
+                    <p>{{ risque.mesuresCorrectives }}</p>
+                {% endif %}
+                {% if risque.mesureEnCours %}
+                    <p><strong>Mesure en cours :</strong></p>
+                    <p>{{ risque.mesureEnCours }}</p>
+                    {% if risque.mesureMiseEnPlace %}
+                        <p style="margin-top: 12px; padding: 12px; background: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 6px;">
+                            <strong style="color: #16a34a;">✓ Mesure mise en place</strong>
+                        </p>
+                    {% endif %}
+                {% endif %}
+                {% if not risque.mesuresPreventives and not risque.mesuresCorrectives and not risque.mesureEnCours %}
+                    <div class="empty-field">Aucune mesure de prévention spécifiée</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="fiche-section">
+            <h2 class="section-header"><i class="fas fa-sticky-note"></i> Remarques / suivi</h2>
+            <div class="section-content">
+                {% if risque.commentaires %}
+                    <p>{{ risque.commentaires }}</p>
+                {% endif %}
+                {% if risque.retourAction %}
+                    <p><strong>Retour d'action :</strong></p>
+                    <p>{{ risque.retourAction }}</p>
+                    {% if risque.auteurRetour %}
+                        <p style="margin-top: 12px; font-size: 13px; color: #6b7280;">
+                            Par {{ risque.auteurRetour.prenom }} {{ risque.auteurRetour.nom }}
+                            {% if risque.dateRetour %}
+                                le {{ risque.dateRetour|date('d/m/Y à H:i') }}
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                {% endif %}
+                {% if risque.lieu %}
+                    <p><strong>Lieu :</strong> {{ risque.lieu.nom }}</p>
+                {% endif %}
+                {% if not risque.commentaires and not risque.retourAction %}
+                    <div class="empty-field">Aucune remarque ou suivi enregistré</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="fiche-section document-section">
+            <h2 class="section-header"><i class="fas fa-paperclip"></i> Documents associés</h2>
+            <div class="section-content">
+                <div class="document-upload" id="documentUpload">
+                    <p style="margin-bottom: 12px; color: #6b7280;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #667eea; margin-bottom: 12px;"></i>
+                    </p>
+                    <p style="color: #374151; font-weight: 600;">Ajouter un document</p>
+                    <p style="font-size: 13px; color: #6b7280; margin-top: 4px;">Glissez-déposez un fichier ou cliquez pour sélectionner</p>
+                    <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                    <button type="button" class="upload-button" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-plus"></i>
+                        Sélectionner un fichier
+                    </button>
+                </div>
+                <div class="document-list" id="documentList">
+                    <p style="text-align: center; color: #9ca3af; padding: 20px;">
+                        Aucun document associé pour le moment
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Gestion du drag & drop
+    const uploadArea = document.getElementById('documentUpload');
+    const fileInput = document.getElementById('fileInput');
+    const documentList = document.getElementById('documentList');
+
+    if (uploadArea) {
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+    }
+
+    function handleFile(file) {
+        // Ici vous pouvez ajouter la logique pour uploader le fichier
+        // Pour l'instant, on affiche juste un message
+        console.log('Fichier sélectionné:', file.name);
+        
+        // Afficher le document dans la liste (temporaire, à connecter avec le backend)
+        if (documentList) {
+            documentList.innerHTML = `
+                <div class="document-item">
+                    <div class="document-item-info">
+                        <i class="fas fa-file-pdf"></i>
+                        <div>
+                            <div style="font-weight: 600; color: #111827;">${file.name}</div>
+                            <div style="font-size: 12px; color: #6b7280;">${(file.size / 1024).toFixed(2)} KB</div>
+                        </div>
+                    </div>
+                    <div class="document-item-actions">
+                        <a href="#" class="document-link">
+                            <i class="fas fa-download"></i> Télécharger
+                        </a>
+                        <a href="#" class="delete-link" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // TODO: Implémenter l'upload via AJAX vers le backend
+        alert('Fonctionnalité d\'upload à implémenter. Fichier: ' + file.name);
+    }
+</script>
+{% endblock %}
