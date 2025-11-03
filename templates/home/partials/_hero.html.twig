@@ -2,13 +2,16 @@
 <section
     id="hero"
     class="relative h-screen overflow-hidden flex items-center justify-center text-center text-white"
+    {% if backgroundImages|length > 0 %}
+    style="background-image: url('{{ asset(backgroundImages[0]) }}'); background-size: cover; background-position: center;"
+    {% endif %}
 >
     {# Slides en background #}
     {% for src in backgroundImages %}
         <div
             data-hero-index="{{ loop.index0 }}"
-            class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out {% if not loop.first %}opacity-0{% endif %}"
-            style="background-image: url('{{ asset(src) }}')"
+            class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ease-in-out {% if not loop.first %}opacity-0{% endif %}"
+            style="background-image: url('{{ asset(src) }}'); z-index: {{ loop.index0 }};"
         ></div>
     {% endfor %}
 
@@ -31,17 +34,75 @@
     </div>
 </section>
 
-{# Petit script de carrousel #}
+{# Script de carrousel avec crossfade parfait #}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const slides = document.querySelectorAll('#hero > div[data-hero-index]');
         if (slides.length < 2) return;
 
+        // Préchargement des images pour éviter les pages blanches
+        const preloadPromises = [];
+        slides.forEach(slide => {
+            const bgImage = slide.style.backgroundImage;
+            if (bgImage) {
+                const imgSrc = bgImage.replace(/url\(['"]?|['"]?\)/g, '');
+                const img = new Image();
+                const promise = new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.onerror = resolve; // Continuer même si une image échoue
+                    img.src = imgSrc;
+                });
+                preloadPromises.push(promise);
+            }
+        });
+
         let current = 0;
-        setInterval(() => {
-            slides[current].classList.add('opacity-0');
-            current = (current + 1) % slides.length;
-            slides[current].classList.remove('opacity-0');
-        }, 5000);
+        let isTransitioning = false;
+        
+        // Attendre que les images soient chargées avant de démarrer le carrousel
+        Promise.all(preloadPromises).then(() => {
+            // Fonction pour changer de slide avec crossfade parfait
+            function nextSlide() {
+                if (isTransitioning) return;
+                isTransitioning = true;
+                
+                const prevIndex = current;
+                current = (current + 1) % slides.length;
+                
+                // Mettre la nouvelle slide au-dessus AVANT de commencer le crossfade
+                slides[current].style.zIndex = slides.length + 10;
+                
+                // Utiliser requestAnimationFrame pour synchroniser avec le navigateur
+                requestAnimationFrame(() => {
+                    // Faire apparaître la nouvelle slide (crossfade progressif)
+                    slides[current].classList.remove('opacity-0');
+                    
+                    // Après la transition complète, nettoyer l'ancienne slide
+                    setTimeout(() => {
+                        // Cacher l'ancienne slide
+                        slides[prevIndex].classList.add('opacity-0');
+                        
+                        // Réinitialiser les z-index de manière propre
+                        requestAnimationFrame(() => {
+                            slides.forEach((slide, idx) => {
+                                slide.style.zIndex = idx;
+                            });
+                            // La slide courante reste au-dessus
+                            slides[current].style.zIndex = slides.length;
+                            isTransitioning = false;
+                        });
+                    }, 1000); // Durée exacte de la transition CSS
+                });
+            }
+            
+            // Initialiser : s'assurer que la première slide est visible et au-dessus
+            if (slides.length > 0) {
+                slides[0].style.zIndex = slides.length;
+                slides[0].classList.remove('opacity-0');
+            }
+            
+            // Changer de slide toutes les 5 secondes
+            setInterval(nextSlide, 5000);
+        });
     });
 </script>
