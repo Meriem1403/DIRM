@@ -830,7 +830,7 @@
     <div class="filters-section">
         <h2 class="filters-title">
             <i class="fas fa-filter"></i>
-            Filtrer par service et lieu
+            Filtrer par service, lieu et risque
         </h2>
         <form method="get" action="{{ path('mes_risques') }}" class="filters-form" id="filters-form">
             {% if isAdmin %}
@@ -854,6 +854,18 @@
                     {% for lieu in lieuxDisponibles %}
                         <option value="{{ lieu.id }}" {% if lieuSelectionne and lieuSelectionne.id == lieu.id %}selected{% endif %}>
                             {{ lieu.nom }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label" for="risque-titre-filter">Risque</label>
+                <select name="risque_titre" id="risque-titre-filter" class="filter-select">
+                    <option value="">-- Tous les risques --</option>
+                    {% for titre in titresRisques %}
+                        <option value="{{ titre }}" {% if risqueTitreFiltre == titre %}selected{% endif %}>
+                            {{ titre }}
                         </option>
                     {% endfor %}
                 </select>
@@ -918,6 +930,11 @@
                         <div class="risk-card">
                             <div class="risk-card-header">
                                 <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                        <span style="font-size: 12px; color: #6b7280; font-weight: 600; background: #f3f4f6; padding: 4px 8px; border-radius: 6px;">
+                                            #{{ risque.id }}
+                                        </span>
+                                    </div>
                                     <h3 class="risk-title">{{ risque.titre }}</h3>
                                 </div>
                                 <div class="badges-container">

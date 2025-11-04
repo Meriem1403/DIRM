@@ -74,8 +74,10 @@ class DashboardController extends AbstractController
         // Récupérer les filtres depuis la requête
         $serviceParam = $request->query->get('service', '');
         $lieuParam = $request->query->get('lieu', '');
+        $risqueTitreParam = $request->query->get('risque_titre', '');
         $serviceId = !empty($serviceParam) && is_numeric($serviceParam) ? (int) $serviceParam : 0;
         $lieuId = !empty($lieuParam) && is_numeric($lieuParam) ? (int) $lieuParam : 0;
+        $risqueTitreFiltre = !empty($risqueTitreParam) ? trim($risqueTitreParam) : '';
         
         // Déterminer les services disponibles
         if ($isAdmin) {
@@ -109,6 +111,24 @@ class DashboardController extends AbstractController
             $lieuSelectionne = $lieuRepository->find($lieuId);
         }
         
+        // Récupérer tous les titres de risques uniques pour le filtre
+        $queryTitres = $goudurixRepository->createQueryBuilder('g')
+            ->select('DISTINCT g.titre')
+            ->orderBy('g.titre', 'ASC');
+        
+        if ($serviceSelectionne) {
+            $queryTitres->andWhere('g.service = :service')
+                ->setParameter('service', $serviceSelectionne);
+        } elseif (!$isAdmin && $userService) {
+            $queryTitres->andWhere('g.service = :service')
+                ->setParameter('service', $userService);
+        }
+        
+        $titresRisques = $queryTitres->getQuery()->getResult();
+        $titresRisquesList = array_map(function($row) {
+            return $row['titre'];
+        }, $titresRisques);
+        
         // Construire la requête des risques
         $queryBuilder = $goudurixRepository->createQueryBuilder('g');
         
@@ -123,6 +143,11 @@ class DashboardController extends AbstractController
         if ($lieuSelectionne) {
             $queryBuilder->andWhere('g.lieu = :lieu')
                 ->setParameter('lieu', $lieuSelectionne);
+        }
+        
+        if (!empty($risqueTitreFiltre)) {
+            $queryBuilder->andWhere('g.titre = :risqueTitre')
+                ->setParameter('risqueTitre', $risqueTitreFiltre);
         }
         
         $risques = $queryBuilder
@@ -164,6 +189,8 @@ class DashboardController extends AbstractController
             'lieuxDisponibles' => $lieuxDisponibles,
             'serviceSelectionne' => $serviceSelectionne,
             'lieuSelectionne' => $lieuSelectionne,
+            'titresRisques' => $titresRisquesList,
+            'risqueTitreFiltre' => $risqueTitreFiltre,
             'notificationsNonLues' => $notificationsNonLues,
         ]);
     }

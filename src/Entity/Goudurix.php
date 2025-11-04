@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\NomRisque;
 
 #[ORM\Entity(repositoryClass: GoudurixRepository::class)]
 class Goudurix
@@ -93,6 +94,10 @@ class Goudurix
     #[ORM\JoinColumn(nullable: true)]
     private ?Lieu $lieu = null;
 
+    #[ORM\ManyToOne(targetEntity: NomRisque::class, inversedBy: 'risques')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?NomRisque $nomRisque = null;
+
     #[ORM\ManyToMany(targetEntity: User::class)]
     #[ORM\JoinTable(name: 'goudurix_observateurs')]
     private Collection $observateurs;
@@ -114,6 +119,40 @@ class Goudurix
 
     #[ORM\Column(nullable: true)]
     private ?int $scoreRisque = null;
+
+    // Colonnes additionnelles du CSV
+    #[ORM\Column(name: 'idaction', length: 50, nullable: true)]
+    private ?string $idaction = null;
+
+    #[ORM\Column(name: 'id_situ_d', length: 50, nullable: true)]
+    private ?string $idSituD = null;
+
+    #[ORM\Column(name: 'id_dommage', length: 50, nullable: true)]
+    private ?string $idDommage = null;
+
+    #[ORM\Column(name: 'id_mesure', length: 50, nullable: true)]
+    private ?string $idMesure = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $unite = null;
+
+    #[ORM\Column(name: 'numero', length: 50, nullable: true)]
+    private ?string $numero = null;
+
+    #[ORM\Column(name: 'dommage', type: Types::TEXT, nullable: true)]
+    private ?string $dommage = null;
+
+    #[ORM\Column(name: 'etat', length: 50, nullable: true)]
+    private ?string $etat = null;
+
+    #[ORM\Column(name: 'periodicite', length: 100, nullable: true)]
+    private ?string $periodicite = null;
+
+    #[ORM\Column(name: 'prochain_controle', type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $prochainControle = null;
+
+    #[ORM\Column(name: 'n_pdf', length: 100, nullable: true)]
+    private ?string $nPdf = null;
 
     public function __construct()
     {
@@ -476,6 +515,139 @@ class Goudurix
             }
         }
 
+        return $this;
+    }
+
+    public function getNomRisque(): ?NomRisque
+    {
+        return $this->nomRisque;
+    }
+
+    public function setNomRisque(?NomRisque $nomRisque): static
+    {
+        $this->nomRisque = $nomRisque;
+        return $this;
+    }
+
+    // Getters/Setters pour les colonnes additionnelles du CSV
+    public function getIdaction(): ?string
+    {
+        return $this->idaction;
+    }
+
+    public function setIdaction(?string $idaction): static
+    {
+        $this->idaction = $idaction;
+        return $this;
+    }
+
+    public function getIdSituD(): ?string
+    {
+        return $this->idSituD;
+    }
+
+    public function setIdSituD(?string $idSituD): static
+    {
+        $this->idSituD = $idSituD;
+        return $this;
+    }
+
+    public function getIdDommage(): ?string
+    {
+        return $this->idDommage;
+    }
+
+    public function setIdDommage(?string $idDommage): static
+    {
+        $this->idDommage = $idDommage;
+        return $this;
+    }
+
+    public function getIdMesure(): ?string
+    {
+        return $this->idMesure;
+    }
+
+    public function setIdMesure(?string $idMesure): static
+    {
+        $this->idMesure = $idMesure;
+        return $this;
+    }
+
+    public function getUnite(): ?string
+    {
+        return $this->unite;
+    }
+
+    public function setUnite(?string $unite): static
+    {
+        $this->unite = $unite;
+        return $this;
+    }
+
+    public function getNumero(): ?string
+    {
+        return $this->numero;
+    }
+
+    public function setNumero(?string $numero): static
+    {
+        $this->numero = $numero;
+        return $this;
+    }
+
+    public function getDommage(): ?string
+    {
+        return $this->dommage;
+    }
+
+    public function setDommage(?string $dommage): static
+    {
+        $this->dommage = $dommage;
+        return $this;
+    }
+
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(?string $etat): static
+    {
+        $this->etat = $etat;
+        return $this;
+    }
+
+    public function getPeriodicite(): ?string
+    {
+        return $this->periodicite;
+    }
+
+    public function setPeriodicite(?string $periodicite): static
+    {
+        $this->periodicite = $periodicite;
+        return $this;
+    }
+
+    public function getProchainControle(): ?\DateTime
+    {
+        return $this->prochainControle;
+    }
+
+    public function setProchainControle(?\DateTime $prochainControle): static
+    {
+        $this->prochainControle = $prochainControle;
+        return $this;
+    }
+
+    public function getNPdf(): ?string
+    {
+        return $this->nPdf;
+    }
+
+    public function setNPdf(?string $nPdf): static
+    {
+        $this->nPdf = $nPdf;
         return $this;
     }
 }

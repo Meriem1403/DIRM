@@ -1,0 +1,40 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_title %}Tableau des Risques (CSV) - {{ total }} lignes{% endblock %}
+
+{% block main %}
+    <div class="content">
+        <div class="table-responsive" style="overflow-x: auto;">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        {% for header in headers %}
+                            <th style="white-space: nowrap; padding: 8px;">{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                        <tr>
+                            {% for header in headers %}
+                                <td style="padding: 8px;">{{ row[header]|default('')|raw }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if paginator %}
+            <div class="pagination mt-3">
+                <span class="me-3">Page {{ paginator.currentPage }} sur {{ paginator.lastPage }} ({{ total }} lignes au total)</span>
+                {% if paginator.currentPage > 1 %}
+                    <a href="?view=table&page={{ paginator.currentPage - 1 }}" class="btn btn-sm btn-primary">Précédent</a>
+                {% endif %}
+                {% if paginator.currentPage < paginator.lastPage %}
+                    <a href="?view=table&page={{ paginator.currentPage + 1 }}" class="btn btn-sm btn-primary">Suivant</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

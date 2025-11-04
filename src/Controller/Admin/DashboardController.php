@@ -14,6 +14,7 @@ use App\Entity\DemandeHabilitationCerbere;
 use App\Entity\DemandeMobilite;
 use App\Entity\DeclarationChantier;
 use App\Entity\Goudurix;
+use App\Entity\NomRisque;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -128,6 +129,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Domaines', 'fas fa-briefcase', DomaineService::class);
         yield MenuItem::linkToCrud('Lieux', 'fas fa-map-marker-alt', Lieu::class);
         yield MenuItem::linkToCrud('Categories', 'fas fa-layer-group', Categorie::class);
+        yield MenuItem::linkToCrud('Noms de risques', 'fas fa-tag', NomRisque::class);
 
         yield MenuItem::section('Applications & Habilitations');
         yield MenuItem::linkToCrud('Applications Cerbère', 'fas fa-cogs', ApplicationCerbere::class);
@@ -139,7 +141,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Déclarations chantier', 'fas fa-anchor', DeclarationChantier::class);
 
             yield MenuItem::section('Gestion des Risques');
-            yield MenuItem::linkToUrl('Tableau des risques', 'fas fa-table', '/admin/goudurix-table');
+            yield MenuItem::linkToUrl('Risques Goudurix', 'fas fa-exclamation-triangle', '/admin/goudurix-table');
             yield MenuItem::linkToUrl('Dashboard risques', 'fas fa-tachometer-alt', '/goudurix-dashboard')->setLinkTarget('_blank');
             yield MenuItem::linkToUrl('Retours d\'action', 'fas fa-comments', '/admin/retours-action')->setLinkTarget('_blank');
             yield MenuItem::linkToUrl('Cartes des services', 'fas fa-th-large', '/services')->setLinkTarget('_blank');

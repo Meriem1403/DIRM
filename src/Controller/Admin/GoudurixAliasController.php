@@ -26,7 +26,7 @@ class GoudurixAliasController extends AbstractController
         return $this->redirect($url);
     }
 
-    // Alias pour la vue "table" (index standard EasyAdmin)
+    // Alias pour la vue "table" (affiche le CSV dans le tableau EasyAdmin standard)
     #[Route('/admin/goudurix-table', name: 'admin_goudurix_table')]
     public function goudurixTable(): Response
     {

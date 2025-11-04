@@ -35,6 +35,10 @@
                     </a>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <a href="{{ path('import_csv_risques') }}" 
+                       class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors text-sm font-medium">
+                        <i class="fas fa-file-import mr-1"></i>Importer CSV
+                    </a>
                     <a href="{{ path('admin') }}?crudAction=new&crudControllerFqcn=App%5CController%5CAdmin%5CGoudurixCrudController" 
                        class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition-colors text-sm font-medium">
                         <i class="fas fa-plus mr-1"></i>Nouveau Risque

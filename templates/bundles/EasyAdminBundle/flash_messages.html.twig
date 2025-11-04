@@ -14,7 +14,7 @@
     }
 </style>
 
-{% set flash_messages = ea.context %}
+{% set flash_messages = app.flashes %}
 
 {% if flash_messages|length > 0 %}
     <div id="flash-messages">

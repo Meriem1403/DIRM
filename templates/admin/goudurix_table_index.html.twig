@@ -1,0 +1,76 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+    {# Barre de recherche personnalisée pour Service, Responsable, Lieu #}
+    <div class="content">
+        <div class="card" style="margin-bottom: 1rem;">
+            <div class="card-body">
+                <form method="get" action="{{ ea_url().set('view', 'table').set('page', 1) }}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
+                    <input type="hidden" name="crudAction" value="index">
+                    <input type="hidden" name="crudControllerFqcn" value="{{ ea.request.get('crudControllerFqcn') }}">
+                    <input type="hidden" name="view" value="table">
+                    
+                    {# Conserver les filtres EasyAdmin existants #}
+                    {% for key, value in ea.request.query.all() %}
+                        {% if key not in ['search_service', 'search_responsable', 'search_lieu', 'page'] %}
+                            {% if value is iterable and value is not same as([]) %}
+                                {% for subKey, subValue in value %}
+                                    <input type="hidden" name="{{ key }}[{{ subKey }}]" value="{{ subValue }}">
+                                {% endfor %}
+                            {% else %}
+                                <input type="hidden" name="{{ key }}" value="{{ value }}">
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Service</label>
+                        <input type="text" 
+                               name="search_service" 
+                               value="{{ searchService ?? '' }}" 
+                               placeholder="Rechercher un service..."
+                               class="form-control"
+                               style="width: 100%;">
+                    </div>
+                    
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Responsable</label>
+                        <input type="text" 
+                               name="search_responsable" 
+                               value="{{ searchResponsable ?? '' }}" 
+                               placeholder="Rechercher un responsable..."
+                               class="form-control"
+                               style="width: 100%;">
+                    </div>
+                    
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Lieu</label>
+                        <input type="text" 
+                               name="search_lieu" 
+                               value="{{ searchLieu ?? '' }}" 
+                               placeholder="Rechercher un lieu..."
+                               class="form-control"
+                               style="width: 100%;">
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 1.5rem;">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
+                        {% if searchService or searchResponsable or searchLieu %}
+                            <a href="{{ ea_url().set('view', 'table').set('page', 1).set('search_service', '').set('search_responsable', '').set('search_lieu', '') }}" 
+                               class="btn btn-secondary" 
+                               style="margin-top: 1.5rem; margin-left: 0.5rem;">
+                                <i class="fas fa-times"></i> Réinitialiser
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        {# Afficher le contenu standard EasyAdmin #}
+        {{ parent() }}
+    </div>
+{% endblock %}
+
