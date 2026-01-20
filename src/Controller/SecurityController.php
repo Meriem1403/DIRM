@@ -13,6 +13,12 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        // Démarrer la session pour le CSRF
+        $session = $this->container->get('request_stack')->getCurrentRequest()?->getSession();
+        if ($session && !$session->isStarted()) {
+            $session->start();
+        }
+        
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
