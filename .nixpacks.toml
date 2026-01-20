@@ -15,4 +15,4 @@ cmds = [
 ]
 
 [start]
-cmd = "./start.sh"
+cmd = "php bin/console doctrine:schema:update --force --env=prod && php bin/console doctrine:fixtures:load --no-interaction --env=prod && php -S 0.0.0.0:$PORT -t public"
