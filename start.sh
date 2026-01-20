@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 echo "=========================================="
-echo "🚀 Démarrage de l'application DIRM v2..."
+echo "DEMARRAGE DE L'APPLICATION DIRM v3"
 echo "=========================================="
 
 # Attendre que la base de données soit prête
