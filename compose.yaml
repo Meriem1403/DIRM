@@ -2,6 +2,7 @@ services:
   # Application Symfony (Apache + PHP)
   app:
     image: webdevops/php-apache:8.2
+    platform: linux/amd64
     ports:
       - "8000:80"
     environment:
@@ -16,6 +17,7 @@ services:
   # Database (MySQL)
   database:
     image: mysql:${MYSQL_VERSION:-8.0}
+    platform: linux/amd64
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-app}

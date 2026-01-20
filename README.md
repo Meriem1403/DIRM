@@ -105,6 +105,34 @@ php bin/console doctrine:fixtures:load
 
 ---
 
+## 🚀 Déploiement
+
+### ⚠️ Important : Netlify n'est pas adapté
+
+Netlify est conçu pour les sites statiques. Pour déployer Symfony (PHP + MySQL), utilisez plutôt :
+
+### Options recommandées :
+
+1. **Railway** (Recommandé - Simple et gratuit) : Voir [RAILWAY_DEPLOY.md](./RAILWAY_DEPLOY.md)
+2. **Clever Cloud** (France) : https://www.clever-cloud.com
+3. **Heroku** : https://www.heroku.com
+4. **DigitalOcean App Platform** : https://www.digitalocean.com
+5. **Platform.sh** : https://platform.sh
+
+Pour plus de détails, consultez le [guide de déploiement complet](./DEPLOYMENT.md).
+
+### Déploiement rapide sur Railway :
+
+1. Créer un compte sur https://railway.app
+2. Connecter votre repository GitHub
+3. Ajouter un service MySQL
+4. Configurer les variables d'environnement
+5. Déployer automatiquement !
+
+Voir le guide détaillé : [RAILWAY_DEPLOY.md](./RAILWAY_DEPLOY.md)
+
+---
+
 ## 🧪 Tester
 
 Lancer les tests automatiques :

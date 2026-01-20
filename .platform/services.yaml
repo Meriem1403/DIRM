@@ -1,0 +1,5 @@
+# Configuration MySQL pour Platform.sh
+
+mysql:
+    type: mysql:8.0
+    disk: 2048

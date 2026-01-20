@@ -1,0 +1,42 @@
+# Configuration pour Platform.sh
+
+name: dirm
+type: php:8.2
+
+build:
+    flavor: composer
+
+relationships:
+    database: "mysql:mysql"
+
+variables:
+    env:
+        APP_ENV: prod
+        APP_DEBUG: false
+
+web:
+    locations:
+        "/":
+            root: "public"
+            passthru: "/index.php"
+            index:
+                - index.php
+            expires: 1h
+            scripts: true
+            allow: true
+
+disk: 2048
+
+mounts:
+    "public/uploads":
+        source: local
+        source_path: uploads
+
+hooks:
+    build: |
+        composer install --no-dev --optimize-autoloader
+        php bin/console cache:clear --env=prod
+        yarn install
+        yarn encore production
+    deploy: |
+        php bin/console doctrine:migrations:migrate --no-interaction
