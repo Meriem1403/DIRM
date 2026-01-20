@@ -130,6 +130,11 @@ APP_ENV=prod
 APP_DEBUG=0
 APP_SECRET=votre_secret_ici
 
+# ⚠️ IMPORTANT : APP_SECRET doit être fixe et ne jamais changer !
+# Si vous changez APP_SECRET, toutes les sessions seront invalidées
+# Pour générer un secret sécurisé :
+# php -r "echo bin2hex(random_bytes(32));"
+
 # Base de données (injectée automatiquement par Railway)
 # DATABASE_URL=mysql://user:password@host:port/database
 
@@ -138,10 +143,21 @@ MAILER_DSN=smtp://smtp.gmail.com:587?encryption=tls&auth_mode=login&username=ema
 
 # MongoDB (si utilisé)
 MONGODB_URI=mongodb://user:password@host:27017/database
+```
 
-# Trusted proxies (pour Railway)
-TRUSTED_PROXIES=*
-TRUSTED_HOSTS=*.up.railway.app
+### 🔧 Résolution du problème CSRF invalide
+
+Si vous rencontrez l'erreur "Jeton CSRF invalide" :
+
+1. **Vérifiez que APP_SECRET est bien configuré** et qu'il ne change pas entre les déploiements
+2. **Assurez-vous que les migrations ont été exécutées** pour créer les utilisateurs
+3. **Videz le cache du navigateur** et réessayez
+4. **Vérifiez que la base de données est accessible** et que les fixtures ont été chargées
+
+Pour charger les fixtures sur Railway :
+```bash
+# Via Railway CLI ou en ajoutant cette commande dans le script de démarrage
+php bin/console doctrine:fixtures:load --no-interaction --env=prod
 ```
 
 ### Domaine personnalisé

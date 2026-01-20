@@ -18,6 +18,16 @@ fi
 echo "📦 Exécution des migrations..."
 php bin/console doctrine:migrations:migrate --no-interaction || echo "⚠️  Erreur lors des migrations (peut être normal si déjà à jour)"
 
+# Vérifier si les utilisateurs existent, sinon charger les fixtures
+echo "👥 Vérification des utilisateurs..."
+USER_COUNT=$(php bin/console doctrine:query:sql "SELECT COUNT(*) FROM user" --env=prod 2>/dev/null | grep -o '[0-9]*' | head -1 || echo "0")
+if [ "$USER_COUNT" = "0" ] || [ -z "$USER_COUNT" ]; then
+    echo "📥 Chargement des fixtures (première installation)..."
+    php bin/console doctrine:fixtures:load --no-interaction --env=prod || echo "⚠️  Erreur lors du chargement des fixtures"
+else
+    echo "✅ Utilisateurs déjà présents ($USER_COUNT utilisateur(s))"
+fi
+
 # Vider le cache
 echo "🧹 Nettoyage du cache..."
 php bin/console cache:clear --env=prod --no-debug || true
